@@ -1,0 +1,11 @@
+package com.angolacall.constants;
+
+public enum ConferenceConstants {
+	conferenceId,
+	audioConfId,
+	owner,
+	created_time,
+	status,
+	title,
+	attendees
+}

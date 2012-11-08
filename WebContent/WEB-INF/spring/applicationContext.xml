@@ -1,0 +1,151 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans 
+			http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+			
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>/WEB-INF/config/Configuration.properties</value>
+			</list>
+		</property>
+	</bean>	
+	
+	<bean id="angola_config" class="com.angolacall.framework.Configuration">
+		<property name="suite0Id">
+			<value>${vos_suite0_id}</value>
+		</property>
+		<property name="suite5Id">
+			<value>${vos_suite5_id}</value>
+		</property>
+		<property name="suite10Id">
+			<value>${vos_suite10_id}</value>
+		</property>
+        <property name="signupGift">
+            <value>${vos_signup_gift}</value>
+        </property>		
+		<property name="appDonwloadPageUrl">
+		    <value>${app_download_page_url}</value>
+		</property>
+		<property name="mongoServerAddress">
+		    <value>${mongo.server.address}</value>
+		</property>
+		<property name="mongoServerPort">
+		    <value>${mongo.server.port}</value>
+		</property>
+		<property name="mongoDBName">
+		    <value>${mongo.db.name}</value>
+		</property>
+		<property name="appvcenterUrl">
+		    <value>${appvcenter_url}</value>
+		</property>
+		<property name="appId">
+		    <value>${app_id}</value>
+		</property>
+	</bean>
+	
+	<bean id="sms_client" class="com.richitec.sms.client.SMSClient">
+		<property name="baseUri">
+			<value>${textMessageUrl}</value>
+		</property>
+		<property name="userName">
+			<value>${textMessageUserName}</value>
+		</property>
+		<property name="password">
+			<value>${textMessagePwd}</value>
+		</property>
+	</bean>	
+	
+	<bean id="donkey_client" class="com.richitec.donkey.client.DonkeyClient">
+		<property name="baseUri">
+			<value>${donkey_base_uri}</value>
+		</property>
+		<property name="appId">
+			<value>${donkey_app_id}</value>
+		</property>
+		<property name="appKey">
+			<value>${donkey_app_key}</value>
+		</property>		
+	</bean>
+	
+	<bean id="vos_client" class="com.richitec.vos.client.VOSClient">
+		<property name="baseUri">
+			<value>${vos_base_uri}</value>
+		</property>
+		<property name="loginName">
+			<value>${vos_loginName}</value>
+		</property>
+		<property name="loginPassword">
+			<value>${vos_loginPassword}</value>
+		</property>
+	</bean>
+	
+	<bean id="notifier" class="com.richitec.notify.Notifier">
+		<property name="notifyUrl">
+			<value>${notify_url}</value>
+		</property>
+	</bean>
+	
+	<bean id="dataSource_mysql_c3p0" 
+		class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		
+		<property name="driverClass">
+			<value>${jdbc.driverClassName.mysql}</value>
+		</property>
+		<property name="jdbcUrl">
+			<value>${jdbc.url.mysql}</value>
+		</property>
+		<property name="user">
+			<value>${jdbc.username.mysql}</value>
+		</property>
+		<property name="password">
+			<value>${jdbc.password.mysql}</value>
+		</property>
+		<property name="acquireIncrement">
+			<value>1</value>
+		</property>			
+		<property name="checkoutTimeout">
+			<value>30000</value>
+		</property>	
+		<property name="preferredTestQuery">
+			<value>SELECT 1</value>
+		</property>
+		<property name="testConnectionOnCheckin">
+			<value>true</value>
+		</property>	
+		<property name="idleConnectionTestPeriod">
+			<value>300</value>
+		</property>
+		<property name="maxIdleTimeExcessConnections">
+			<value>600</value>
+		</property>
+		<property name="unreturnedConnectionTimeout">
+			<value>30</value>
+		</property>	
+		<property name="debugUnreturnedConnectionStackTraces">
+			<value>true</value>
+		</property>			
+		<property name="maxStatementsPerConnection">
+			<value>10</value>
+		</property>	
+		<property name="maxStatements">
+			<value>100</value>
+		</property>				 		
+	</bean>	
+	
+	<bean id="user_dao" class="com.richitec.ucenter.model.UserDAO">
+		<property name="dataSource" ref="dataSource_mysql_c3p0"></property>
+	</bean>
+	
+	<bean id="charge_dao" class="com.angolacall.mvc.model.charge.ChargeDAO">
+		<property name="dataSource" ref="dataSource_mysql_c3p0"></property>
+	</bean>
+	
+	<bean id="addressbook_dao" class="com.angolacall.mvc.model.addressbook.AddressBookDAO">
+	</bean>
+    
+</beans>

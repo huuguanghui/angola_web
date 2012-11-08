@@ -1,0 +1,222 @@
+@CHARSET "UTF-8";
+
+body {
+	font-family: 微软雅黑;
+}
+
+footer {
+	color: #999;
+	border-top: #999 solid 1px;
+	padding: 10px 0px 50px; 
+	margin-top: 50px;
+}
+
+footer span {
+	padding: 0 5px;
+}
+
+.hidden {
+	display: none;	
+}
+
+#signin-form {
+	margin-top: 50px;
+	margin-bottom: 200px;
+}
+
+.im-form input, button {
+    margin: 0;
+}
+
+.app_demo_view {
+	position: relative;
+}
+
+.app_demo_img {
+	position: absolute;
+	top: 85px;
+	left: 19px;
+}
+
+.pay_result_center {
+	position: relative;
+	width: 500px;
+	height: 424px;
+	margin: 0 auto;
+}
+
+.pay_result_center > div {
+	position: relative;
+	width: 400px;
+	height: 100px;
+	top: 100px;
+	margin: 0 auto;	
+}
+
+.pay_result_center > div p {
+	font-size: 20px;
+}
+
+.pay_result_center > div .link_region {
+	position: relative;
+	top: 20px;
+}
+
+.im-btn {
+    margin: 10px 0;
+}
+
+.im-conf-info {
+	width: 80%;
+}
+
+.im-conf-title {
+	font-size: 18px;
+    line-height: 20px;
+	margin-bottom: 10px;
+}
+
+.im-attendee-name {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.im-attendee-conf,
+.im-attendee-history {
+	background-color: #D9EDF7;
+	border: solid 1px #BCE8F1;
+}
+
+.im-video {
+    width: 270px;
+    height: 360px;
+    margin: 10px 1px 10px 0;
+    background: #999;
+    float: left;
+}
+
+.im-flash {
+    height: 400px;	
+}
+
+.im-attendee {
+    padding: 5px;
+    margin: 0 5px 5px 0;
+    width: 110px;
+    overflow: hidden;
+}
+
+.im-icon {
+	display: inline-block;
+	width: 14px;
+	height: 14px;
+	line-height: 14px;
+	vertical-align: text-top;
+	background-repeat: no-repeat;
+}
+
+.im-icon-signin-online {
+	background-image: url("../img/online_flag.png");
+    background-color: #DFF0D8;
+    border-color: #D6E9C6;
+}
+
+.im-icon-signin-offline {
+	background-image: url("../img/offline_flag.png");
+    background-color: #F2DEDE;
+    border-color: #EED3D7;
+}
+
+.im-icon-phone-Terminated {
+    background-image: url("../img/hangedup.png");
+}
+
+.im-icon-phone-CallWait {
+    background-image: url("../img/calling.png");
+}
+
+.im-icon-phone-Established {
+    background-image: url("../img/intalking.png");
+}
+
+.im-icon-phone-Failed {
+    background-image: url("../img/call_failed.png");
+}
+
+.im-icon-video-off {
+	background-image: url("../img/video_off.png");
+}
+
+.im-icon-video-on {
+    background-image: url("../img/video_on.png");
+}
+
+#formJoinConference hr {
+	margin: 5px 0;
+}
+
+.selection-list {
+	height: 400px;
+	width: 49%;
+}
+
+.selection-list ul {
+	overflow: auto;
+	margin: 0;
+	padding: 0;
+	height: 80%;
+}
+
+.selection-list ul > li {
+	padding: 4px 4px 4px 6px;
+}
+
+.create-button-region {
+	text-align: center;
+}
+
+#ab_search_input {
+	width: 89%;
+}
+
+.selection-list > .blank {
+	margin-bottom: 5px;
+}
+
+.selection-list > .blank > button {
+	width: 100%
+}
+
+.selection-list .add_contact_bt, .selection-list .remove_contact_bt {
+	float: right;
+	margin-right: 4px;
+}
+
+#addressbook .ab_contact {
+	background-color: #E8E8E8;
+	border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 4px 4px 4px 4px;
+}
+
+#addressbook .ab_contact:HOVER {
+	background-color: #B9D3EE;
+	border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 4px 4px 4px 4px;
+}
+
+#selected_contacts .selected_contact {
+	background-color: #E8E8E8;
+	border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 4px 4px 4px 4px;
+}
+
+#selected_contacts .selected_contact:HOVER {
+	background-color: #EED5B7;
+	border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 4px 4px 4px 4px;
+}
+
+#add_new_contact_dlg {
+	width: 360px;
+	left: 55%;
+	margin-left: -245px;
+}
