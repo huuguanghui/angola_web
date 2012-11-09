@@ -12,16 +12,6 @@
 	<h3>智会客户端下载</h3>
 	<br/>
 	<div>
-		<a class="btn" style="margin: 5px;" href="https://itunes.apple.com/us/app/zhi-hui/id554959651?ls=1&mt=8">
-			<div>
-				<img class="pull-left" alt="app store" src="./img/iphone.png">
-				<div class="pull-right">
-					<p>
-						<strong>&nbsp;智会 iPhone 版</strong><br>App Store 下载
-					</p>
-				</div>
-			</div>
-		</a> 
 		<a class="btn" style="margin: 5px;" href="/angola/downloadAppClient/android">
 			<div>
 				<img class="pull-left" alt="app store" src="./img/android.png">

@@ -15,6 +15,15 @@
     		<form id="formResetPassword" action="user/resetpassword" class="im-form span6 offset3">
                 <h2>重新设置密码</h2>
                 <hr>
+                 <div class="control-group">
+			    	<label class="control-label">国家代码</label>
+			    	<div class="controls">
+			    		<select id="countryCode" name="countryCode">
+			    			<option value="0086" selected="selected">0086 (China 中国)</option>
+			    			<option value="00244">00244 (Angola 安哥拉)</option>
+			    		</select>
+			    	</div>
+			    </div>
                 <div id="divPhoneNumberCtrl" class="control-group">
                     <label class="control-label" for="iptPhoneNumber">手机号</label>
                     <div class="controls">
@@ -117,6 +126,7 @@
     
     $("#btnGetPhoneCode").click(function(){
         var phoneNumber = $("#iptPhoneNumber").val();
+        var country_code = $("#countryCode").val();
         if (!isValidPhoneNumber($_divCtrl, phoneNumber)){
         	return;
         }
@@ -125,7 +135,8 @@
         $_divCtrl.removeClass("error");
         $_divCtrl.removeClass("success");
         $.post("/angola/user/validatePhoneNumber", 
-            { phone: phoneNumber },
+            { phone: phoneNumber, 
+        	countryCode: country_code},
             function(data){
                 if ("200" == data){
                     disable60Seconds();

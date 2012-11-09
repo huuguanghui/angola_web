@@ -13,6 +13,15 @@
     <div class="container">
     	<div class="row">
 			<form id="signin-form" action="" class="span4 offset4 well">
+				<div class="control-group">
+			    	<label class="control-label">国家代码</label>
+			    	<div class="controls">
+			    		<select id="countryCode" name="countryCode">
+			    			<option value="0086" selected="selected">0086 (China 中国)</option>
+			    			<option value="00244">00244 (Angola 安哥拉)</option>
+			    		</select>
+			    	</div>
+			    </div>
 			    <div id="divUserNameAlert" class="control-group">
 				    <label class="control-label" for="username">手机号码</label>
 				    <div class="controls">
@@ -88,14 +97,16 @@
 		if (isValidUserName() && isValidPassword()){
 			var username = $("#iptUserName").val();
 		    var pwd = $("#iptPassword").val();
+		    var country_code = $("#countryCode").val();
 		    var jqxhr = $.post("/angola/user/login",
 		    	{
 		         loginName: username,
-		         loginPwd: md5(pwd)
+		         loginPwd: md5(pwd),
+		         countryCode: country_code
 		    	}, 
 		    	function(data){
 		    		if (data.result == "0"){
-		    			location.href = "/angola/myconference";
+		    			location.href = "/angola/accountcharge";
 		    		} else {
 		                $divCtrl.addClass("error");
 		                $span.html("登录失败，请仔细检查你输入的用户名和密码。");

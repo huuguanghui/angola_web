@@ -27,8 +27,8 @@ import com.richitec.sms.client.SMSHttpResponse;
 
 
 @Controller
-public class IMeetingWebController {
-	private static Log log = LogFactory.getLog(IMeetingWebController.class);
+public class AngolaWebController {
+	private static Log log = LogFactory.getLog(AngolaWebController.class);
 	@RequestMapping("/")
 	public ModelAndView index(HttpSession session, HttpServletRequest request) {
 		ModelAndView view = new ModelAndView();

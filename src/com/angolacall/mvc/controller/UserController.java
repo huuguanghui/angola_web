@@ -11,6 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,14 +39,14 @@ public class UserController extends ExceptionController {
 	private VOSClient vosClient;
 	private SMSClient smsClient;
 	private Configuration config;
-	
+
 	public static final String ErrorCode = "error_code";
 	public static final String PhoneNumberError = "phone_number_error";
 	public static final String PhoneCodeError = "phone_code_error";
 	public static final String PasswordError = "password_error";
 	public static final String ConfirmPasswordError = "confirm_password_error";
 	public static final String NicknameError = "nickname_error";
-	
+
 	@PostConstruct
 	public void init() {
 		userDao = ContextLoader.getUserDAO();
@@ -53,33 +54,9 @@ public class UserController extends ExceptionController {
 		config = ContextLoader.getConfiguration();
 	}
 
-	@Deprecated
-	@RequestMapping("/loginold")
-	public void loginold(
-			@RequestParam(value = "loginName") String loginName,
-			@RequestParam(value = "loginPwd") String loginPwd,
-			@RequestParam(value = "brand", required = false, defaultValue = "") String brand,
-			@RequestParam(value = "model", required = false, defaultValue = "") String model,
-			@RequestParam(value = "release", required = false, defaultValue = "") String release,
-			@RequestParam(value = "sdk", required = false, defaultValue = "") String sdk,
-			@RequestParam(value = "width", required = false, defaultValue = "0") String width,
-			@RequestParam(value = "height", required = false, defaultValue = "0") String height,
-			HttpServletResponse response, HttpSession session) throws Exception {
-		JSONObject jsonUser = userDao.login(loginName, loginPwd);
-		log.info("result: " + jsonUser.toString());
-		String result = jsonUser.getString("result");
-		if (result != null && result.equals("0")) {
-			// login success, add UserBean to Session
-			UserBean userBean = new UserBean();
-			userBean.setUserName(loginName);
-			userBean.setPassword(loginPwd);
-			session.setAttribute(UserBean.SESSION_BEAN, userBean);
-		}
-		response.getWriter().print(jsonUser.toString());
-	}
-	
 	@RequestMapping("/login")
 	public void login(
+			@RequestParam(value = "countryCode") String countryCode, 
 			@RequestParam(value = "loginName") String loginName,
 			@RequestParam(value = "loginPwd") String loginPwd,
 			@RequestParam(value = "brand", required = false, defaultValue = "") String brand,
@@ -89,23 +66,27 @@ public class UserController extends ExceptionController {
 			@RequestParam(value = "width", required = false, defaultValue = "0") String width,
 			@RequestParam(value = "height", required = false, defaultValue = "0") String height,
 			HttpServletResponse response, HttpSession session) throws Exception {
-		UserBean user = userDao.getUserBean(loginName, loginPwd);
 		JSONObject json = new JSONObject();
-		if (null != user){
-			json.put("result", "0");
-			json.put("userkey", user.getUserKey());
-			json.put("nickname", user.getNickName());
-			user.setUserName(loginName);
-			user.setPassword(loginPwd);
-			session.setAttribute(UserBean.SESSION_BEAN, user);
-		} else {
+		try {
+			UserBean user = userDao.getUserBean(countryCode, loginName, loginPwd);
+			if (null != user) {
+				json.put("result", "0");
+				json.put("userkey", user.getUserKey());
+				user.setUserName(loginName);
+				user.setPassword(loginPwd);
+				session.setAttribute(UserBean.SESSION_BEAN, user);
+				userDao.recordDeviceInfo(loginName, countryCode, brand, model, release, sdk, width, height);
+			} else {
+				json.put("result", "1");
+			}
+		} catch (DataAccessException e) {
 			json.put("result", "1");
 		}
 		response.getWriter().print(json.toString());
 	}
 
 	/**
-	 * forgetpwd.jsp 页面获取手机验证码请求。
+	 * 此接口用于 forgetpwd.jsp 页面获取手机验证码请求。
 	 * 
 	 * @param session
 	 * @param phoneNumber
@@ -114,10 +95,11 @@ public class UserController extends ExceptionController {
 	@RequestMapping("/validatePhoneNumber")
 	public @ResponseBody
 	String validatePhoneNumber(HttpSession session,
+			@RequestParam(value = "countryCode") String countryCode,
 			@RequestParam(value = "phone") String phoneNumber) {
 		String result = userDao.checkRegisterPhone(phoneNumber);
 		if ("3".equals(result)) {
-			userDao.getPhoneCode(session, phoneNumber);
+			userDao.getPhoneCode(session, phoneNumber, countryCode);
 			return "200";
 		} else {
 			return "404";
@@ -148,8 +130,9 @@ public class UserController extends ExceptionController {
 
 		String sessionPhoneNumber = (String) session
 				.getAttribute("phonenumber");
+		String countryCode = (String) session.getAttribute("countrycode");
 		String sessionPhoneCode = (String) session.getAttribute("phonecode");
-		if (null == sessionPhoneCode || null == sessionPhoneNumber) {
+		if (null == sessionPhoneCode || null == sessionPhoneNumber || null == countryCode) {
 			return "410";
 		}
 
@@ -163,51 +146,52 @@ public class UserController extends ExceptionController {
 		}
 
 		String md5Password = MD5Util.md5(newPassword);
-		if (userDao.changePassword(phoneNumber, md5Password) <= 0) {
+		if (userDao.changePassword(phoneNumber, md5Password, countryCode) <= 0) {
 			return "500";
 		}
 
 		session.removeAttribute("phonenumber");
 		session.removeAttribute("phonecode");
+		session.removeAttribute("countrycode");
 		return "200";
 	}
-	
-	@RequestMapping(value="/websignup", method=RequestMethod.POST)
+
+	@RequestMapping(value = "/websignup", method = RequestMethod.POST)
 	public ModelAndView webSignup(
 			HttpSession session,
+			@RequestParam(value = "countryCode", defaultValue = "") String countryCode,
 			@RequestParam(value = "phoneNumber") String phoneNumber,
 			@RequestParam(value = "phoneCode") String phoneCode,
-			@RequestParam(value = "nickname") String nickname,			
 			@RequestParam(value = "password") String password,
-			@RequestParam(value = "confirmPassword") String confirmPassword) throws Exception {
+			@RequestParam(value = "referrer", defaultValue = "") String referrer,
+			@RequestParam(value = "confirmPassword") String confirmPassword)
+			throws Exception {
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("signup");
-		
-		String sessionPhoneNumber = (String)session.getAttribute("phonenumber");
-		String sessionPhoneCode = (String)session.getAttribute("phonecode");
+
+		String sessionPhoneNumber = (String) session
+				.getAttribute("phonenumber");
+		String sessionPhoneCode = (String) session.getAttribute("phonecode");
 		/*
-		if (null == sessionPhoneCode || null == sessionPhoneNumber) {
-			mv.addObject(ErrorCode, HttpServletResponse.SC_GONE);
-			return mv;
-		}
-		*/
-		if (phoneNumber.isEmpty() || phoneCode.isEmpty()
-				|| password.isEmpty() || confirmPassword.isEmpty() || nickname.isEmpty()) {
+		 * if (null == sessionPhoneCode || null == sessionPhoneNumber) {
+		 * mv.addObject(ErrorCode, HttpServletResponse.SC_GONE); return mv; }
+		 */
+		if (phoneNumber.isEmpty() || phoneCode.isEmpty() || password.isEmpty()
+				|| confirmPassword.isEmpty()) {
 			mv.addObject(ErrorCode, HttpServletResponse.SC_BAD_REQUEST);
-			if (phoneNumber.isEmpty()){
-				mv.addObject(PhoneNumberError, HttpServletResponse.SC_BAD_REQUEST);
+			if (phoneNumber.isEmpty()) {
+				mv.addObject(PhoneNumberError,
+						HttpServletResponse.SC_BAD_REQUEST);
 			}
 			if (phoneCode.isEmpty()) {
 				mv.addObject(PhoneCodeError, HttpServletResponse.SC_BAD_REQUEST);
 			}
-			if (password.isEmpty()){
+			if (password.isEmpty()) {
 				mv.addObject(PasswordError, HttpServletResponse.SC_BAD_REQUEST);
 			}
 			if (confirmPassword.isEmpty()) {
-				mv.addObject(ConfirmPasswordError, HttpServletResponse.SC_BAD_REQUEST);
-			}
-			if (nickname.isEmpty()) {
-				mv.addObject(NicknameError, HttpServletResponse.SC_BAD_REQUEST);
+				mv.addObject(ConfirmPasswordError,
+						HttpServletResponse.SC_BAD_REQUEST);
 			}
 			return mv;
 		}
@@ -225,53 +209,62 @@ public class UserController extends ExceptionController {
 			return mv;
 		}
 
-		String result = userDao.regUser(phoneNumber, nickname, password, confirmPassword);
-		if ("0".equals(result)) { // insert success
-			Integer vosphone = userDao.getVOSPhoneNumber(phoneNumber);
-			result = addUserToVOS(phoneNumber, vosphone.toString());
-			
-			if ("0".equals(result)) {
-				int affectedRows = 
-					userDao.updateUserAccountStatus(phoneNumber, UserAccountStatus.success);
-				if (affectedRows > 0) {
-					result = "0";
-				} else {
-					result = "1";
-				}
-			} else if ("2001".equals(result)) {
-				userDao.updateUserAccountStatus(phoneNumber, UserAccountStatus.vos_account_error);
-			} else if ("2002".equals(result)) {
-				userDao.updateUserAccountStatus(phoneNumber, UserAccountStatus.vos_phone_error);
-			} else if ("2003".equals(result)) {
-				userDao.updateUserAccountStatus(phoneNumber, UserAccountStatus.vos_suite_error);
-			}
-		}
-		
-		if ("0".equals(result)){
-			Double money = config.getSignupGift();
-			if (money!=null && money>0){
-				VOSHttpResponse depositeResp = vosClient.deposite(phoneNumber, money);
-				if (depositeResp.getHttpStatusCode()!=200 ||
-						!depositeResp.isOperationSuccess()){
-					log.error("\nCannot deposite gift for user : " + phoneNumber
-							+ "\nVOS Http Response : "
-							+ depositeResp.getHttpStatusCode()
-							+ "\nVOS Status Code : "
-							+ depositeResp.getVOSStatusCode()
-							+ "\nVOS Response Info ："
-							+ depositeResp.getVOSResponseInfo());
-				}
+		String result = userDao.regUser(countryCode, phoneNumber, referrer,
+				password, confirmPassword);
+
+		// if ("0".equals(result)) { // insert success
+		// Integer vosphone = userDao.getVOSPhoneNumber(phoneNumber);
+		// result = addUserToVOS(phoneNumber, vosphone.toString());
+		//
+		if ("0".equals(result)) {
+			int affectedRows = userDao.updateUserAccountStatus(countryCode, phoneNumber,
+					UserAccountStatus.success);
+			if (affectedRows > 0) {
+				result = "0";
+			} else {
+				result = "1";
 			}
 		}
 
-		if ("0".equals(result)){
+		// else if ("2001".equals(result)) {
+		// userDao.updateUserAccountStatus(phoneNumber,
+		// UserAccountStatus.vos_account_error);
+		// } else if ("2002".equals(result)) {
+		// userDao.updateUserAccountStatus(phoneNumber,
+		// UserAccountStatus.vos_phone_error);
+		// } else if ("2003".equals(result)) {
+		// userDao.updateUserAccountStatus(phoneNumber,
+		// UserAccountStatus.vos_suite_error);
+		// }
+		// }
+		//
+		// if ("0".equals(result)) {
+		// Double money = config.getSignupGift();
+		// if (money != null && money > 0) {
+		// VOSHttpResponse depositeResp = vosClient.deposite(phoneNumber,
+		// money);
+		// if (depositeResp.getHttpStatusCode() != 200
+		// || !depositeResp.isOperationSuccess()) {
+		// log.error("\nCannot deposite gift for user : "
+		// + phoneNumber + "\nVOS Http Response : "
+		// + depositeResp.getHttpStatusCode()
+		// + "\nVOS Status Code : "
+		// + depositeResp.getVOSStatusCode()
+		// + "\nVOS Response Info ："
+		// + depositeResp.getVOSResponseInfo());
+		// }
+		// }
+		// }
+
+		if ("0".equals(result)) {
 			mv.addObject(ErrorCode, HttpServletResponse.SC_OK);
 		} else {
-			mv.addObject(ErrorCode, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			mv.addObject(ErrorCode,
+					HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 		return mv;
 	}
-	
+
 	/**
 	 * 用户从手机注册获取验证码请求。
 	 * 
@@ -281,15 +274,16 @@ public class UserController extends ExceptionController {
 	 * @throws Exception
 	 */
 	@RequestMapping("/getPhoneCode")
-	public void getPhoneCode(@RequestParam(value = "phone") String phone,
+	public void getPhoneCode(
+			@RequestParam(value = "countryCode") String countryCode,
+			@RequestParam(value = "phone") String phone,
 			HttpServletResponse response, HttpSession session) throws Exception {
 		JSONObject jsonUser = new JSONObject();
 		try {
 			String result = "0";
 			result = userDao.checkRegisterPhone(phone);
-			log.info("check register phone return: " + result);
 			if (result.equals("0")) {
-				result = userDao.getPhoneCode(session, phone);
+				result = userDao.getPhoneCode(session, phone, countryCode);
 			}
 			jsonUser.put("result", result);
 		} catch (JSONException e) {
@@ -327,65 +321,72 @@ public class UserController extends ExceptionController {
 	@RequestMapping("/regUser")
 	public void regUser(@RequestParam(value = "password") String password,
 			@RequestParam(value = "password1") String password1,
-			@RequestParam(value = "nickname", defaultValue = "") String nickname,
 			HttpServletResponse response, HttpSession session) throws Exception {
 		log.info("regUser");
-	
+
 		String result = "";
 		String phone = "";
+		String countryCode = "";
 		if (null == session.getAttribute("phonenumber")) {
 			result = "6"; // session过期
 		} else {
 			phone = (String) session.getAttribute("phonenumber");
-			if (nickname.length() == 0) {
-				nickname = phone;
-			}
-			result = userDao.regUser(phone, nickname, password, password1);
+			countryCode = (String) session.getAttribute("countrycode");
+			result = userDao.regUser(countryCode, phone, "", password,
+					password1);
 		}
 
-		if ("0".equals(result)) { // insert success
-			Integer vosphone = userDao.getVOSPhoneNumber(phone);
-			result = addUserToVOS(phone, vosphone.toString());
-			
-			if ("0".equals(result)) {
-				int affectedRows = userDao.updateUserAccountStatus(phone, UserAccountStatus.success);
-				if (affectedRows > 0) {
-					result = "0";
-				} else {
-					result = "1";
-				}
-			} else if ("2001".equals(result)) {
-				userDao.updateUserAccountStatus(phone, UserAccountStatus.vos_account_error);
-			} else if ("2002".equals(result)) {
-				userDao.updateUserAccountStatus(phone, UserAccountStatus.vos_phone_error);
-			} else if ("2003".equals(result)) {
-				userDao.updateUserAccountStatus(phone, UserAccountStatus.vos_suite_error);
+		// if ("0".equals(result)) { // insert success
+		// Integer vosphone = userDao.getVOSPhoneNumber(phone);
+		// result = addUserToVOS(phone, vosphone.toString());
+		//
+		if ("0".equals(result)) {
+			int affectedRows = userDao.updateUserAccountStatus(countryCode, phone,
+					UserAccountStatus.success);
+			if (affectedRows > 0) {
+				result = "0";
+			} else {
+				result = "1";
 			}
 		}
-		
-		if ("0".equals(result)){
-			Double money = config.getSignupGift();
-			if (money!=null && money>0){
-				VOSHttpResponse depositeResp = vosClient.deposite(phone, money);
-				if (depositeResp.getHttpStatusCode()!=200 ||
-						!depositeResp.isOperationSuccess()){
-					log.error("\nCannot deposite gift for user : " + phone
-							+ "\nVOS Http Response : "
-							+ depositeResp.getHttpStatusCode()
-							+ "\nVOS Status Code : "
-							+ depositeResp.getVOSStatusCode()
-							+ "\nVOS Response Info ："
-							+ depositeResp.getVOSResponseInfo());
-				} else {
-				    try {
-				        smsClient.sendTextMessage(phone, "欢迎您成为智会用户，" +
-				    		"您的账户已获赠10元。更多信息请访问 http://www.wetalking.net/help");
-				    } catch(Exception e) {
-				        log.error("Cannot send SMS to new user: " + phone);
-				    }
-				}
-			}
-		}
+		// else if ("2001".equals(result)) {
+		// userDao.updateUserAccountStatus(phone,
+		// UserAccountStatus.vos_account_error);
+		// } else if ("2002".equals(result)) {
+		// userDao.updateUserAccountStatus(phone,
+		// UserAccountStatus.vos_phone_error);
+		// } else if ("2003".equals(result)) {
+		// userDao.updateUserAccountStatus(phone,
+		// UserAccountStatus.vos_suite_error);
+		// }
+		// }
+		//
+		// if ("0".equals(result)) {
+		// Double money = config.getSignupGift();
+		// if (money != null && money > 0) {
+		// VOSHttpResponse depositeResp = vosClient.deposite(phone, money);
+		// if (depositeResp.getHttpStatusCode() != 200
+		// || !depositeResp.isOperationSuccess()) {
+		// log.error("\nCannot deposite gift for user : " + phone
+		// + "\nVOS Http Response : "
+		// + depositeResp.getHttpStatusCode()
+		// + "\nVOS Status Code : "
+		// + depositeResp.getVOSStatusCode()
+		// + "\nVOS Response Info ："
+		// + depositeResp.getVOSResponseInfo());
+		// } else {
+		// try {
+		// smsClient
+		// .sendTextMessage(
+		// phone,
+		// "欢迎您成为智会用户，"
+		// + "您的账户已获赠10元。更多信息请访问 http://www.wetalking.net/help");
+		// } catch (Exception e) {
+		// log.error("Cannot send SMS to new user: " + phone);
+		// }
+		// }
+		// }
+		// }
 
 		JSONObject jsonUser = new JSONObject();
 		try {
@@ -439,6 +440,7 @@ public class UserController extends ExceptionController {
 
 		return "0";
 	}
+
 	/**
 	 * iphone 客户端每次启动登录后会发送该请求
 	 * 
@@ -462,7 +464,8 @@ public class UserController extends ExceptionController {
 	@RequestMapping("/checkUserExist")
 	public void checkUserExist(
 			@RequestParam(value = "username", required = true) String userName,
-			HttpServletResponse response) throws JSONException, SQLException, IOException {
+			HttpServletResponse response) throws JSONException, SQLException,
+			IOException {
 		JSONObject ret = new JSONObject();
 		boolean isExist = userDao.isExistsLoginName(userName);
 		ret.put("result", isExist);

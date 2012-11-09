@@ -58,14 +58,6 @@
 	  }
   }
   
-  Integer nicknameError = (Integer)request.getAttribute(UserController.NicknameError);
-  String nicknameErrorInfo = "";
-  if (null != nicknameError) {
-	  if (HttpServletResponse.SC_BAD_REQUEST == nicknameError) {
-		  nicknameErrorInfo = "名称不能为空";
-	  }
-  }
-  
   String phoneNumber = "";
   if (null != request.getParameter("phoneNumber")){
 	  phoneNumber = request.getParameter("phoneNumber");
@@ -102,6 +94,15 @@
 			     <strong>错误：</strong><%=errorInfo %>
 			    </div>
 			    <% } %>
+			    <div class="control-group">
+			    	<label class="control-label">国家代码</label>
+			    	<div class="controls">
+			    		<select id="countryCode" name="countryCode">
+			    			<option value="0086" selected="selected">0086 (China 中国)</option>
+			    			<option value="00244">00244 (Angola 安哥拉)</option>
+			    		</select>
+			    	</div>
+			    </div>
 	    		<div id="divPhoneNumberCtrl" class="control-group <%=phoneNumberErrorInfo.isEmpty()?"":"error"%>">
 	    		    <label class="control-label" for="iptPhoneNumber">手机号</label>
 	    		    <div class="controls">
@@ -120,15 +121,6 @@
 		    		    pattern="[0-9]{6}" maxlength="6" value="<%=phoneCode %>" />
 		    		    <span id="spanPhoneCodeInfo" class="help-inline">
 		    		    <%=phoneCodeErrorInfo %>
-		    		    </span>
-		    		</div>
-		    	</div>
-		    	<div class="control-group <%=nicknameErrorInfo.isEmpty()? "" : "error" %>">
-		    	    <label class="control-label" for="iptNickname">名称</label>
-		    	    <div class="controls">
-		    		    <input type="text" name="nickname" maxlength="64" id="iptNickname" />
-		    		    <span id="spanNicknameInfo" class="help-inline">
-		    		   	<%=nicknameErrorInfo %>
 		    		    </span>
 		    		</div>
 		    	</div>
@@ -190,6 +182,7 @@
 			$("#btnGetPhoneCode").click(function(){
 				var $span = $("#spanPhoneNumberInfo");
 				var $divCtrl = $("#divPhoneNumberCtrl");
+				var country_code = $("#countryCode").val();
 				var phoneNumber = $("#iptPhoneNumber").val();
 				if (phoneNumber.length != 11 || 
 					!$.isNumeric(phoneNumber) ||
@@ -203,7 +196,8 @@
 				$divCtrl.removeClass("error");
 				$divCtrl.removeClass("success");
 				$.post("/angola/user/getPhoneCode", 
-					{ phone: phoneNumber },
+					{ phone: phoneNumber,
+					countryCode : country_code},
 					function(data){
 						if ("0" == data.result){
 							disable60Seconds();

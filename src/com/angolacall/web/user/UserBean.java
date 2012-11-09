@@ -4,10 +4,10 @@ public class UserBean {
 	public static final String SESSION_BEAN = "userbean";
 	
 	private String username;
-	private String nickname;
+	private String referrer;
 	private String userKey;
 	private String password;
-	
+	private String countryCode;
 
 	public String getUserName() {
 		return username;
@@ -17,19 +17,19 @@ public class UserBean {
 		this.username = name;
 	}
 	
-	public String getNickName(){
-		return nickname;
+	public String getReferrer(){
+		return referrer;
 	}
 	
-	public void setNickName(String nickName){
-		this.nickname = nickName;
+	public void setReferrer(String referrer){
+		this.referrer = referrer;
 	}
 	
 	public String getDisplayName(){
-		if (nickname == null || nickname.length()<=0){
+		if (referrer == null || referrer.length()<=0){
 			return username; 
 		} else {
-			return nickname;
+			return referrer;
 		}
 	}
 	
@@ -48,4 +48,14 @@ public class UserBean {
 	public void setUserKey(String userKey){
 		this.userKey = userKey;
 	}
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
+	}
+	
+	
 }

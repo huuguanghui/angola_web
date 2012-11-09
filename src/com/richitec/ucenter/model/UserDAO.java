@@ -25,6 +25,7 @@ import com.richitec.sms.client.SMSHttpResponse;
 import com.richitec.util.MD5Util;
 import com.richitec.util.RandomString;
 import com.richitec.util.ValidatePattern;
+import com.sun.xml.wss.impl.callback.UsernameCallback;
 
 public class UserDAO {
 	private static Log log = LogFactory.getLog(UserDAO.class);
@@ -42,16 +43,18 @@ public class UserDAO {
 	 * @param session
 	 * @param phone
 	 * @param phoneCode
+	 * @param countryCode
 	 * @return
 	 */
-	public String getPhoneCode(HttpSession session, String phone) {
+	public String getPhoneCode(HttpSession session, String phone, String countryCode) {
 		String result = "0";
 		String phoneCode = RandomString.validateCode();
 		log.info("phone code: " + phoneCode);
 		try {
 			session.setAttribute("phonenumber", phone);
 			session.setAttribute("phonecode", phoneCode);
-			String content = "验证码：" + phoneCode + " [智会]";
+			session.setAttribute("countrycode", countryCode);
+			String content = "验证码：" + phoneCode + " [AngolaCall]";
 			SMSHttpResponse response = ContextLoader.getSMSClient()
 					.sendTextMessage(phone, content);
 			log.info("sms return: " + response.getCode());
@@ -71,66 +74,35 @@ public class UserDAO {
 	 * @param code
 	 * @return
 	 */
-	public String regUser(String phone, String nickname, String password,
+	public String regUser(String countryCode, String phone, String referrer, String password,
 			String password1) {
 		String result = checkRegisterUser(phone, password, password1);
+		log.info("checkRegisterUser - result: " + result);
 		if (result.equals("0")) {
 			String userkey = MD5Util.md5(phone + password);
-			String sql = "INSERT INTO im_user(username, password, userkey, nickname) VALUES (?,?,?,?)";
-			Object[] params = new Object[] { Long.parseLong(phone),
-					MD5Util.md5(password), userkey, nickname };
+			String sql = "INSERT INTO im_user(username, password, userkey, referrer, countrycode, bindphone) VALUES (?,?,?,?,?,?)";
+			Object[] params = new Object[] { phone,
+					MD5Util.md5(password), userkey, referrer, countryCode, phone };
 			int resultCount = jdbc.update(sql, params);
 			result = resultCount > 0 ? "0" : "1001";
 		}
 		return result;
 	}
 
-	/**
-	 * 登录
-	 * 
-	 * @param session
-	 * @param loginName
-	 * @param loginPwd
-	 * @return
-	 * @throws JSONException
-	 */
-	@Deprecated
-	public JSONObject login(String loginName, final String loginPwd)
-			throws DataAccessException, JSONException {
-		String sql = "SELECT userkey FROM im_user WHERE username=? AND password=? AND status = ?";
-		log.info("login pwd: " + loginPwd);
-		Object[] params = new Object[] { loginName, loginPwd,
-				UserAccountStatus.success.name() };
-		String result = null;
-		JSONObject ret = new JSONObject();
-		try {
-			String userkey = jdbc.queryForObject(sql, params, String.class);
-			if (null != userkey) {
-				result = "0";
-				ret.put("result", result);
-				ret.put("userkey", userkey);
-			}
-		} catch (EmptyResultDataAccessException e) {
-			result = "1";
-			ret.put("result", result);
-		} catch (DataAccessException e) {
-			throw e;
-		}
-		return ret;
-	}
 
-	public UserBean getUserBean(String loginName, final String loginPwd)
+	public UserBean getUserBean(String countryCode, String loginName, final String loginPwd)
 			throws DataAccessException {
-		String sql = "SELECT userkey, nickname FROM im_user WHERE username=? AND password=? AND status = ?";
-		Object[] params = new Object[] { loginName, loginPwd,
+		String sql = "SELECT userkey, referrer, countrycode FROM im_user WHERE username=? AND countrycode=? AND password=? AND status = ?";
+		Object[] params = new Object[] { loginName, countryCode, loginPwd,
 				UserAccountStatus.success.name() };
 		return jdbc.queryForObject(sql, params, new RowMapper<UserBean>() {
 			@Override
 			public UserBean mapRow(ResultSet rs, int rowCount)
 					throws SQLException {
 				UserBean user = new UserBean();
-				user.setNickName(rs.getString("nickname"));
+				user.setReferrer(rs.getString("referrer"));
 				user.setUserKey(rs.getString("userkey"));
+				user.setCountryCode(rs.getString("countrycode"));
 				return user;
 			}
 		});
@@ -147,21 +119,21 @@ public class UserDAO {
 	 * @param width
 	 * @param height
 	 */
-	public void recodeDeviceInfo(String username, String brand, String model,
+	public void recordDeviceInfo(String username, String countryCode, String brand, String model,
 			String release, String sdk, String width, String height) {
 		log.info("record device info - username:  " + username + " brand: "
 				+ brand);
 
-		String sql = "SELECT count(username) FROM fy_device_info WHERE username = ?";
-		int count = jdbc.queryForInt(sql, username);
+		String sql = "SELECT count(*) FROM device_info WHERE username = ? AND countrycode = ?";
+		int count = jdbc.queryForInt(sql, username, countryCode);
 		if (count > 0) {
 			jdbc.update(
-					"UPDATE fy_device_info SET brand=?, model=?, "
-							+ "release_ver=?, sdk=?, width=?, height=? WHERE username = ?",
-					brand, model, release, sdk, width, height, username);
+					"UPDATE device_info SET brand=?, model=?, "
+							+ "release_ver=?, sdk=?, width=?, height=? WHERE username = ? AND countrycode = ?",
+					brand, model, release, sdk, width, height, username, countryCode);
 		} else {
-			jdbc.update("INSERT INTO fy_device_info VALUE(?,?,?,?,?,?,?)",
-					username, brand, model, release, sdk, width, height);
+			jdbc.update("INSERT INTO device_info VALUE(?,?,?,?,?,?,?,?)",
+					username, countryCode, brand, model, release, sdk, width, height);
 		}
 	}
 
@@ -190,7 +162,7 @@ public class UserDAO {
 		try {
 			if (phone.equals("")) {
 				return "1"; // 手机号码必填
-			} else if (!ValidatePattern.isValidMobilePhone(phone)) {
+			} else if (!ValidatePattern.isNumber(phone)) {
 				return "2"; // 手机号码格式错误
 			} else if (isExistsLoginName(phone)) {
 				return "3"; // 手机号码已存�?
@@ -217,7 +189,7 @@ public class UserDAO {
 		try {
 			if (phone.equals("")) {
 				return "1"; // 手机号码必填
-			} else if (!ValidatePattern.isValidMobilePhone(phone)) {
+			} else if (!ValidatePattern.isNumber(phone)) {
 				return "2"; // 手机号码格式错误
 			} else if (isExistsLoginName(phone)) {
 				return "3"; // 手机号码已存�?
@@ -273,44 +245,40 @@ public class UserDAO {
 		return retCode;
 	}
 
-	public int changePassword(String userName, String md5Password) {
-		String sql = "UPDATE im_user SET password=?, userkey=? WHERE username=?";
+	public int changePassword(String userName, String md5Password, String countryCode) {
+		String sql = "UPDATE im_user SET password=?, userkey=? WHERE username=? AND countrycode=?";
 		String userkey = MD5Util.md5(userName + md5Password);
-		return jdbc.update(sql, md5Password, userkey, userName);
+		return jdbc.update(sql, md5Password, userkey, userName, countryCode);
 	}
 
-	public int updateUserAccountStatus(String userName, UserAccountStatus status) {
-		String sql = "UPDATE im_user SET status = ? WHERE username = ?";
-		return jdbc.update(sql, status.name(), userName);
+	public int updateUserAccountStatus(String countryCode, String userName, UserAccountStatus status) {
+		String sql = "UPDATE im_user SET status = ? WHERE username = ? AND countrycode=?";
+		return jdbc.update(sql, status.name(), userName, countryCode);
 	}
 
 	/**
-	 * get nickname of user
+	 * get referrer of user
 	 * 
 	 * @param userNameList
 	 *            - IN Operation parameter eg. "(x, x, x)"
 	 * @return
 	 */
-	public List<Map<String, Object>> getNicknameInfo(String userNameList) {
-		String sql = "SELECT username, nickname FROM im_user WHERE username IN "
+	public List<Map<String, Object>> getReferrerInfo(String userNameList) {
+		String sql = "SELECT username, referrer FROM im_user WHERE username IN "
 				+ userNameList;
 		log.info(sql);
 		return jdbc.queryForList(sql);
 	}
 
-	public String getNickname(String userName) {
-		String nickname = "";
-		String sql = "SELECT nickname FROM im_user WHERE username = ?";
+	public String getReferrer(String userName) {
+		String referrer = "";
+		String sql = "SELECT referrer FROM im_user WHERE username = ?";
 		try {
-			nickname = jdbc.queryForObject(sql, new Object[] { userName },
+			referrer = jdbc.queryForObject(sql, new Object[] { userName },
 					String.class);
 		} catch (Exception e) {
 		}
-		return nickname;
+		return referrer;
 	}
 
-	public int changeNickname(String userName, String nickname) {
-		String sql = "UPDATE im_user SET nickname = ? WHERE username = ?";
-		return jdbc.update(sql, nickname, userName);
-	}
 }
