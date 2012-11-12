@@ -2,6 +2,8 @@ package com.angolacall.mvc.controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Map;
+import java.util.Random;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
@@ -26,6 +28,7 @@ import com.angolacall.web.user.UserBean;
 import com.richitec.sms.client.SMSClient;
 import com.richitec.ucenter.model.UserDAO;
 import com.richitec.util.MD5Util;
+import com.richitec.util.RandomString;
 import com.richitec.vos.client.VOSClient;
 import com.richitec.vos.client.VOSHttpResponse;
 
@@ -37,8 +40,8 @@ public class UserController extends ExceptionController {
 
 	private UserDAO userDao;
 	private VOSClient vosClient;
-	private SMSClient smsClient;
 	private Configuration config;
+	private SMSClient smsClient;
 
 	public static final String ErrorCode = "error_code";
 	public static final String PhoneNumberError = "phone_number_error";
@@ -52,11 +55,12 @@ public class UserController extends ExceptionController {
 		userDao = ContextLoader.getUserDAO();
 		vosClient = ContextLoader.getVOSClient();
 		config = ContextLoader.getConfiguration();
+		smsClient = ContextLoader.getSMSClient();
 	}
 
 	@RequestMapping("/login")
 	public void login(
-			@RequestParam(value = "countryCode") String countryCode, 
+			@RequestParam(value = "countryCode") String countryCode,
 			@RequestParam(value = "loginName") String loginName,
 			@RequestParam(value = "loginPwd") String loginPwd,
 			@RequestParam(value = "brand", required = false, defaultValue = "") String brand,
@@ -68,14 +72,16 @@ public class UserController extends ExceptionController {
 			HttpServletResponse response, HttpSession session) throws Exception {
 		JSONObject json = new JSONObject();
 		try {
-			UserBean user = userDao.getUserBean(countryCode, loginName, loginPwd);
+			UserBean user = userDao.getUserBean(countryCode, loginName,
+					loginPwd);
 			if (null != user) {
 				json.put("result", "0");
 				json.put("userkey", user.getUserKey());
 				user.setUserName(loginName);
 				user.setPassword(loginPwd);
 				session.setAttribute(UserBean.SESSION_BEAN, user);
-				userDao.recordDeviceInfo(loginName, countryCode, brand, model, release, sdk, width, height);
+				userDao.recordDeviceInfo(loginName, countryCode, brand, model,
+						release, sdk, width, height);
 			} else {
 				json.put("result", "1");
 			}
@@ -97,7 +103,7 @@ public class UserController extends ExceptionController {
 	String validatePhoneNumber(HttpSession session,
 			@RequestParam(value = "countryCode") String countryCode,
 			@RequestParam(value = "phone") String phoneNumber) {
-		String result = userDao.checkRegisterPhone(phoneNumber);
+		String result = userDao.checkRegisterPhone(countryCode, phoneNumber);
 		if ("3".equals(result)) {
 			userDao.getPhoneCode(session, phoneNumber, countryCode);
 			return "200";
@@ -132,7 +138,8 @@ public class UserController extends ExceptionController {
 				.getAttribute("phonenumber");
 		String countryCode = (String) session.getAttribute("countrycode");
 		String sessionPhoneCode = (String) session.getAttribute("phonecode");
-		if (null == sessionPhoneCode || null == sessionPhoneNumber || null == countryCode) {
+		if (null == sessionPhoneCode || null == sessionPhoneNumber
+				|| null == countryCode) {
 			return "410";
 		}
 
@@ -217,8 +224,8 @@ public class UserController extends ExceptionController {
 		// result = addUserToVOS(phoneNumber, vosphone.toString());
 		//
 		if ("0".equals(result)) {
-			int affectedRows = userDao.updateUserAccountStatus(countryCode, phoneNumber,
-					UserAccountStatus.success);
+			int affectedRows = userDao.updateUserAccountStatus(countryCode,
+					phoneNumber, UserAccountStatus.success);
 			if (affectedRows > 0) {
 				result = "0";
 			} else {
@@ -281,7 +288,7 @@ public class UserController extends ExceptionController {
 		JSONObject jsonUser = new JSONObject();
 		try {
 			String result = "0";
-			result = userDao.checkRegisterPhone(phone);
+			result = userDao.checkRegisterPhone(countryCode, phone);
 			if (result.equals("0")) {
 				result = userDao.getPhoneCode(session, phone, countryCode);
 			}
@@ -341,8 +348,8 @@ public class UserController extends ExceptionController {
 		// result = addUserToVOS(phone, vosphone.toString());
 		//
 		if ("0".equals(result)) {
-			int affectedRows = userDao.updateUserAccountStatus(countryCode, phone,
-					UserAccountStatus.success);
+			int affectedRows = userDao.updateUserAccountStatus(countryCode,
+					phone, UserAccountStatus.success);
 			if (affectedRows > 0) {
 				result = "0";
 			} else {
@@ -463,12 +470,42 @@ public class UserController extends ExceptionController {
 
 	@RequestMapping("/checkUserExist")
 	public void checkUserExist(
+			@RequestParam(value = "countryCode", required = true) String countryCode,
 			@RequestParam(value = "username", required = true) String userName,
 			HttpServletResponse response) throws JSONException, SQLException,
 			IOException {
 		JSONObject ret = new JSONObject();
-		boolean isExist = userDao.isExistsLoginName(userName);
+		boolean isExist = userDao.isExistsLoginName(countryCode, userName);
 		ret.put("result", isExist);
 		response.getWriter().print(ret.toString());
+	}
+
+	@RequestMapping("/getUserPwd")
+	public void getUserPassword(HttpServletResponse response,
+			@RequestParam(value = "countryCode") String countryCode,
+			@RequestParam(value = "username") String userName)
+			throws IOException {
+		try {
+			Map<String, Object> user = userDao.getUser(countryCode, userName);
+			if (user == null) {
+				log.info("user is null");
+				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+				return;
+			}
+			String newPwd = RandomString.getPassword();
+			int rows = userDao.changePassword(userName, MD5Util.md5(newPwd),
+					countryCode);
+			if (rows > 0) {
+				String msg = String.format(
+						"您的新密码是%s，请登录后及时修改您的密码。[AngolaCall]", newPwd);
+				String bindPhone = (String) user.get("bindphone");
+				smsClient.sendTextMessage(bindPhone, msg);
+			} else {
+				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+			}
+		} catch (DataAccessException e) {
+//			e.printStackTrace();
+			response.sendError(HttpServletResponse.SC_NOT_FOUND);
+		}
 	}
 }

@@ -1,6 +1,5 @@
 package com.angolacall.mvc.controller;
 
-import java.io.File;
 import java.io.IOException;
 
 import javax.annotation.PostConstruct;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.angolacall.constants.WebConstants;
@@ -23,7 +21,6 @@ import com.angolacall.framework.ContextLoader;
 import com.angolacall.web.user.UserBean;
 import com.richitec.ucenter.model.UserDAO;
 import com.richitec.util.MD5Util;
-import com.richitec.util.RandomString;
 
 @Controller
 @RequestMapping(value="/setting")
@@ -73,5 +70,6 @@ public class ProfileController {
 		user.setPassword(md5Password);
 		return "200";
 	}
+	
 	
 }

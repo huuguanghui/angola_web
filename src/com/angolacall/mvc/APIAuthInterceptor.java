@@ -50,6 +50,7 @@ public class APIAuthInterceptor implements HandlerInterceptor {
 		log.debug("uri: " + uri);
 
 		String username = request.getParameter(AuthConstant.username.name());
+		String countryCode = request.getParameter(AuthConstant.countryCode.name());
 		String sig = request.getParameter(AuthConstant.sig.name());
 		
 		log.debug("username: " + username + " sig: " + sig);
@@ -61,7 +62,7 @@ public class APIAuthInterceptor implements HandlerInterceptor {
 			return false;
 		}
 
-		boolean flag = isValidSignature(request, username, sig);
+		boolean flag = isValidSignature(request, countryCode, username, sig);
 		log.debug("isValidSignature: " + flag);
 		if (!flag) {
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
@@ -79,15 +80,15 @@ public class APIAuthInterceptor implements HandlerInterceptor {
 	 * @param sig
 	 * @return true: valid, false: invalid
 	 */
-	private boolean isValidSignature(HttpServletRequest request,
+	private boolean isValidSignature(HttpServletRequest request, String countryCode,
 			String username, String sig) {
-		String userkey = ContextLoader.getUserDAO().getUserKey(username);
+		String userkey = ContextLoader.getUserDAO().getUserKey(countryCode, username);
 		if (userkey == null) {
 			log.debug("userkey is null");
 			return false;
 		}
 		
-		log.debug("username: " + username + " key: " + userkey);
+		log.debug("countrycode: " + countryCode + " username: " + username + " key: " + userkey);
 		
 		ArrayList<String> paramList = new ArrayList<String>();
 		Enumeration<String> names = request.getParameterNames();

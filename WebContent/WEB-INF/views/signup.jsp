@@ -98,8 +98,7 @@
 			    	<label class="control-label">国家代码</label>
 			    	<div class="controls">
 			    		<select id="countryCode" name="countryCode">
-			    			<option value="0086" selected="selected">0086 (China 中国)</option>
-			    			<option value="00244">00244 (Angola 安哥拉)</option>
+			    			<jsp:include page="common/countrycode_options.jsp"></jsp:include>
 			    		</select>
 			    	</div>
 			    </div>

@@ -39,10 +39,16 @@
 				<div class="tab-content">
 					<div class="tab-pane active" id="pane-pay">
 			    		<form id="formAlipay" action="alipay" method="post">
+			    			<label>国家代码</label>
+				    		<select name="countryCode">
+				    			<jsp:include page="common/countrycode_options.jsp"></jsp:include>
+				    		</select>
+			    		
 				    		<label>请输入要充值的账户名</label>
 				    		<input id="account_name_input" type="text" 
 				    		name="account_name"	pattern="[0-9]{11}" maxlength="11"
 				    		value="<%=userBean != null ? userBean.getUserName() : ""%>" />
+				    		
 							<label>请选择充值金额（RMB&nbsp;单位：元）</label>
 							<select name="charge_amount">
 							    <option value="10.00">10</option>
@@ -67,6 +73,10 @@
 					</div>		
 					<div class="tab-pane" id="pane-zhihuicard">
 						<form id="formCard" action="zhihuicard", method="post">
+							<label>国家代码</label>
+				    		<select name="countryCode">
+				    			<jsp:include page="common/countrycode_options.jsp"></jsp:include>
+				    		</select>
 							<label>请输入要充值的账户名</label>
 				    		<input id="iptCardAccounName" type="text" 
 				    		name="account_name" pattern="[0-9]{11}" maxlength="11"

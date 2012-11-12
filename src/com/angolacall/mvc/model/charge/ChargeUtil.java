@@ -23,11 +23,11 @@ public class ChargeUtil {
 	 * @param accountName - account to charge
 	 * @return
 	 */
-	public static String getOrderNumber(String type, String accountName) {
+	public static String getOrderNumber(String type, String countryCode, String accountName) {
 		Date currTime = new Date();
 		SimpleDateFormat sf = new SimpleDateFormat("_yyyyMMdd_HHmmss_",
 				Locale.US);
-		return type + sf.format(currTime) + accountName + "_"
+		return type + sf.format(currTime) + countryCode + accountName + "_"
 				+ RandomString.validateCode();
 	}
 	

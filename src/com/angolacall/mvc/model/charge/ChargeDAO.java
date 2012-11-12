@@ -20,13 +20,13 @@ public class ChargeDAO {
 		jdbc = new JdbcTemplate(ds);
 	}
 
-	public int getChargeListTotalCount(String userName)
+	public int getChargeListTotalCount(String countryCode, String userName)
 			throws DataAccessException {
 		String sql = "SELECT count(*) FROM im_charge_history WHERE username = ? AND status = ? ORDER BY time DESC";
 		return jdbc.queryForInt(sql, userName, ChargeStatus.success.name());
 	}
 
-	public List<Map<String, Object>> getChargeList(String userName, int offset,
+	public List<Map<String, Object>> getChargeList(String countryCode, String userName, int offset,
 			int pageSize) {
 		String sql = "SELECT chargeId, money, DATE_FORMAT(time, '%Y-%m-%d %H:%i') as charge_time " +
 				"FROM im_charge_history WHERE username = ? AND status = ? " +
@@ -42,14 +42,14 @@ public class ChargeDAO {
 		return list;
 	}
 	
-	public void addChargeRecord(String chargeId, String userName, Double money, ChargeStatus status) {
-		String sql = "INSERT INTO im_charge_history(chargeId, username, money, status) VALUES(?, ?, ?, ?)";
-		jdbc.update(sql, chargeId, userName, money, status.name());
+	public void addChargeRecord(String chargeId, String countryCode, String userName, Double money, ChargeStatus status) {
+		String sql = "INSERT INTO im_charge_history(chargeId, username, money, status, countryCode) VALUES(?, ?, ?, ?, ?)";
+		jdbc.update(sql, chargeId, userName, money, status.name(), countryCode);
 	}	
 
-	public void addChargeRecord(String chargeId, String userName, Double money) {
-		String sql = "INSERT INTO im_charge_history(chargeId, username, money) VALUES(?, ?, ?)";
-		jdbc.update(sql, chargeId, userName, money);
+	public void addChargeRecord(String chargeId, String countryCode, String userName, Double money) {
+		String sql = "INSERT INTO im_charge_history(chargeId, username, money, countrycode) VALUES(?, ?, ?, ?)";
+		jdbc.update(sql, chargeId, userName, money, countryCode);
 	}
 
 	public void updateChargeRecord(String chargeId, ChargeStatus status) {

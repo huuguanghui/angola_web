@@ -75,12 +75,13 @@ public class ChargeAccountController {
 	 */
 	@RequestMapping(value = "/zhihuicard", method = RequestMethod.POST)
 	public ModelAndView zhihuiCard(HttpServletResponse response,
+			@RequestParam(value = "countryCode") String countryCode,
 			@RequestParam(value = "account_name") String account,
 			@RequestParam(value = "pin") String pin,
 			@RequestParam(value = "password") String password)
 			throws IOException, SQLException {
 		ModelAndView mv = new ModelAndView();
-		boolean isExist = userDao.isExistsLoginName(account);
+		boolean isExist = userDao.isExistsLoginName(countryCode, account);
 		if (!isExist) {
 			mv.setViewName("accountcharge/invalidAccount");
 			return mv;
@@ -104,7 +105,7 @@ public class ChargeAccountController {
 		VOSHttpResponse vosResp = vosClient.depositeByCard(account, pin,
 				password);
 		if (vosResp.getHttpStatusCode() != 200 || !vosResp.isOperationSuccess()) {
-			chargeDao.addChargeRecord(chargeId, account, value,
+			chargeDao.addChargeRecord(countryCode, chargeId, account, value,
 					ChargeStatus.vos_fail);
 			log.error("\nCannot deposite to account <" + account
 					+ "> with card <" + pin + ">" + "<" + password + ">"
@@ -121,7 +122,7 @@ public class ChargeAccountController {
 			 * DepositeCardInfo(vosResp.getVOSResponseInfo());
 			 * mv.addObject("despositeInfo", info);
 			 */
-			chargeDao.addChargeRecord(chargeId, account, value,
+			chargeDao.addChargeRecord(countryCode, chargeId, account, value,
 					ChargeStatus.success);
 			smsClient.sendTextMessage(account, "您的智会账户已成功充值" + value + "元，谢谢！");
 		}
@@ -146,9 +147,9 @@ public class ChargeAccountController {
 				vosClient.getAccountBalance(userBean.getUserName()));
 
 		// get charge history list
-		int total = chargeDao.getChargeListTotalCount(userBean.getUserName());
+		int total = chargeDao.getChargeListTotalCount(userBean.getCountryCode(), userBean.getUserName());
 		int pageSize = 10;
-		List<Map<String, Object>> chargeList = chargeDao.getChargeList(
+		List<Map<String, Object>> chargeList = chargeDao.getChargeList(userBean.getCountryCode(), 
 				userBean.getUserName(), offset, pageSize);
 
 		String url = "accountcharge?";
@@ -160,11 +161,12 @@ public class ChargeAccountController {
 
 	@RequestMapping(value = "/alipay", method = RequestMethod.POST)
 	public ModelAndView aliPay(HttpSession session,
+			@RequestParam(value = "countryCode") String countryCode,
 			@RequestParam(value = "account_name") String accountName,
 			@RequestParam(value = "charge_amount") String chargeAmount)
 			throws Exception {
 		log.info("****** prepay alipay ******");
-		boolean isExist = userDao.isExistsLoginName(accountName);
+		boolean isExist = userDao.isExistsLoginName(countryCode, accountName);
 		ModelAndView mv = new ModelAndView();
 		if (isExist) {
 			mv.setViewName("accountcharge/alipay");
@@ -308,11 +310,12 @@ public class ChargeAccountController {
 	 */
 	@RequestMapping(value = "/cardCharge", method = RequestMethod.POST)
 	public void cardCharge(HttpServletResponse response,
+			@RequestParam(value = "countryCode") String countryCode,
 			@RequestParam(value = "username") String userName,
 			@RequestParam(value = "pin") String pin,
 			@RequestParam(value = "password") String password)
 			throws IOException, SQLException {
-		boolean isExist = userDao.isExistsLoginName(userName);
+		boolean isExist = userDao.isExistsLoginName(countryCode, userName);
 		if (!isExist) {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 			return;
@@ -336,7 +339,7 @@ public class ChargeAccountController {
 		VOSHttpResponse vosResp = vosClient.depositeByCard(userName, pin,
 				password);
 		if (vosResp.getHttpStatusCode() != 200 || !vosResp.isOperationSuccess()) {
-			chargeDao.addChargeRecord(chargeId, userName, value,
+			chargeDao.addChargeRecord(countryCode, chargeId, userName, value,
 					ChargeStatus.vos_fail);
 			log.error("\nCannot deposite to account <" + userName
 					+ "> with card <" + pin + ">" + "<" + password + ">"
@@ -346,7 +349,7 @@ public class ChargeAccountController {
 		}
 
 		if (vosResp.isOperationSuccess()) {
-			chargeDao.addChargeRecord(chargeId, userName, value,
+			chargeDao.addChargeRecord(countryCode, chargeId, userName, value,
 					ChargeStatus.success);
 			smsClient
 					.sendTextMessage(userName, "您的智会账户已成功充值" + value + "元，谢谢！");
