@@ -6,6 +6,8 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +19,7 @@ import com.richitec.util.MD5Util;
 @Controller
 @RequestMapping("/profile")
 public class ProfileApiController {
+	private static Log log = LogFactory.getLog(ProfileController.class);
 	private UserDAO userDao;
 	
 	@PostConstruct
@@ -31,6 +34,7 @@ public class ProfileApiController {
 			@RequestParam(value = "oldPwd") String oldPwd,
 			@RequestParam(value = "newPwd") String newPwd,
 			@RequestParam(value = "newPwdConfirm") String newPwdConfirm) throws IOException {
+		log.info("countryCode: " + countryCode + " username: " + userName + " oldPwd: " + oldPwd + " newpwd: " + newPwd + " confirmpwd: " + newPwdConfirm);
 		Map<String, Object> user = userDao.getUser(countryCode, userName);
 		String pwd = (String) user.get("password");
 		

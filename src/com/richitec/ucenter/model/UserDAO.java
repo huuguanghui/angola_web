@@ -46,7 +46,8 @@ public class UserDAO {
 	 * @param countryCode
 	 * @return
 	 */
-	public String getPhoneCode(HttpSession session, String phone, String countryCode) {
+	public String getPhoneCode(HttpSession session, String phone,
+			String countryCode) {
 		String result = "0";
 		String phoneCode = RandomString.validateCode();
 		log.info("phone code: " + phoneCode);
@@ -74,24 +75,25 @@ public class UserDAO {
 	 * @param code
 	 * @return
 	 */
-	public String regUser(String countryCode, String phone, String referrer, String password,
+	public String regUser(String countryCode, String phone,
+			String referrerCountryCode, String referrer, String password,
 			String password1) {
-		String result = checkRegisterUser(countryCode, phone, password, password1);
+		String result = checkRegisterUser(countryCode, phone, password,
+				password1);
 		log.info("checkRegisterUser - result: " + result);
 		if (result.equals("0")) {
 			String userkey = MD5Util.md5(phone + password);
-			String sql = "INSERT INTO im_user(username, password, userkey, referrer, countrycode, bindphone) VALUES (?,?,?,?,?,?)";
-			Object[] params = new Object[] { phone,
-					MD5Util.md5(password), userkey, referrer, countryCode, phone };
+			String sql = "INSERT INTO im_user(username, password, userkey, referrer_country_code, referrer, countrycode, bindphone) VALUES (?,?,?,?,?,?,?)";
+			Object[] params = new Object[] { phone, MD5Util.md5(password),
+					userkey, referrerCountryCode, referrer, countryCode, phone };
 			int resultCount = jdbc.update(sql, params);
 			result = resultCount > 0 ? "0" : "1001";
 		}
 		return result;
 	}
 
-
-	public UserBean getUserBean(String countryCode, String loginName, final String loginPwd)
-			throws DataAccessException {
+	public UserBean getUserBean(String countryCode, String loginName,
+			final String loginPwd) throws DataAccessException {
 		String sql = "SELECT * FROM im_user WHERE username=? AND countrycode=? AND password=? AND status = ?";
 		Object[] params = new Object[] { loginName, countryCode, loginPwd,
 				UserAccountStatus.success.name() };
@@ -107,10 +109,11 @@ public class UserDAO {
 			}
 		});
 	}
-	
+
 	public Map<String, Object> getUser(String countryCode, String userName) {
 		String sql = "SELECT * FROM im_user WHERE username = ? AND countrycode = ? AND status = ?";
-		return jdbc.queryForMap(sql, userName, countryCode, UserAccountStatus.success.name());
+		return jdbc.queryForMap(sql, userName, countryCode,
+				UserAccountStatus.success.name());
 	}
 
 	/**
@@ -124,18 +127,21 @@ public class UserDAO {
 	 * @param width
 	 * @param height
 	 */
-	public void recordDeviceInfo(String username, String countryCode, String brand, String model,
-			String release, String sdk, String width, String height) {
+	public void recordDeviceInfo(String username, String countryCode,
+			String brand, String model, String release, String sdk,
+			String width, String height) {
 		String sql = "SELECT count(*) FROM device_info WHERE username = ? AND countrycode = ?";
 		int count = jdbc.queryForInt(sql, username, countryCode);
 		if (count > 0) {
 			jdbc.update(
 					"UPDATE device_info SET brand=?, model=?, "
 							+ "release_ver=?, sdk=?, width=?, height=? WHERE username = ? AND countrycode = ?",
-					brand, model, release, sdk, width, height, username, countryCode);
+					brand, model, release, sdk, width, height, username,
+					countryCode);
 		} else {
 			jdbc.update("INSERT INTO device_info VALUE(?,?,?,?,?,?,?,?)",
-					username, countryCode, brand, model, release, sdk, width, height);
+					username, countryCode, brand, model, release, sdk, width,
+					height);
 		}
 	}
 
@@ -159,8 +165,8 @@ public class UserDAO {
 	 * @param code
 	 * @return
 	 */
-	public String checkRegisterUser(String countryCode, String phone, String password,
-			String password1) {
+	public String checkRegisterUser(String countryCode, String phone,
+			String password, String password1) {
 		try {
 			if (phone.equals("")) {
 				return "1"; // 手机号码必填
@@ -210,7 +216,8 @@ public class UserDAO {
 	 * @return
 	 * @throws SQLException
 	 */
-	public boolean isExistsLoginName(String countryCode, String loginName) throws SQLException {
+	public boolean isExistsLoginName(String countryCode, String loginName)
+			throws SQLException {
 		String sql = "SELECT count(username) FROM im_user WHERE username = ? AND countrycode = ?";
 		Object[] params = new Object[] { loginName, countryCode };
 		return jdbc.queryForInt(sql, params) > 0;
@@ -247,13 +254,15 @@ public class UserDAO {
 		return retCode;
 	}
 
-	public int changePassword(String userName, String md5Password, String countryCode) {
+	public int changePassword(String userName, String md5Password,
+			String countryCode) {
 		String sql = "UPDATE im_user SET password=?, userkey=? WHERE username=? AND countrycode=?";
 		String userkey = MD5Util.md5(RandomString.genRandomChars(10));
 		return jdbc.update(sql, md5Password, userkey, userName, countryCode);
 	}
 
-	public int updateUserAccountStatus(String countryCode, String userName, UserAccountStatus status) {
+	public int updateUserAccountStatus(String countryCode, String userName,
+			UserAccountStatus status) {
 		String sql = "UPDATE im_user SET status = ? WHERE username = ? AND countrycode=?";
 		return jdbc.update(sql, status.name(), userName, countryCode);
 	}

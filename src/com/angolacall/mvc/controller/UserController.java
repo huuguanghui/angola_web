@@ -3,7 +3,6 @@ package com.angolacall.mvc.controller;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
-import java.util.Random;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
@@ -170,7 +169,6 @@ public class UserController extends ExceptionController {
 			@RequestParam(value = "phoneNumber") String phoneNumber,
 			@RequestParam(value = "phoneCode") String phoneCode,
 			@RequestParam(value = "password") String password,
-			@RequestParam(value = "referrer", defaultValue = "") String referrer,
 			@RequestParam(value = "confirmPassword") String confirmPassword)
 			throws Exception {
 		ModelAndView mv = new ModelAndView();
@@ -178,11 +176,10 @@ public class UserController extends ExceptionController {
 
 		String sessionPhoneNumber = (String) session
 				.getAttribute("phonenumber");
+		String sessionCountryCode = (String) session
+				.getAttribute("countrycode");
 		String sessionPhoneCode = (String) session.getAttribute("phonecode");
-		/*
-		 * if (null == sessionPhoneCode || null == sessionPhoneNumber) {
-		 * mv.addObject(ErrorCode, HttpServletResponse.SC_GONE); return mv; }
-		 */
+
 		if (phoneNumber.isEmpty() || phoneCode.isEmpty() || password.isEmpty()
 				|| confirmPassword.isEmpty()) {
 			mv.addObject(ErrorCode, HttpServletResponse.SC_BAD_REQUEST);
@@ -204,7 +201,8 @@ public class UserController extends ExceptionController {
 		}
 
 		if (!phoneNumber.equals(sessionPhoneNumber)
-				|| !phoneCode.equals(sessionPhoneCode)) {
+				|| !phoneCode.equals(sessionPhoneCode)
+				|| !countryCode.equals(sessionCountryCode)) {
 			mv.addObject(ErrorCode, HttpServletResponse.SC_UNAUTHORIZED);
 			mv.addObject(PhoneCodeError, HttpServletResponse.SC_UNAUTHORIZED);
 			return mv;
@@ -216,8 +214,8 @@ public class UserController extends ExceptionController {
 			return mv;
 		}
 
-		String result = userDao.regUser(countryCode, phoneNumber, referrer,
-				password, confirmPassword);
+		String result = userDao.regUser(countryCode, phoneNumber, "", "", password,
+				confirmPassword);
 
 		// if ("0".equals(result)) { // insert success
 		// Integer vosphone = userDao.getVOSPhoneNumber(phoneNumber);
@@ -270,6 +268,61 @@ public class UserController extends ExceptionController {
 					HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 		return mv;
+	}
+
+	@RequestMapping("/regViaInvite")
+	public void regViaInvite(
+			HttpServletResponse response,
+			HttpSession session,
+			@RequestParam(value = "referrer") String referrer,
+			@RequestParam(value = "referrerCountryCode") String referrerCountryCode,
+			@RequestParam(value = "countryCode", defaultValue = "") String countryCode,
+			@RequestParam(value = "phoneNumber") String phoneNumber,
+			@RequestParam(value = "phoneCode") String phoneCode,
+			@RequestParam(value = "password") String password,
+			@RequestParam(value = "confirmPassword") String confirmPassword) throws IOException {
+		String sessionPhoneNumber = (String) session
+				.getAttribute("phonenumber");
+		String sessionCountryCode = (String) session
+				.getAttribute("countrycode");
+		String sessionPhoneCode = (String) session.getAttribute("phonecode");
+
+		if (phoneNumber.isEmpty() || phoneCode.isEmpty() || password.isEmpty()
+				|| confirmPassword.isEmpty()) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
+
+		if (!phoneNumber.equals(sessionPhoneNumber)
+				|| !phoneCode.equals(sessionPhoneCode)
+				|| !countryCode.equals(sessionCountryCode)) {
+			response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+			return;
+		}
+
+		if (!password.equals(confirmPassword)) {
+			response.sendError(HttpServletResponse.SC_FORBIDDEN);
+			return;
+		}
+
+		String result = userDao.regUser(countryCode, phoneNumber, referrerCountryCode, referrer, password,
+				confirmPassword);
+		
+		if ("0".equals(result)) {
+			int affectedRows = userDao.updateUserAccountStatus(countryCode,
+					phoneNumber, UserAccountStatus.success);
+			if (affectedRows > 0) {
+				result = "0";
+			} else {
+				result = "1";
+			}
+		}
+		
+		if (!"0".equals(result)) {
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			return;
+		}
+			
 	}
 
 	/**
@@ -339,7 +392,7 @@ public class UserController extends ExceptionController {
 		} else {
 			phone = (String) session.getAttribute("phonenumber");
 			countryCode = (String) session.getAttribute("countrycode");
-			result = userDao.regUser(countryCode, phone, "", password,
+			result = userDao.regUser(countryCode, phone, "", "", password,
 					password1);
 		}
 
@@ -504,8 +557,9 @@ public class UserController extends ExceptionController {
 				response.sendError(HttpServletResponse.SC_NOT_FOUND);
 			}
 		} catch (DataAccessException e) {
-//			e.printStackTrace();
+			// e.printStackTrace();
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
 	}
+
 }

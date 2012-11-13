@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.angolacall.constants.AuthConstant;
 import com.angolacall.constants.WebConstants;
 import com.angolacall.framework.Configuration;
 import com.angolacall.framework.ContextLoader;
@@ -68,6 +69,15 @@ public class AngolaWebController {
 		ModelAndView view = new ModelAndView();
 		view.setViewName("signin");
 		view.addObject(WebConstants.page_name.name(), "signin");
+		return view;
+	}
+	
+	@RequestMapping(value = "/invitejoin/{countryCode}/{userName}", method = RequestMethod.GET)
+	public ModelAndView inviteJoin(@PathVariable String countryCode, @PathVariable String userName) {
+		ModelAndView view = new ModelAndView();
+		view.setViewName("invitejoin");
+		view.addObject(AuthConstant.username.name(), userName);
+		view.addObject(AuthConstant.countryCode.name(), countryCode);
 		return view;
 	}
 

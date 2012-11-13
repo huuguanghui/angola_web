@@ -286,11 +286,13 @@ public class ChargeAccountController {
 	 */
 	@RequestMapping("/accountBalance")
 	public void accountBalance(HttpServletResponse response,
+			@RequestParam(value = "countryCode") String countryCode,
 			@RequestParam(value = "username") String userName)
 			throws JSONException, IOException {
 		// get account balance
 		JSONObject ret = new JSONObject();
-		Double value = vosClient.getAccountBalance(userName);
+//		Double value = vosClient.getAccountBalance(userName);
+		Double value = new Double(100);
 		ret.put("result", null == value ? 1 : 0);
 		if (null != value) {
 			ret.put(WebConstants.balance.name(), value);
