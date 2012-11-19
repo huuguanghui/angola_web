@@ -26,6 +26,8 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
+import com.richitec.util.RandomString;
+
 
 public class VOSClient {
 	
@@ -152,7 +154,7 @@ public class VOSClient {
 	 * @param account
 	 * @param phoneNumber
 	 */
-	public VOSHttpResponse addPhoneToAccount(String account, String phoneNumber){
+	public VOSHttpResponse addPhoneToAccount(String account, String phoneNumber, String phonePwd){
 		List<NameValuePair> params = new LinkedList<NameValuePair>();
 		params.add(new BasicNameValuePair(P_loginName, loginName));
 		params.add(new BasicNameValuePair(P_loginPassword, loginPassword));
@@ -161,6 +163,7 @@ public class VOSClient {
 		params.add(new BasicNameValuePair(P_e164, phoneNumber));
 		params.add(new BasicNameValuePair(P_dynamic, "0"));
 		params.add(new BasicNameValuePair(P_protocol, "1"));
+		params.add(new BasicNameValuePair(P_password, phonePwd));
 		
 		HttpEntity entity = new UrlEncodedFormEntity(params, Consts.UTF_8);
 		HttpPost post = new HttpPost(this.baseURI + "setphone.jsp");
@@ -289,7 +292,7 @@ public class VOSClient {
 //		System.out.println(depositeResp.getVOSStatusCode());
 //		System.out.println(depositeResp.getVOSResponseInfo());
 		
-		VOSHttpResponse addPhoneResponse = client.addPhoneToAccount("123456", "10123456");
+		VOSHttpResponse addPhoneResponse = client.addPhoneToAccount("123456", "10123456", "123132");
 		System.out.println(addPhoneResponse.getHttpStatusCode());
 		System.out.println(addPhoneResponse.getVOSStatusCode());
 		System.out.println(addPhoneResponse.getVOSResponseInfo());		

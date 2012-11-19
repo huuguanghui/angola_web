@@ -83,9 +83,10 @@ public class UserDAO {
 		log.info("checkRegisterUser - result: " + result);
 		if (result.equals("0")) {
 			String userkey = MD5Util.md5(phone + password);
-			String sql = "INSERT INTO im_user(username, password, userkey, referrer_country_code, referrer, countrycode, bindphone) VALUES (?,?,?,?,?,?,?)";
+			String vosPhonePwd = RandomString.genRandomNum(6);
+			String sql = "INSERT INTO im_user(username, password, userkey, referrer_country_code, referrer, countrycode, bindphone, vosphone_pwd) VALUES (?,?,?,?,?,?,?,?)";
 			Object[] params = new Object[] { phone, MD5Util.md5(password),
-					userkey, referrerCountryCode, referrer, countryCode, phone };
+					userkey, referrerCountryCode, referrer, countryCode, phone, vosPhonePwd };
 			int resultCount = jdbc.update(sql, params);
 			result = resultCount > 0 ? "0" : "1001";
 		}
@@ -226,32 +227,18 @@ public class UserDAO {
 	/**
 	 * 获得userkey
 	 * 
-	 * @param phone
+	 * @param username
 	 * @return
 	 */
-	public String getUserKey(String countryCode, String phone) {
+	public String getUserKey(String countryCode, String username) {
 		String sql = "SELECT userkey FROM im_user WHERE username = ? AND countrycode = ?";
-		Object[] params = new Object[] { phone, countryCode };
+		Object[] params = new Object[] { username, countryCode };
 		return jdbc.queryForObject(sql, params, String.class);
 	}
 
-	public int getVOSPhoneNumber(String username) {
-		String sql = "SELECT vosphone FROM im_user WHERE username = ?";
-		Object[] params = new Object[] { username };
-		return jdbc.queryForInt(sql, params);
-	}
-
-	public String saveToken(String userName, String token) {
-		String retCode = "0";
-		String sql = "UPDATE im_token SET token = ? WHERE username = ?";
-		int affectedRows = jdbc.update(sql, token, userName);
-		if (affectedRows == 0) {
-			// no user existed, insert new one
-			sql = "INSERT INTO im_token(username, token) VALUES(?,?)";
-			int rows = jdbc.update(sql, userName, token);
-			retCode = rows > 0 ? "0" : "1001";
-		}
-		return retCode;
+	public Map<String, Object> getVOSPhone(String countryCode, String username) {
+		String sql = "SELECT vosphone, vosphone_pwd FROM im_user WHERE username = ? AND countrycode = ?";
+		return jdbc.queryForMap(sql, username, countryCode);
 	}
 
 	public int changePassword(String userName, String md5Password,

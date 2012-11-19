@@ -214,52 +214,56 @@ public class UserController extends ExceptionController {
 			return mv;
 		}
 
-		String result = userDao.regUser(countryCode, phoneNumber, "", "", password,
-				confirmPassword);
+		String result = userDao.regUser(countryCode, phoneNumber, "", "",
+				password, confirmPassword);
 
-		// if ("0".equals(result)) { // insert success
-		// Integer vosphone = userDao.getVOSPhoneNumber(phoneNumber);
-		// result = addUserToVOS(phoneNumber, vosphone.toString());
-		//
-		if ("0".equals(result)) {
-			int affectedRows = userDao.updateUserAccountStatus(countryCode,
-					phoneNumber, UserAccountStatus.success);
-			if (affectedRows > 0) {
-				result = "0";
-			} else {
-				result = "1";
+		if ("0".equals(result)) { // insert success
+			Map<String, Object> vosPhoneInfoMap = userDao.getVOSPhone(countryCode,
+					phoneNumber);
+			Long vosPhoneNumber = (Long) vosPhoneInfoMap.get("vosphone");
+			String vosPhonePwd = (String) vosPhoneInfoMap.get("vosphone_pwd");
+			result = addUserToVOS(countryCode + phoneNumber,
+					vosPhoneNumber.toString(), vosPhonePwd);
+
+			if ("0".equals(result)) {
+				int affectedRows = userDao.updateUserAccountStatus(countryCode,
+						phoneNumber, UserAccountStatus.success);
+				if (affectedRows > 0) {
+					result = "0";
+				} else {
+					result = "1";
+				}
+			}
+
+			else if ("2001".equals(result)) {
+				userDao.updateUserAccountStatus(countryCode, phoneNumber,
+						UserAccountStatus.vos_account_error);
+			} else if ("2002".equals(result)) {
+				userDao.updateUserAccountStatus(countryCode, phoneNumber,
+						UserAccountStatus.vos_phone_error);
+			} else if ("2003".equals(result)) {
+				userDao.updateUserAccountStatus(countryCode, phoneNumber,
+						UserAccountStatus.vos_suite_error);
 			}
 		}
 
-		// else if ("2001".equals(result)) {
-		// userDao.updateUserAccountStatus(phoneNumber,
-		// UserAccountStatus.vos_account_error);
-		// } else if ("2002".equals(result)) {
-		// userDao.updateUserAccountStatus(phoneNumber,
-		// UserAccountStatus.vos_phone_error);
-		// } else if ("2003".equals(result)) {
-		// userDao.updateUserAccountStatus(phoneNumber,
-		// UserAccountStatus.vos_suite_error);
-		// }
-		// }
-		//
-		// if ("0".equals(result)) {
-		// Double money = config.getSignupGift();
-		// if (money != null && money > 0) {
-		// VOSHttpResponse depositeResp = vosClient.deposite(phoneNumber,
-		// money);
-		// if (depositeResp.getHttpStatusCode() != 200
-		// || !depositeResp.isOperationSuccess()) {
-		// log.error("\nCannot deposite gift for user : "
-		// + phoneNumber + "\nVOS Http Response : "
-		// + depositeResp.getHttpStatusCode()
-		// + "\nVOS Status Code : "
-		// + depositeResp.getVOSStatusCode()
-		// + "\nVOS Response Info ："
-		// + depositeResp.getVOSResponseInfo());
-		// }
-		// }
-		// }
+		if ("0".equals(result)) {
+			Double money = config.getSignupGift();
+			if (money != null && money > 0) {
+				VOSHttpResponse depositeResp = vosClient.deposite(countryCode
+						+ phoneNumber, money);
+				if (depositeResp.getHttpStatusCode() != 200
+						|| !depositeResp.isOperationSuccess()) {
+					log.error("\nCannot deposite gift for user : "
+							+ phoneNumber + "\nVOS Http Response : "
+							+ depositeResp.getHttpStatusCode()
+							+ "\nVOS Status Code : "
+							+ depositeResp.getVOSStatusCode()
+							+ "\nVOS Response Info ："
+							+ depositeResp.getVOSResponseInfo());
+				}
+			}
+		}
 
 		if ("0".equals(result)) {
 			mv.addObject(ErrorCode, HttpServletResponse.SC_OK);
@@ -280,7 +284,8 @@ public class UserController extends ExceptionController {
 			@RequestParam(value = "phoneNumber") String phoneNumber,
 			@RequestParam(value = "phoneCode") String phoneCode,
 			@RequestParam(value = "password") String password,
-			@RequestParam(value = "confirmPassword") String confirmPassword) throws IOException {
+			@RequestParam(value = "confirmPassword") String confirmPassword)
+			throws IOException {
 		String sessionPhoneNumber = (String) session
 				.getAttribute("phonenumber");
 		String sessionCountryCode = (String) session
@@ -305,24 +310,60 @@ public class UserController extends ExceptionController {
 			return;
 		}
 
-		String result = userDao.regUser(countryCode, phoneNumber, referrerCountryCode, referrer, password,
-				confirmPassword);
-		
-		if ("0".equals(result)) {
-			int affectedRows = userDao.updateUserAccountStatus(countryCode,
-					phoneNumber, UserAccountStatus.success);
-			if (affectedRows > 0) {
-				result = "0";
-			} else {
-				result = "1";
+		String result = userDao.regUser(countryCode, phoneNumber,
+				referrerCountryCode, referrer, password, confirmPassword);
+
+		if ("0".equals(result)) { // insert success
+			Map<String, Object> vosPhoneInfoMap = userDao.getVOSPhone(countryCode,
+					phoneNumber);
+			Long vosPhoneNumber = (Long) vosPhoneInfoMap.get("vosphone");
+			String vosPhonePwd = (String) vosPhoneInfoMap.get("vosphone_pwd");
+			result = addUserToVOS(countryCode + phoneNumber,
+					vosPhoneNumber.toString(), vosPhonePwd);
+
+			if ("0".equals(result)) {
+				int affectedRows = userDao.updateUserAccountStatus(countryCode,
+						phoneNumber, UserAccountStatus.success);
+				if (affectedRows > 0) {
+					result = "0";
+				} else {
+					result = "1";
+				}
+			} else if ("2001".equals(result)) {
+				userDao.updateUserAccountStatus(countryCode, phoneNumber,
+						UserAccountStatus.vos_account_error);
+			} else if ("2002".equals(result)) {
+				userDao.updateUserAccountStatus(countryCode, phoneNumber,
+						UserAccountStatus.vos_phone_error);
+			} else if ("2003".equals(result)) {
+				userDao.updateUserAccountStatus(countryCode, phoneNumber,
+						UserAccountStatus.vos_suite_error);
 			}
 		}
-		
+
+		if ("0".equals(result)) {
+			Double money = config.getSignupGift();
+			if (money != null && money > 0) {
+				VOSHttpResponse depositeResp = vosClient.deposite(countryCode
+						+ phoneNumber, money);
+				if (depositeResp.getHttpStatusCode() != 200
+						|| !depositeResp.isOperationSuccess()) {
+					log.error("\nCannot deposite gift for user : "
+							+ phoneNumber + "\nVOS Http Response : "
+							+ depositeResp.getHttpStatusCode()
+							+ "\nVOS Status Code : "
+							+ depositeResp.getVOSStatusCode()
+							+ "\nVOS Response Info ："
+							+ depositeResp.getVOSResponseInfo());
+				}
+			}
+		}
+
 		if (!"0".equals(result)) {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			return;
 		}
-			
+
 	}
 
 	/**
@@ -396,57 +437,61 @@ public class UserController extends ExceptionController {
 					password1);
 		}
 
-		// if ("0".equals(result)) { // insert success
-		// Integer vosphone = userDao.getVOSPhoneNumber(phone);
-		// result = addUserToVOS(phone, vosphone.toString());
-		//
-		if ("0".equals(result)) {
-			int affectedRows = userDao.updateUserAccountStatus(countryCode,
-					phone, UserAccountStatus.success);
-			if (affectedRows > 0) {
-				result = "0";
-			} else {
-				result = "1";
+		if ("0".equals(result)) { // insert success
+			Map<String, Object> vosPhoneInfoMap = userDao.getVOSPhone(countryCode,
+					phone);
+			Long vosPhoneNumber = (Long) vosPhoneInfoMap.get("vosphone");
+			String vosPhonePwd = (String) vosPhoneInfoMap.get("vosphone_pwd");
+			result = addUserToVOS(countryCode + phone,
+					vosPhoneNumber.toString(), vosPhonePwd);
+
+			if ("0".equals(result)) {
+				int affectedRows = userDao.updateUserAccountStatus(countryCode,
+						phone, UserAccountStatus.success);
+				if (affectedRows > 0) {
+					result = "0";
+				} else {
+					result = "1";
+				}
+			} else if ("2001".equals(result)) {
+				userDao.updateUserAccountStatus(countryCode, phone,
+						UserAccountStatus.vos_account_error);
+			} else if ("2002".equals(result)) {
+				userDao.updateUserAccountStatus(countryCode, phone,
+						UserAccountStatus.vos_phone_error);
+			} else if ("2003".equals(result)) {
+				userDao.updateUserAccountStatus(countryCode, phone,
+						UserAccountStatus.vos_suite_error);
 			}
 		}
-		// else if ("2001".equals(result)) {
-		// userDao.updateUserAccountStatus(phone,
-		// UserAccountStatus.vos_account_error);
-		// } else if ("2002".equals(result)) {
-		// userDao.updateUserAccountStatus(phone,
-		// UserAccountStatus.vos_phone_error);
-		// } else if ("2003".equals(result)) {
-		// userDao.updateUserAccountStatus(phone,
-		// UserAccountStatus.vos_suite_error);
-		// }
-		// }
-		//
-		// if ("0".equals(result)) {
-		// Double money = config.getSignupGift();
-		// if (money != null && money > 0) {
-		// VOSHttpResponse depositeResp = vosClient.deposite(phone, money);
-		// if (depositeResp.getHttpStatusCode() != 200
-		// || !depositeResp.isOperationSuccess()) {
-		// log.error("\nCannot deposite gift for user : " + phone
-		// + "\nVOS Http Response : "
-		// + depositeResp.getHttpStatusCode()
-		// + "\nVOS Status Code : "
-		// + depositeResp.getVOSStatusCode()
-		// + "\nVOS Response Info ："
-		// + depositeResp.getVOSResponseInfo());
-		// } else {
-		// try {
-		// smsClient
-		// .sendTextMessage(
-		// phone,
-		// "欢迎您成为智会用户，"
-		// + "您的账户已获赠10元。更多信息请访问 http://www.wetalking.net/help");
-		// } catch (Exception e) {
-		// log.error("Cannot send SMS to new user: " + phone);
-		// }
-		// }
-		// }
-		// }
+
+		if ("0".equals(result)) {
+			Double money = config.getSignupGift();
+			if (money != null && money > 0) {
+				VOSHttpResponse depositeResp = vosClient.deposite(countryCode
+						+ phone, money);
+				if (depositeResp.getHttpStatusCode() != 200
+						|| !depositeResp.isOperationSuccess()) {
+					log.error("\nCannot deposite gift for user : " + phone
+							+ "\nVOS Http Response : "
+							+ depositeResp.getHttpStatusCode()
+							+ "\nVOS Status Code : "
+							+ depositeResp.getVOSStatusCode()
+							+ "\nVOS Response Info ："
+							+ depositeResp.getVOSResponseInfo());
+				} else {
+					// try {
+					// smsClient
+					// .sendTextMessage(
+					// phone,
+					// "欢迎您成为智会用户，"
+					// + "您的账户已获赠10元。更多信息请访问 http://www.wetalking.net/help");
+					// } catch (Exception e) {
+					// log.error("Cannot send SMS to new user: " + phone);
+					// }
+				}
+			}
+		}
 
 		JSONObject jsonUser = new JSONObject();
 		try {
@@ -457,12 +502,12 @@ public class UserController extends ExceptionController {
 		response.getWriter().print(jsonUser.toString());
 	}
 
-	private String addUserToVOS(String username, String vosPhoneNumber) {
+	private String addUserToVOS(String fullUserName, String vosPhoneNumber, String vosPhonePwd) {
 		// create new account in VOS
-		VOSHttpResponse addAccountResp = vosClient.addAccount(username);
+		VOSHttpResponse addAccountResp = vosClient.addAccount(fullUserName);
 		if (addAccountResp.getHttpStatusCode() != 200
 				|| !addAccountResp.isOperationSuccess()) {
-			log.error("\nCannot create VOS accont for user : " + username
+			log.error("\nCannot create VOS accont for user : " + fullUserName
 					+ "\nVOS Http Response : "
 					+ addAccountResp.getHttpStatusCode()
 					+ "\nVOS Status Code : "
@@ -473,12 +518,12 @@ public class UserController extends ExceptionController {
 		}
 
 		// create new phone in VOS
-		VOSHttpResponse addPhoneResp = vosClient.addPhoneToAccount(username,
-				vosPhoneNumber);
+		VOSHttpResponse addPhoneResp = vosClient.addPhoneToAccount(
+				fullUserName, vosPhoneNumber, vosPhonePwd);
 		if (addPhoneResp.getHttpStatusCode() != 200
 				|| !addPhoneResp.isOperationSuccess()) {
 			log.error("\nCannot create VOS phone <" + vosPhoneNumber
-					+ "> for user : " + username + "\nVOS Http Response : "
+					+ "> for user : " + fullUserName + "\nVOS Http Response : "
 					+ addPhoneResp.getHttpStatusCode() + "\nVOS Status Code : "
 					+ addPhoneResp.getVOSStatusCode() + "\nVOS Response Info ："
 					+ addPhoneResp.getVOSResponseInfo());
@@ -486,12 +531,12 @@ public class UserController extends ExceptionController {
 		}
 
 		// add suite to account
-		VOSHttpResponse addSuiteResp = vosClient.addSuiteToAccount(username,
-				config.getSuite0Id());
+		VOSHttpResponse addSuiteResp = vosClient.addSuiteToAccount(
+				fullUserName, config.getSuite0Id());
 		if (addSuiteResp.getHttpStatusCode() != 200
 				|| !addSuiteResp.isOperationSuccess()) {
 			log.error("\nCannot add VOS suite <" + config.getSuite0Id()
-					+ "> for user : " + username + "\nVOS Http Response : "
+					+ "> for user : " + fullUserName + "\nVOS Http Response : "
 					+ addSuiteResp.getHttpStatusCode() + "\nVOS Status Code : "
 					+ addSuiteResp.getVOSStatusCode() + "\nVOS Response Info ："
 					+ addSuiteResp.getVOSResponseInfo());
@@ -499,26 +544,6 @@ public class UserController extends ExceptionController {
 		}
 
 		return "0";
-	}
-
-	/**
-	 * iphone 客户端每次启动登录后会发送该请求
-	 * 
-	 * @param userName
-	 * @param token
-	 * @param response
-	 * @throws JSONException
-	 * @throws IOException
-	 */
-	@RequestMapping("/regToken")
-	public void regToken(
-			@RequestParam(value = "username", required = true) String userName,
-			@RequestParam String token, HttpServletResponse response)
-			throws JSONException, IOException {
-		JSONObject resultJson = new JSONObject();
-		String result = userDao.saveToken(userName, token);
-		resultJson.put("result", result);
-		response.getWriter().print(resultJson.toString());
 	}
 
 	@RequestMapping("/checkUserExist")
