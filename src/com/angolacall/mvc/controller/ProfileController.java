@@ -20,7 +20,7 @@ import com.angolacall.framework.Configuration;
 import com.angolacall.framework.ContextLoader;
 import com.angolacall.web.user.UserBean;
 import com.richitec.ucenter.model.UserDAO;
-import com.richitec.util.MD5Util;
+import com.richitec.util.CryptoUtil;
 
 @Controller
 @RequestMapping(value="/setting")
@@ -62,7 +62,7 @@ public class ProfileController {
 			return "403";
 		}
 		
-		String md5Password = MD5Util.md5(newPwd);
+		String md5Password = CryptoUtil.md5(newPwd);
 		if (userDao.changePassword(user.getUserName(), md5Password, user.getCountryCode())<=0){
 			return "500";
 		}

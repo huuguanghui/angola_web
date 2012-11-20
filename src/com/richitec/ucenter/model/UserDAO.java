@@ -22,7 +22,7 @@ import com.angolacall.constants.UserAccountStatus;
 import com.angolacall.framework.ContextLoader;
 import com.angolacall.web.user.UserBean;
 import com.richitec.sms.client.SMSHttpResponse;
-import com.richitec.util.MD5Util;
+import com.richitec.util.CryptoUtil;
 import com.richitec.util.RandomString;
 import com.richitec.util.ValidatePattern;
 import com.sun.xml.wss.impl.callback.UsernameCallback;
@@ -82,10 +82,10 @@ public class UserDAO {
 				password1);
 		log.info("checkRegisterUser - result: " + result);
 		if (result.equals("0")) {
-			String userkey = MD5Util.md5(phone + password);
+			String userkey = CryptoUtil.md5(phone + password);
 			String vosPhonePwd = RandomString.genRandomNum(6);
 			String sql = "INSERT INTO im_user(username, password, userkey, referrer_country_code, referrer, countrycode, bindphone, vosphone_pwd) VALUES (?,?,?,?,?,?,?,?)";
-			Object[] params = new Object[] { phone, MD5Util.md5(password),
+			Object[] params = new Object[] { phone, CryptoUtil.md5(password),
 					userkey, referrerCountryCode, referrer, countryCode, phone, vosPhonePwd };
 			int resultCount = jdbc.update(sql, params);
 			result = resultCount > 0 ? "0" : "1001";
@@ -246,7 +246,7 @@ public class UserDAO {
 	public int changePassword(String userName, String md5Password,
 			String countryCode) {
 		String sql = "UPDATE im_user SET password=?, userkey=? WHERE username=? AND countrycode=?";
-		String userkey = MD5Util.md5(RandomString.genRandomChars(10));
+		String userkey = CryptoUtil.md5(RandomString.genRandomChars(10));
 		return jdbc.update(sql, md5Password, userkey, userName, countryCode);
 	}
 

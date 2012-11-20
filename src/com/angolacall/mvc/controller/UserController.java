@@ -26,7 +26,7 @@ import com.angolacall.framework.ContextLoader;
 import com.angolacall.web.user.UserBean;
 import com.richitec.sms.client.SMSClient;
 import com.richitec.ucenter.model.UserDAO;
-import com.richitec.util.MD5Util;
+import com.richitec.util.CryptoUtil;
 import com.richitec.util.RandomString;
 import com.richitec.vos.client.VOSClient;
 import com.richitec.vos.client.VOSHttpResponse;
@@ -153,7 +153,7 @@ public class UserController extends ExceptionController {
 			return "403";
 		}
 
-		String md5Password = MD5Util.md5(newPassword);
+		String md5Password = CryptoUtil.md5(newPassword);
 		if (userDao.changePassword(phoneNumber, md5Password, countryCode) <= 0) {
 			return "500";
 		}
@@ -573,7 +573,7 @@ public class UserController extends ExceptionController {
 				return;
 			}
 			String newPwd = RandomString.getPassword();
-			int rows = userDao.changePassword(userName, MD5Util.md5(newPwd),
+			int rows = userDao.changePassword(userName, CryptoUtil.md5(newPwd),
 					countryCode);
 			if (rows > 0) {
 				String msg = String.format(

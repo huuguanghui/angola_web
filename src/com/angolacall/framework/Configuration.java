@@ -18,6 +18,9 @@ public class Configuration {
 	private Double signupGift;
 	private String appvcenterUrl;
 	private String appId;
+	private String alipayPrivateKey;
+	private String alipayPartnerID;
+	private String alipaySeller;
 
 	public String getSuite0Id() {
 		return this.suite0Id;
@@ -105,6 +108,30 @@ public class Configuration {
 
 	public void setAppId(String appId) {
 		this.appId = appId;
+	}
+
+	public String getAlipayPrivateKey() {
+		return alipayPrivateKey;
+	}
+
+	public void setAlipayPrivateKey(String alipayPrivateKey) {
+		this.alipayPrivateKey = alipayPrivateKey;
+	}
+
+	public String getAlipayPartnerID() {
+		return alipayPartnerID;
+	}
+
+	public void setAlipayPartnerID(String alipayPartnerID) {
+		this.alipayPartnerID = alipayPartnerID;
+	}
+
+	public String getAlipaySeller() {
+		return alipaySeller;
+	}
+
+	public void setAlipaySeller(String alipaySeller) {
+		this.alipaySeller = alipaySeller;
 	}
 
 }
