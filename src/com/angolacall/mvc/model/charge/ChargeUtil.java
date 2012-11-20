@@ -38,21 +38,22 @@ public class ChargeUtil {
 			return null;
 		}
 		String userName = (String) chargeInfo.get("username");
-		if (userName == null) {
+		String countryCode = (String) chargeInfo.get("countrycode");
+		if (userName == null || countryCode == null) {
 			return null;
 		}
 		String status = (String) chargeInfo.get("status");
 		if (ChargeStatus.success.name().equals(status)) {
-			return userName;
+			return countryCode + userName;
 		}
 		
 		Double amount = Double.valueOf(money);
 		VOSClient vosClient = ContextLoader.getVOSClient();
-		VOSHttpResponse response = vosClient.deposite(userName, amount);
+		VOSHttpResponse response = vosClient.deposite(countryCode + userName, amount);
 		if (response.isOperationSuccess()) {
 			log.info("vos deposite success");
 			chargeDao.updateChargeRecord(chargeId, ChargeStatus.success);
-			return userName;
+			return countryCode + userName;
 		} else {
 			log.info("vos deposite fail");
 			chargeDao.updateChargeRecord(chargeId, ChargeStatus.vos_fail);

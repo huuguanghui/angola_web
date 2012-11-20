@@ -106,6 +106,8 @@ public class UserDAO {
 				user.setReferrer(rs.getString("referrer"));
 				user.setUserKey(rs.getString("userkey"));
 				user.setCountryCode(rs.getString("countrycode"));
+				user.setVosPhone(String.valueOf(rs.getLong("vosphone")));
+				user.setVosPhonePwd(rs.getString("vosphone_pwd"));
 				return user;
 			}
 		});

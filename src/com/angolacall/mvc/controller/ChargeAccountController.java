@@ -102,7 +102,7 @@ public class ChargeAccountController {
 		}
 
 		String chargeId = pin + "_" + RandomString.genRandomChars(10);
-		VOSHttpResponse vosResp = vosClient.depositeByCard(account, pin,
+		VOSHttpResponse vosResp = vosClient.depositeByCard(countryCode + account, pin,
 				password);
 		if (vosResp.getHttpStatusCode() != 200 || !vosResp.isOperationSuccess()) {
 			chargeDao.addChargeRecord(countryCode, chargeId, account, value,
@@ -291,8 +291,7 @@ public class ChargeAccountController {
 			throws JSONException, IOException {
 		// get account balance
 		JSONObject ret = new JSONObject();
-//		Double value = vosClient.getAccountBalance(userName);
-		Double value = new Double(100);
+		Double value = vosClient.getAccountBalance(countryCode + userName);
 		ret.put("result", null == value ? 1 : 0);
 		if (null != value) {
 			ret.put(WebConstants.balance.name(), value);
@@ -338,7 +337,7 @@ public class ChargeAccountController {
 		}
 
 		String chargeId = pin + "_" + RandomString.genRandomChars(10);
-		VOSHttpResponse vosResp = vosClient.depositeByCard(userName, pin,
+		VOSHttpResponse vosResp = vosClient.depositeByCard(countryCode + userName, pin,
 				password);
 		if (vosResp.getHttpStatusCode() != 200 || !vosResp.isOperationSuccess()) {
 			chargeDao.addChargeRecord(countryCode, chargeId, userName, value,

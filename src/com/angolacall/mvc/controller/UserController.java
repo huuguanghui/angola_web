@@ -76,6 +76,8 @@ public class UserController extends ExceptionController {
 			if (null != user) {
 				json.put("result", "0");
 				json.put("userkey", user.getUserKey());
+				json.put("vosphone", user.getVosPhone());
+				json.put("vosphone_pwd", user.getVosPhonePwd());
 				user.setUserName(loginName);
 				user.setPassword(loginPwd);
 				session.setAttribute(UserBean.SESSION_BEAN, user);
