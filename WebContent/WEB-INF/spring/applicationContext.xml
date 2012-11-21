@@ -39,15 +39,6 @@
 		<property name="appId">
 		    <value>${app_id}</value>
 		</property>
-		<property name="alipayPrivateKey">
-		    <value>${alipay_private_key}</value>
-		</property>
-		<property name="alipayPartnerID">
-		    <value>${alipay_partner_id}</value>
-		</property>
-		<property name="alipaySeller">
-		    <value>${alipay_seller}</value>
-		</property>
 	</bean>
 	
 	<bean id="sms_client" class="com.richitec.sms.client.SMSClient">

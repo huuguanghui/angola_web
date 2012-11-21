@@ -1,6 +1,7 @@
 package com.angolacall.mvc.controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,6 +17,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.XML;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.alipay.client.base.PartnerConfig;
+import com.alipay.client.security.RSASignature;
 import com.alipay.util.AlipayNotify;
 import com.angolacall.constants.ChargeStatus;
 import com.angolacall.constants.WebConstants;
@@ -102,8 +106,8 @@ public class ChargeAccountController {
 		}
 
 		String chargeId = pin + "_" + RandomString.genRandomChars(10);
-		VOSHttpResponse vosResp = vosClient.depositeByCard(countryCode + account, pin,
-				password);
+		VOSHttpResponse vosResp = vosClient.depositeByCard(countryCode
+				+ account, pin, password);
 		if (vosResp.getHttpStatusCode() != 200 || !vosResp.isOperationSuccess()) {
 			chargeDao.addChargeRecord(countryCode, chargeId, account, value,
 					ChargeStatus.vos_fail);
@@ -147,10 +151,12 @@ public class ChargeAccountController {
 				vosClient.getAccountBalance(userBean.getUserName()));
 
 		// get charge history list
-		int total = chargeDao.getChargeListTotalCount(userBean.getCountryCode(), userBean.getUserName());
+		int total = chargeDao.getChargeListTotalCount(
+				userBean.getCountryCode(), userBean.getUserName());
 		int pageSize = 10;
-		List<Map<String, Object>> chargeList = chargeDao.getChargeList(userBean.getCountryCode(), 
-				userBean.getUserName(), offset, pageSize);
+		List<Map<String, Object>> chargeList = chargeDao.getChargeList(
+				userBean.getCountryCode(), userBean.getUserName(), offset,
+				pageSize);
 
 		String url = "accountcharge?";
 		Pager pager = new Pager(offset, pageSize, total, url);
@@ -337,8 +343,8 @@ public class ChargeAccountController {
 		}
 
 		String chargeId = pin + "_" + RandomString.genRandomChars(10);
-		VOSHttpResponse vosResp = vosClient.depositeByCard(countryCode + userName, pin,
-				password);
+		VOSHttpResponse vosResp = vosClient.depositeByCard(countryCode
+				+ userName, pin, password);
 		if (vosResp.getHttpStatusCode() != 200 || !vosResp.isOperationSuccess()) {
 			chargeDao.addChargeRecord(countryCode, chargeId, userName, value,
 					ChargeStatus.vos_fail);
@@ -360,4 +366,67 @@ public class ChargeAccountController {
 		}
 
 	}
+
+	@RequestMapping("/alipayClientComplete")
+	public void alipayClientComplete(HttpServletResponse response,
+			HttpServletRequest request) throws IOException {
+		log.info("=== alipayClientComplete ===");
+		// 获得通知参数
+		Map map = request.getParameterMap();
+		// 获得通知签名
+		String sign = (String) ((Object[]) map.get("sign"))[0];
+		log.info("sign: " + sign);
+		
+		String notify_data = (String) ((Object[]) map.get("notify_data"))[0];
+		log.info("notify data: " + notify_data);
+
+		// 获得待验签名的数据
+		String verifyData = "notify_data=" + notify_data;
+		boolean verified = false;
+		PrintWriter out = response.getWriter();
+
+		// 使用支付宝公钥验签名
+		try {
+			verified = RSASignature.doCheck(verifyData, sign,
+					PartnerConfig.RSA_ALIPAY_PUBLIC);
+		} catch (Exception e) {
+			e.printStackTrace();
+			out.print("fail");
+			return;
+		}
+
+		try {
+			JSONObject notifyInfo = XML.toJSONObject(notify_data)
+					.getJSONObject("notify");
+			log.info("notify json: " + notifyInfo.toString());
+
+			String order_no = notifyInfo.getString("out_trade_no");
+			String total_fee = notifyInfo.getString("total_fee");
+			String trade_status = notifyInfo.getString("trade_status");
+
+			log.info("order_no: " + order_no);
+			log.info("total_fee: " + total_fee);
+			log.info("trade_status: " + trade_status);
+			// 验证签名通过
+			if (verified) {
+				// 根据交易状态处理业务逻辑
+				// 当交易状态成功，处理业务逻辑成功。回写success
+				if (trade_status.equals("TRADE_FINISHED")
+						|| trade_status.equals("TRADE_SUCCESS")) {
+					ChargeUtil.finishCharge(order_no, total_fee);
+				} else {
+					chargeDao.updateChargeRecord(order_no, ChargeStatus.fail);
+				}
+				out.print("success");
+			} else {
+				log.info("sign check failed for alipay notification");
+				chargeDao.updateChargeRecord(order_no, ChargeStatus.fail);
+				out.print("fail");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			out.print("fail");
+		}
+	}
+
 }

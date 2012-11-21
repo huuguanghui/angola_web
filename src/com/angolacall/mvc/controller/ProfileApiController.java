@@ -14,12 +14,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.angolacall.framework.Configuration;
+import com.alipay.client.base.PartnerConfig;
+import com.alipay.client.security.RSASignature;
 import com.angolacall.framework.ContextLoader;
 import com.richitec.ucenter.model.UserDAO;
 import com.richitec.util.CryptoUtil;
 import com.richitec.util.MyRC4;
-import com.sun.xml.ws.security.impl.policy.UseKey;
 
 @Controller
 @RequestMapping("/profile")
@@ -68,22 +68,33 @@ public class ProfileApiController {
 		ret.put("userkey", userkey);
 		response.getWriter().print(ret.toString());
 	}
-
+	
+	// === following code is used for alipay client request
 	@RequestMapping("/alipayinfo")
 	public void alipayInfo(HttpServletResponse response,
 			@RequestParam(value = "countryCode") String countryCode,
 			@RequestParam(value = "username") String userName)
 			throws JSONException, IOException {
 		JSONObject info = new JSONObject();
-		Configuration config = ContextLoader.getConfiguration();
-		info.put("private_key", config.getAlipayPrivateKey());
-		info.put("partner_id", config.getAlipayPartnerID());
-		info.put("seller", config.getAlipaySeller());
+		info.put("partner_id", PartnerConfig.PARTNER);
+		info.put("seller", PartnerConfig.SELLER);
 
 		Map<String, Object> user = ContextLoader.getUserDAO().getUser(
 				countryCode, userName);
 		String userkey = (String) user.get("userkey");
 		String cryptMsg = MyRC4.encryptPro(info.toString(), userkey);
 		response.getWriter().print(cryptMsg);
+	}
+
+	@RequestMapping("/alipaysign")
+	public void alipayClientParamSign(HttpServletResponse response,
+			@RequestParam String content, @RequestParam String out_trade_no, @RequestParam String total_fee,
+			@RequestParam(value = "countryCode") String countryCode,
+			@RequestParam(value = "username") String userName)
+			throws IOException {
+		log.info("content: " + content);
+		ContextLoader.getChargeDAO().addChargeRecord(out_trade_no, countryCode, userName, Double.valueOf(total_fee));
+		response.getWriter().print(
+				RSASignature.sign(content, PartnerConfig.RSA_PRIVATE));
 	}
 }
