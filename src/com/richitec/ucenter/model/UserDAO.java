@@ -11,10 +11,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -25,7 +22,6 @@ import com.richitec.sms.client.SMSHttpResponse;
 import com.richitec.util.CryptoUtil;
 import com.richitec.util.RandomString;
 import com.richitec.util.ValidatePattern;
-import com.sun.xml.wss.impl.callback.UsernameCallback;
 
 public class UserDAO {
 	private static Log log = LogFactory.getLog(UserDAO.class);

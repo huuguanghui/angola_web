@@ -51,6 +51,11 @@ public class ChargeDAO {
 		String sql = "INSERT INTO im_charge_history(chargeId, username, money, countrycode) VALUES(?, ?, ?, ?)";
 		jdbc.update(sql, chargeId, userName, money, countryCode);
 	}
+	
+	public void addChargeRecord(String chargeId, String countryCode, String userName, Double money, String contributorCountryCode, String contributor, ChargeStatus status) {
+		String sql = "INSERT INTO im_charge_history(chargeId, username, money, countrycode, status, contributor_country_code, contributor) VALUES(?, ?, ?, ?, ? ,?, ?)";
+		jdbc.update(sql, chargeId, userName, money, countryCode, status.name(), contributorCountryCode, contributor);	
+	}
 
 	public void updateChargeRecord(String chargeId, ChargeStatus status) {
 		String sql = "UPDATE im_charge_history SET status = ? WHERE chargeId = ?";

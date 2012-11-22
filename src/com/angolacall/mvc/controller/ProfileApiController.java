@@ -97,4 +97,17 @@ public class ProfileApiController {
 		response.getWriter().print(
 				RSASignature.sign(content, PartnerConfig.RSA_PRIVATE));
 	}
+	
+	@RequestMapping("/getRegInviteLink")
+	public void getRegInviteLink(HttpServletResponse response, 	@RequestParam(value = "countryCode") String countryCode,
+			@RequestParam(value = "username") String userName) throws IOException {
+		String inviterId = ContextLoader.getRegLinkTagDao().getRegLinkTag(countryCode, userName);
+		if (inviterId == null) {
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			return;
+		}
+		
+		String inviteRegUrl = ContextLoader.getConfiguration().getServerUrl() + "/invitejoin/" + inviterId;
+		response.getWriter().print(inviteRegUrl);
+	}
 }

@@ -29,6 +29,7 @@ import com.alipay.client.base.PartnerConfig;
 import com.alipay.client.security.RSASignature;
 import com.alipay.util.AlipayNotify;
 import com.angolacall.constants.ChargeStatus;
+import com.angolacall.constants.ChargeType;
 import com.angolacall.constants.WebConstants;
 import com.angolacall.framework.ContextLoader;
 import com.angolacall.mvc.model.charge.ChargeDAO;
@@ -105,7 +106,7 @@ public class ChargeAccountController {
 			return mv;
 		}
 
-		String chargeId = pin + "_" + RandomString.genRandomChars(10);
+		String chargeId = ChargeType.card.name() + pin + "_" + RandomString.genRandomChars(10);
 		VOSHttpResponse vosResp = vosClient.depositeByCard(countryCode
 				+ account, pin, password);
 		if (vosResp.getHttpStatusCode() != 200 || !vosResp.isOperationSuccess()) {
@@ -148,7 +149,7 @@ public class ChargeAccountController {
 
 		// get account balance
 		view.addObject(WebConstants.balance.name(),
-				vosClient.getAccountBalance(userBean.getUserName()));
+				vosClient.getAccountBalance(userBean.getCountryCode() + userBean.getUserName()));
 
 		// get charge history list
 		int total = chargeDao.getChargeListTotalCount(
@@ -182,18 +183,7 @@ public class ChargeAccountController {
 		return mv;
 	}
 
-	/**
-	 * 支付宝异步返回URL
-	 * 
-	 * @param request
-	 * @param response
-	 * @throws Exception
-	 */
-	@RequestMapping(value = "/alipayComplete")
-	public @ResponseBody
-	String aliPayComplete(HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
-		log.info("****** alipay complete ******");
+	private Map<String, String> getParameterMap(HttpServletRequest request) {
 		Map<String, String> params = new HashMap<String, String>();
 		Map requestParams = request.getParameterMap();
 		for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext();) {
@@ -206,6 +196,34 @@ public class ChargeAccountController {
 			}
 			params.put(name, valueStr);
 		}
+		return params;
+	}
+	
+	/**
+	 * 支付宝异步返回URL
+	 * 
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/alipayComplete")
+	public @ResponseBody
+	String aliPayComplete(HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+		log.info("****** alipay complete ******");
+//		Map<String, String> params = new HashMap<String, String>();
+//		Map requestParams = request.getParameterMap();
+//		for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext();) {
+//			String name = (String) iter.next();
+//			String[] values = (String[]) requestParams.get(name);
+//			String valueStr = "";
+//			for (int i = 0; i < values.length; i++) {
+//				valueStr = (i == values.length - 1) ? valueStr + values[i]
+//						: valueStr + values[i] + ",";
+//			}
+//			params.put(name, valueStr);
+//		}
+		Map<String, String> params = getParameterMap(request);
 
 		String order_no = request.getParameter("out_trade_no"); // 获取订单号
 		String total_fee = request.getParameter("total_fee"); // 获取总金额
@@ -242,19 +260,20 @@ public class ChargeAccountController {
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("accountcharge/receive");
 		// 获取支付宝GET过来反馈信息
-		Map<String, String> params = new HashMap<String, String>();
-		Map requestParams = request.getParameterMap();
-		for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext();) {
-			String name = (String) iter.next();
-			String[] values = (String[]) requestParams.get(name);
-			String valueStr = "";
-			for (int i = 0; i < values.length; i++) {
-				valueStr = (i == values.length - 1) ? valueStr + values[i]
-						: valueStr + values[i] + ",";
-			}
-			params.put(name, valueStr);
-		}
-
+//		Map<String, String> params = new HashMap<String, String>();
+//		Map requestParams = request.getParameterMap();
+//		for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext();) {
+//			String name = (String) iter.next();
+//			String[] values = (String[]) requestParams.get(name);
+//			String valueStr = "";
+//			for (int i = 0; i < values.length; i++) {
+//				valueStr = (i == values.length - 1) ? valueStr + values[i]
+//						: valueStr + values[i] + ",";
+//			}
+//			params.put(name, valueStr);
+//		}
+		Map<String, String> params = getParameterMap(request);
+		
 		String order_no = request.getParameter("out_trade_no"); // 获取订单号
 		String total_fee = request.getParameter("total_fee"); // 获取总金额
 		String trade_status = request.getParameter("trade_status"); // 交易状态

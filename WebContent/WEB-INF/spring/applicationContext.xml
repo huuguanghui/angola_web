@@ -39,6 +39,15 @@
 		<property name="appId">
 		    <value>${app_id}</value>
 		</property>
+		<property name="inviteRegGivingAmount">
+		    <value>${invite_reg_giving_amount}</value>
+		</property>
+		<property name="chargeGivingPercentage">
+		    <value>${charge_giving_percentage}</value>
+		</property>
+		<property name="serverUrl">
+		    <value>${server_url}</value>
+		</property>
 	</bean>
 	
 	<bean id="sms_client" class="com.richitec.sms.client.SMSClient">
@@ -142,4 +151,7 @@
 	<bean id="addressbook_dao" class="com.angolacall.mvc.model.addressbook.AddressBookDAO">
 	</bean>
     
+	<bean id="reg_link_tag_dao" class="com.richitec.ucenter.model.RegLinkTagDao">
+	    <property name="dataSource" ref="dataSource_mysql_c3p0"></property>
+	</bean>
 </beans>

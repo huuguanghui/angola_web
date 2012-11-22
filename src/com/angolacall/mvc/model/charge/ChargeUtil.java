@@ -9,6 +9,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.angolacall.constants.ChargeStatus;
+import com.angolacall.constants.ChargeType;
 import com.angolacall.framework.ContextLoader;
 import com.richitec.util.RandomString;
 import com.richitec.vos.client.VOSClient;
@@ -53,11 +54,39 @@ public class ChargeUtil {
 		if (response.isOperationSuccess()) {
 			log.info("vos deposite success");
 			chargeDao.updateChargeRecord(chargeId, ChargeStatus.success);
+			
+			// give money to referrer if has
+			Map<String, Object> user = ContextLoader.getUserDAO().getUser(countryCode, userName);
+			String referrer = (String) user.get("referrer");
+			String referrerCountryCode = (String) user.get("referrer_country_code");
+			if (referrer != null && referrerCountryCode != null && !referrer.equals("") && !referrerCountryCode.equals("")) {
+				Double giveAmount = amount * ContextLoader.getConfiguration().getChargeGivingPercentage();
+				giveMoneyToReferrer(ChargeType.chargecontribute, referrerCountryCode, referrer, giveAmount, countryCode, userName);
+			}
+			
 			return countryCode + userName;
 		} else {
 			log.info("vos deposite fail");
 			chargeDao.updateChargeRecord(chargeId, ChargeStatus.vos_fail);
 			return null;
+		}
+	}
+	
+	/**
+	 * give money to referrer
+	 * @param chargetype
+	 * @param referrerCountryCode
+	 * @param referrer - target user to give money
+	 * @param money - amount of money to give
+	 * @param contributorCountryCode
+	 * @param contributor - user who makes the contribution
+	 */
+	public static void giveMoneyToReferrer(ChargeType chargetype, String referrerCountryCode, String referrer, Double money, String contributorCountryCode, String contributor) {
+		String chargeId = getOrderNumber(chargetype.name(), referrerCountryCode, referrer);
+		VOSClient vosClient = ContextLoader.getVOSClient();
+		VOSHttpResponse response = vosClient.deposite(referrerCountryCode + referrer, money);
+		if (response.isOperationSuccess()) {
+			ContextLoader.getChargeDAO().addChargeRecord(chargeId, referrerCountryCode, referrer, money, contributorCountryCode, contributor, ChargeStatus.success);
 		}
 	}
 }

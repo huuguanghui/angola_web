@@ -20,9 +20,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.angolacall.constants.ChargeType;
 import com.angolacall.constants.UserAccountStatus;
 import com.angolacall.framework.Configuration;
 import com.angolacall.framework.ContextLoader;
+import com.angolacall.mvc.model.charge.ChargeUtil;
 import com.angolacall.web.user.UserBean;
 import com.richitec.sms.client.SMSClient;
 import com.richitec.ucenter.model.UserDAO;
@@ -358,6 +360,11 @@ public class UserController extends ExceptionController {
 							+ "\nVOS Response Info ："
 							+ depositeResp.getVOSResponseInfo());
 				}
+			}
+			
+			// give money to referrer
+			if (!referrer.equals("") && !referrerCountryCode.equals("")) {
+				ChargeUtil.giveMoneyToReferrer(ChargeType.invitereg, referrerCountryCode, referrer, config.getInviteRegGivingAmount(), countryCode, phoneNumber);
 			}
 		}
 

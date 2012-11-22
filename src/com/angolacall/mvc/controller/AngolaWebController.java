@@ -1,6 +1,7 @@
 package com.angolacall.mvc.controller;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,6 +26,7 @@ import com.angolacall.framework.Configuration;
 import com.angolacall.framework.ContextLoader;
 import com.angolacall.web.user.UserBean;
 import com.richitec.sms.client.SMSHttpResponse;
+import com.sun.xml.rpc.processor.modeler.j2ee.xml.exceptionMappingType;
 
 
 @Controller
@@ -72,12 +74,27 @@ public class AngolaWebController {
 		return view;
 	}
 	
-	@RequestMapping(value = "/invitejoin/{countryCode}/{userName}", method = RequestMethod.GET)
-	public ModelAndView inviteJoin(@PathVariable String countryCode, @PathVariable String userName) {
+	@RequestMapping(value = "/invitejoin/{inviterId}", method = RequestMethod.GET)
+	public ModelAndView inviteJoin(HttpServletResponse response, @PathVariable String inviterId) throws IOException {
 		ModelAndView view = new ModelAndView();
 		view.setViewName("invitejoin");
-		view.addObject(AuthConstant.username.name(), userName);
-		view.addObject(AuthConstant.countryCode.name(), countryCode);
+		
+		Map<String, Object> inviterMap = null;
+		try {
+			inviterMap = ContextLoader.getRegLinkTagDao().getInviterMap(inviterId);
+		} catch (Exception e) {
+			log.info(e.getMessage());
+		}
+		if (inviterMap == null) {
+			response.sendError(HttpServletResponse.SC_NOT_FOUND);
+			return view;
+		}
+		
+		String inviterName = (String) inviterMap.get("username");
+		String inviterCountryCode = (String) inviterMap.get("country_code");
+		
+		view.addObject(AuthConstant.username.name(), inviterName);
+		view.addObject(AuthConstant.countryCode.name(), inviterCountryCode);
 		return view;
 	}
 

@@ -1,3 +1,4 @@
+<%@page import="com.angolacall.constants.ChargeType"%>
 <%@ page language="java" contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
 <%@page import="com.richitec.util.Pager"%>
@@ -54,10 +55,14 @@
 							  time = String.valueOf(m.get("charge_time"));
 							  money = "￥" +  String.format("%,.2f", m.get("money"));
 							  String chargeId = String.valueOf(m.get("chargeId"));
-							  if (chargeId.startsWith("alipay")){
+							  if (chargeId.startsWith(ChargeType.alipay.name())){
 								  type = "支付宝";
-							  } else {
-								  type = "智会卡";
+							  } else if (chargeId.startsWith(ChargeType.card.name())) {
+								  type = "UUTalk充值卡";
+							  } else if (chargeId.startsWith(ChargeType.invitereg.name())) {
+								  type = "系统赠送[您邀请的用户成功注册]";
+							  } else if (chargeId.startsWith(ChargeType.chargecontribute.name())) {
+								  type = "系统赠送[您邀请的用户成功充值]";
 							  }
 						  }
 					%>

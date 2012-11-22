@@ -14,6 +14,7 @@ import com.mongodb.DB;
 import com.richitec.donkey.client.DonkeyClient;
 import com.richitec.notify.Notifier;
 import com.richitec.sms.client.SMSClient;
+import com.richitec.ucenter.model.RegLinkTagDao;
 import com.richitec.ucenter.model.UserDAO;
 import com.richitec.vos.client.VOSClient;
 
@@ -76,5 +77,9 @@ public class ContextLoader extends ContextLoaderListener {
 
 	public static VOSClient getVOSClient() {
 		return (VOSClient) appContext.getBean("vos_client");
+	}
+	
+	public static RegLinkTagDao getRegLinkTagDao() {
+		return (RegLinkTagDao) appContext.getBean("reg_link_tag_dao");
 	}
 }

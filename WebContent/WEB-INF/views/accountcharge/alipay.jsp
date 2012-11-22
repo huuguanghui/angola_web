@@ -1,3 +1,4 @@
+<%@page import="com.angolacall.constants.ChargeType"%>
 <%@page import="com.angolacall.framework.ContextLoader"%>
 <%@page import="com.angolacall.constants.WebConstants"%>
 <%@page import="com.angolacall.mvc.model.charge.ChargeUtil"%>
@@ -35,9 +36,9 @@
 	String accountName = request.getParameter("account_name");
 	String countryCode = request.getParameter("countryCode");
 	//请与贵网站订单系统中的唯一订单号匹配
-	String out_trade_no = ChargeUtil.getOrderNumber("alipay", countryCode, accountName);
+	String out_trade_no = ChargeUtil.getOrderNumber(ChargeType.alipay.name(), countryCode, accountName);
 	//订单名称，显示在支付宝收银台里的“商品名称”里，显示在支付宝的交易管理的“商品名称”的列表里。
-	String body = "智会账户充值";
+	String body = "UUTalk账户充值";
 	//订单总金额，显示在支付宝收银台里的“应付总额”里
 	String total_fee = request.getParameter("charge_amount");
 	

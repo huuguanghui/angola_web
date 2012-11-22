@@ -18,6 +18,9 @@ public class Configuration {
 	private Double signupGift;
 	private String appvcenterUrl;
 	private String appId;
+	private Double inviteRegGivingAmount;
+	private Float chargeGivingPercentage;
+	private String serverUrl;
 
 	public String getSuite0Id() {
 		return this.suite0Id;
@@ -105,6 +108,30 @@ public class Configuration {
 
 	public void setAppId(String appId) {
 		this.appId = appId;
+	}
+
+	public Double getInviteRegGivingAmount() {
+		return inviteRegGivingAmount;
+	}
+
+	public void setInviteRegGivingAmount(Double inviteRegGivingAmount) {
+		this.inviteRegGivingAmount = inviteRegGivingAmount;
+	}
+
+	public Float getChargeGivingPercentage() {
+		return chargeGivingPercentage;
+	}
+
+	public void setChargeGivingPercentage(Float chargeGivingPercentage) {
+		this.chargeGivingPercentage = chargeGivingPercentage;
+	}
+
+	public String getServerUrl() {
+		return serverUrl;
+	}
+
+	public void setServerUrl(String serverUrl) {
+		this.serverUrl = serverUrl;
 	}
 
 }
