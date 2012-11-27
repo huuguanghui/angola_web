@@ -68,7 +68,7 @@ public class ProfileApiController {
 		ret.put("userkey", userkey);
 		response.getWriter().print(ret.toString());
 	}
-	
+
 	// === following code is used for alipay client request
 	@RequestMapping("/alipayinfo")
 	public void alipayInfo(HttpServletResponse response,
@@ -88,26 +88,58 @@ public class ProfileApiController {
 
 	@RequestMapping("/alipaysign")
 	public void alipayClientParamSign(HttpServletResponse response,
-			@RequestParam String content, @RequestParam String out_trade_no, @RequestParam String total_fee,
+			@RequestParam String content, @RequestParam String out_trade_no,
+			@RequestParam String total_fee,
 			@RequestParam(value = "countryCode") String countryCode,
 			@RequestParam(value = "username") String userName)
 			throws IOException {
 		log.info("content: " + content);
-		ContextLoader.getChargeDAO().addChargeRecord(out_trade_no, countryCode, userName, Double.valueOf(total_fee));
+		ContextLoader.getChargeDAO().addChargeRecord(out_trade_no, countryCode,
+				userName, Double.valueOf(total_fee));
 		response.getWriter().print(
 				RSASignature.sign(content, PartnerConfig.RSA_PRIVATE));
 	}
-	
+
 	@RequestMapping("/getRegInviteLink")
-	public void getRegInviteLink(HttpServletResponse response, 	@RequestParam(value = "countryCode") String countryCode,
-			@RequestParam(value = "username") String userName) throws IOException {
-		String inviterId = ContextLoader.getRegLinkTagDao().getRegLinkTag(countryCode, userName);
+	public void getRegInviteLink(HttpServletResponse response,
+			@RequestParam(value = "countryCode") String countryCode,
+			@RequestParam(value = "username") String userName)
+			throws IOException {
+		String inviterId = ContextLoader.getRegLinkTagDao().getRegLinkTag(
+				countryCode, userName);
 		if (inviterId == null) {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			return;
 		}
-		
-		String inviteRegUrl = ContextLoader.getConfiguration().getServerUrl() + "/invitejoin/" + inviterId;
+
+		String inviteRegUrl = ContextLoader.getConfiguration().getServerUrl()
+				+ "/invitejoin/" + inviterId;
 		response.getWriter().print(inviteRegUrl);
+	}
+
+	@RequestMapping("/getBindPhone")
+	public void getBindPhone(HttpServletResponse response,
+			@RequestParam(value = "countryCode") String countryCode,
+			@RequestParam(value = "username") String userName)
+			throws JSONException, IOException {
+		Map<String, Object> user = userDao.getUser(countryCode, userName);
+		String bindPhone = (String) user.get("bindphone");
+		String bindPhoneCountryCode = (String) user
+				.get("bindphone_country_code");
+		JSONObject ret = new JSONObject();
+		ret.put("bindphone", bindPhone);
+		ret.put("bindphone_country_code", bindPhoneCountryCode);
+		response.getWriter().print(ret.toString());
+	}
+
+	@RequestMapping("/setBindPhone")
+	public void setBindPhone(
+			HttpServletResponse response,
+			@RequestParam(value = "countryCode") String countryCode,
+			@RequestParam(value = "username") String userName,
+			@RequestParam(value = "bindphone_country_code") String bindPhoneCountryCode,
+			@RequestParam(value = "bindphone") String bindPhone) {
+		userDao.setBindPhone(countryCode, userName, bindPhoneCountryCode,
+				bindPhone);
 	}
 }

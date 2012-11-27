@@ -80,9 +80,9 @@ public class UserDAO {
 		if (result.equals("0")) {
 			String userkey = CryptoUtil.md5(phone + password);
 			String vosPhonePwd = RandomString.genRandomNum(6);
-			String sql = "INSERT INTO im_user(username, password, userkey, referrer_country_code, referrer, countrycode, bindphone, vosphone_pwd) VALUES (?,?,?,?,?,?,?,?)";
+			String sql = "INSERT INTO im_user(username, password, userkey, referrer_country_code, referrer, countrycode, bindphone, bindphone_country_code, vosphone_pwd) VALUES (?,?,?,?,?,?,?,?,?)";
 			Object[] params = new Object[] { phone, CryptoUtil.md5(password),
-					userkey, referrerCountryCode, referrer, countryCode, phone, vosPhonePwd };
+					userkey, referrerCountryCode, referrer, countryCode, phone, countryCode, vosPhonePwd };
 			int resultCount = jdbc.update(sql, params);
 			result = resultCount > 0 ? "0" : "1001";
 		}
@@ -275,6 +275,11 @@ public class UserDAO {
 		} catch (Exception e) {
 		}
 		return referrer;
+	}
+	
+	public int setBindPhone(String countryCode, String userName, String bindPhoneCountryCode, String bindPhone) {
+		String sql = "UPDATE im_user SET bindphone = ?, bindphone_country_code = ? WHERE countrycode = ? AND username = ?";
+		return jdbc.update(sql, bindPhone, bindPhoneCountryCode, countryCode, userName);
 	}
 
 }
