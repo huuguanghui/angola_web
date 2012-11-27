@@ -579,7 +579,7 @@ public class UserController extends ExceptionController {
 				response.sendError(HttpServletResponse.SC_NOT_FOUND);
 				return;
 			}
-			String newPwd = RandomString.getPassword();
+			String newPwd = RandomString.genRandomNum(6);
 			int rows = userDao.changePassword(userName, CryptoUtil.md5(newPwd),
 					countryCode);
 			if (rows > 0) {
