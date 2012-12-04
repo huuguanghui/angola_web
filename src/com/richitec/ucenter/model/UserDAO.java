@@ -51,7 +51,7 @@ public class UserDAO {
 			session.setAttribute("phonenumber", phone);
 			session.setAttribute("phonecode", phoneCode);
 			session.setAttribute("countrycode", countryCode);
-			String content = "验证码：" + phoneCode + " [AngolaCall]";
+			String content = "验证码：" + phoneCode + " [UUTalk]";
 			SMSHttpResponse response = ContextLoader.getSMSClient()
 					.sendTextMessage(phone, content);
 			log.info("sms return: " + response.getCode());

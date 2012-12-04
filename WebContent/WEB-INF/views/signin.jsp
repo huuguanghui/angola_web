@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html lang="zh">
   <head>
-    <title>智会-登录</title>
+    <title>UUTalk-登录</title>
 	<jsp:include page="common/_head.jsp"></jsp:include>
   </head>
 

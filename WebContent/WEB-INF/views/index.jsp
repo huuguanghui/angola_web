@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="zh">
   <head>
-    <title>智会</title>
+    <title>UUTalk</title>
 	<jsp:include page="common/_head.jsp"></jsp:include>
   </head>
 

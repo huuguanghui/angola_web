@@ -8,7 +8,7 @@
 <!DOCTYPE html>
 <html lang="zh">
   <head>
-    <title>智会-充值账户</title>
+    <title>UUTalk-充值账户</title>
 	<jsp:include page="common/_head.jsp"></jsp:include>
   </head>
 

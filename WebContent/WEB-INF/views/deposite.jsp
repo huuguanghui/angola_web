@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="zh">
   <head>
-    <title>智会-在线充值</title>
+    <title>UUTalk-在线充值</title>
 	<jsp:include page="common/_head.jsp"></jsp:include>
   </head>
 
@@ -33,7 +33,7 @@
     				</li>
     				-->
     				<li type="card">
-    					<a href="#pane-zhihuicard" data-toggle="tab">智会卡充值</a>
+    					<a href="#pane-zhihuicard" data-toggle="tab">充值卡充值</a>
     				</li>
     			</ul>
 				<div class="tab-content">
@@ -81,9 +81,9 @@
 				    		<input id="iptCardAccounName" type="text" 
 				    		name="account_name" pattern="[0-9]{11}" maxlength="11"
 				    		value="<%=userBean != null ? userBean.getUserName() : ""%>" />						
-							<label>请输入智会卡号</label>
+							<label>请输入充值卡卡号</label>
 							<input id="iptCardPin" type="text" name="pin" />
-							<label>请输入智会卡密码</label>
+							<label>请输入充值卡密码</label>
 							<input id="iptCardPassword" type="text" name="password" />
 							<hr>
 							<button id="btnCardSubmit" type="submit" class="btn btn-success">确&nbsp;定</button>						
