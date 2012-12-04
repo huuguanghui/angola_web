@@ -35,29 +35,11 @@ public class AngolaWebController {
 	@RequestMapping("/")
 	public ModelAndView index(HttpSession session, HttpServletRequest request) {
 		ModelAndView view = new ModelAndView();
-		view.setViewName("index");
-		view.addObject(WebConstants.page_name.name(), "home");
+		view.setViewName("signin");
+		view.addObject(WebConstants.page_name.name(), "signin");
 		return view;
 	}
 
-	@RequestMapping(value = "/home", method = RequestMethod.GET)
-	public ModelAndView home(HttpSession session, HttpServletRequest request) {
-		ModelAndView view = new ModelAndView();
-		view.setViewName("index");
-		view.addObject(WebConstants.page_name.name(), "home");
-		return view;
-	}
-
-	@RequestMapping(value = "/mobile", method = RequestMethod.GET)
-	public String mobile() {
-		return "index_mobile";
-	}
-	
-	@RequestMapping(value = "/help", method = RequestMethod.GET)
-	public String help() {
-		return "help";
-	}
-	
 	@RequestMapping(value = "/signup", method = RequestMethod.GET)
 	public ModelAndView signup() {
 		ModelAndView view = new ModelAndView();
@@ -95,14 +77,6 @@ public class AngolaWebController {
 		
 		view.addObject(AuthConstant.username.name(), inviterName);
 		view.addObject(AuthConstant.countryCode.name(), inviterCountryCode);
-		return view;
-	}
-
-	@RequestMapping(value = "/features", method = RequestMethod.GET)
-	public ModelAndView features() {
-		ModelAndView view = new ModelAndView();
-		view.setViewName("features");
-		view.addObject(WebConstants.page_name.name(), "features");
 		return view;
 	}
 

@@ -17,9 +17,6 @@
 				class="brand" href="/angola/home">UUTalk</a>
 			<div class="nav-collapse">
 				<ul class="nav pull-right">
-					<li class="<%="home".equals(pageName) ? "active" : ""%>">
-					   <a href="/angola/home">首页</a>
-					</li>
                     <li class="<%="signup".equals(pageName) ? "active" : ""%>">
                         <a href="/angola/signup">注册</a>
                     </li>
