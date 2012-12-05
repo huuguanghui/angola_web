@@ -30,6 +30,8 @@
 		<mvc:interceptor>
 		    <mvc:mapping path="/profile/"/>
 			<mvc:mapping path="/profile/**"/>
+			<mvc:mapping path="/callop/"/>
+			<mvc:mapping path="/callop/**"/>
 		    <bean class="com.angolacall.mvc.APIAuthInterceptor"></bean>
 		</mvc:interceptor>
 		<!-- Changes the locale when a 'locale' request parameter is sent; e.g. /?locale=de -->

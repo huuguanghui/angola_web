@@ -47,6 +47,13 @@ public class VOSClient {
 	public static final String P_pin = "pin";
 	public static final String P_callLevel = "callLevel";
 	public static final String P_password = "password";
+	public static final String P_caller = "caller";
+	public static final String P_callee= "callees";
+	public static final String P_number = "number";
+	public static final String P_callbackBillingNumber = "callbackBillingNumber";
+	public static final String P_callbackBillingPassword = "callbackBillingPassword";
+	public static final String P_calloutBillingNumber = "calloutBillingNumber";
+	public static final String P_calloutBillingPassword = "calloutBillingPassword";
 	
 	private HttpClient httpClient;
 	private PoolingClientConnectionManager connManager;
@@ -277,6 +284,26 @@ public class VOSClient {
 		}
 		
 		return balance;
+	}
+	
+	public VOSHttpResponse doCallBack(String callee, String userName, String countryCode, String vosPhoneNumber, String vosPhonePassword) {
+		List<NameValuePair> params = new LinkedList<NameValuePair>();
+		params.add(new BasicNameValuePair(P_loginName, loginName));
+		params.add(new BasicNameValuePair(P_loginPassword, loginPassword));
+		params.add(new BasicNameValuePair(P_caller, countryCode + userName));
+		params.add(new BasicNameValuePair(P_callee, callee));
+		params.add(new BasicNameValuePair(P_number, "9999"));
+		params.add(new BasicNameValuePair(P_password, "9999"));
+		params.add(new BasicNameValuePair(P_callbackBillingNumber, vosPhoneNumber));
+		params.add(new BasicNameValuePair(P_callbackBillingPassword, vosPhonePassword));
+		params.add(new BasicNameValuePair(P_calloutBillingNumber, vosPhoneNumber));
+		params.add(new BasicNameValuePair(P_calloutBillingPassword, vosPhonePassword));
+
+		HttpEntity entity = new UrlEncodedFormEntity(params, Consts.UTF_8);
+		HttpPost post = new HttpPost(this.baseURI + "callback.jsp");
+		post.setEntity(entity);
+		
+		return execute(post);
 	}
 	
 	public static void main(String [] args){
