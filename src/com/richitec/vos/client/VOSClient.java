@@ -45,6 +45,7 @@ public class VOSClient {
 	public static final String P_protocol = "protocol";
 	public static final String P_money = "money";
 	public static final String P_pin = "pin";
+	public static final String P_callLevel = "callLevel";
 	public static final String P_password = "password";
 	
 	private HttpClient httpClient;
@@ -161,10 +162,11 @@ public class VOSClient {
 		params.add(new BasicNameValuePair(P_loginPassword, loginPassword));
 		params.add(new BasicNameValuePair(P_account, account));
 		params.add(new BasicNameValuePair(P_e164, phoneNumber));
-		params.add(new BasicNameValuePair(P_dynamic, "0"));
 		params.add(new BasicNameValuePair(P_protocol, "1"));
 		params.add(new BasicNameValuePair(P_password, phonePwd));
 		params.add(new BasicNameValuePair(P_operationType, "0"));
+		params.add(new BasicNameValuePair(P_dynamic, "1"));
+		params.add(new BasicNameValuePair(P_callLevel, "5"));
 		
 		HttpEntity entity = new UrlEncodedFormEntity(params, Consts.UTF_8);
 		HttpPost post = new HttpPost(this.baseURI + "setphone.jsp");
