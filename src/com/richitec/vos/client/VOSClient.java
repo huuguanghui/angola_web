@@ -116,6 +116,7 @@ public class VOSClient {
 		params.add(new BasicNameValuePair(P_loginPassword, loginPassword));
 		params.add(new BasicNameValuePair(P_account, account));
 		params.add(new BasicNameValuePair(P_type, "0"));
+		params.add(new BasicNameValuePair(P_operationType, "0"));
 //		params.add(new BasicNameValuePair(P_validTime, "2015-01-01 00:00:00"));
 		
 		HttpEntity entity = new UrlEncodedFormEntity(params, Consts.UTF_8);
@@ -158,12 +159,12 @@ public class VOSClient {
 		List<NameValuePair> params = new LinkedList<NameValuePair>();
 		params.add(new BasicNameValuePair(P_loginName, loginName));
 		params.add(new BasicNameValuePair(P_loginPassword, loginPassword));
-		params.add(new BasicNameValuePair(P_type, "0"));
 		params.add(new BasicNameValuePair(P_account, account));
 		params.add(new BasicNameValuePair(P_e164, phoneNumber));
 		params.add(new BasicNameValuePair(P_dynamic, "0"));
 		params.add(new BasicNameValuePair(P_protocol, "1"));
 		params.add(new BasicNameValuePair(P_password, phonePwd));
+		params.add(new BasicNameValuePair(P_operationType, "0"));
 		
 		HttpEntity entity = new UrlEncodedFormEntity(params, Consts.UTF_8);
 		HttpPost post = new HttpPost(this.baseURI + "setphone.jsp");
