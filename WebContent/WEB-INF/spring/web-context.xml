@@ -20,13 +20,17 @@
 	
 	<!-- Configures Handler Interceptors -->	
 	<mvc:interceptors>
-	   <mvc:interceptor>
+	   	<mvc:interceptor>
 			<mvc:mapping path="/accountcharge"/>
 			<mvc:mapping path="/accountcharge/**"/>
 			<mvc:mapping path="/setting"/>
 			<mvc:mapping path="/setting/**"/>
 			<bean class="com.angolacall.mvc.UserInterceptor" />
 		</mvc:interceptor>	
+		<mvc:interceptor>
+		    <mvc:mapping path="/admin/giftmanage"/>
+		    <bean class="com.angolacall.mvc.AdminUserInterceptor"></bean>
+		</mvc:interceptor>
 		<mvc:interceptor>
 		    <mvc:mapping path="/profile/"/>
 			<mvc:mapping path="/profile/**"/>

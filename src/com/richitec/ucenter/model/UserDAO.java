@@ -25,7 +25,6 @@ import com.richitec.util.ValidatePattern;
 
 public class UserDAO {
 	private static Log log = LogFactory.getLog(UserDAO.class);
-	public static final String PASSWORD_STR = "huuguanghui";
 
 	private JdbcTemplate jdbc;
 
