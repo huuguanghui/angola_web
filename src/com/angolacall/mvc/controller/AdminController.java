@@ -1,7 +1,11 @@
 package com.angolacall.mvc.controller;
 
+import java.io.IOException;
+
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.GET;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,24 +16,40 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.angolacall.constants.Pages;
+import com.angolacall.constants.UUTalkConfigKeys;
 import com.angolacall.constants.WebConstants;
 import com.angolacall.framework.ContextLoader;
+import com.angolacall.mvc.admin.model.UUTalkConfigManager;
 import com.angolacall.web.user.AdminUserBean;
 import com.richitec.ucenter.model.AdminUserDao;
+import com.richitec.util.ValidatePattern;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
 	private static Log log = LogFactory.getLog(AdminController.class);
 	
-	@RequestMapping(value = "/", method = RequestMethod.GET)
+	private UUTalkConfigManager ucm;
+	
+	@PostConstruct
+	public void init() {
+		ucm = ContextLoader.getUUTalkConfigManager();
+	}
+	
+	@RequestMapping(value = "", method = RequestMethod.GET)
 	public ModelAndView index() {
 		ModelAndView view = new ModelAndView("admin/index");
 		return view;
 	}
 	
-	@RequestMapping(value = "/index", method = RequestMethod.GET)
+	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public ModelAndView index_() {
+		ModelAndView view = new ModelAndView("admin/index");
+		return view;
+	}
+	
+	@RequestMapping(value = "/index", method = RequestMethod.GET)
+	public ModelAndView index__() {
 		ModelAndView view = new ModelAndView("admin/index");
  		return view;
 	}
@@ -62,7 +82,16 @@ public class AdminController {
 	public ModelAndView giftManage() {
 		ModelAndView view = new ModelAndView("admin/giftmanage");
 		view.addObject(WebConstants.page_name.name(), Pages.gift_manage.name());
+		view.addObject(UUTalkConfigKeys.reg_gift_value.name(), ucm.getRegGiftValue());
 		return view;
 	}
 	
+	@RequestMapping(value = "/giftmanage/editRegGiftValue", method = RequestMethod.POST)
+	public void editRegGiftValue(HttpServletResponse response, @RequestParam String regGiftValue) throws IOException {
+		if (ValidatePattern.isValidMoney(regGiftValue)) {
+			ucm.setRegGiftValue(regGiftValue);
+		} else {
+			response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE);
+		}
+	}
 }

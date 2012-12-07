@@ -10,6 +10,8 @@ public class UserBean {
 	private String countryCode;
 	private String vosPhone;
 	private String vosPhonePwd;
+	private String bindPhone;
+	private String bindPhoneCountryCode;
 	
 	public String getUserName() {
 		return username;
@@ -74,4 +76,21 @@ public class UserBean {
 	public void setVosPhonePwd(String vosPhonePwd) {
 		this.vosPhonePwd = vosPhonePwd;
 	}
+
+	public String getBindPhone() {
+		return bindPhone;
+	}
+
+	public void setBindPhone(String bindPhone) {
+		this.bindPhone = bindPhone;
+	}
+
+	public String getBindPhoneCountryCode() {
+		return bindPhoneCountryCode;
+	}
+
+	public void setBindPhoneCountryCode(String bindPhoneCountryCode) {
+		this.bindPhoneCountryCode = bindPhoneCountryCode;
+	}
+	
 }

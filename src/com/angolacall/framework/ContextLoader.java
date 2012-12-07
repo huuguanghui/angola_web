@@ -7,6 +7,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import com.angolacall.mvc.admin.model.UUTalkConfigManager;
 import com.angolacall.mvc.model.charge.ChargeDAO;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.richitec.donkey.client.DonkeyClient;
@@ -82,5 +83,9 @@ public class ContextLoader extends ContextLoaderListener {
 	
 	public static CommonConfigDao getCommonConfigDao() {
 		return (CommonConfigDao) appContext.getBean("common_config_dao");
+	}
+	
+	public static UUTalkConfigManager getUUTalkConfigManager() {
+		return (UUTalkConfigManager) appContext.getBean("uutalk_config_manager");
 	}
 }

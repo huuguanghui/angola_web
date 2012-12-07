@@ -80,6 +80,8 @@ public class UserController extends ExceptionController {
 				json.put("userkey", user.getUserKey());
 				json.put("vosphone", user.getVosPhone());
 				json.put("vosphone_pwd", user.getVosPhonePwd());
+				json.put("bindphone", user.getBindPhone());
+				json.put("bindphone_country_code", user.getBindPhoneCountryCode());
 				user.setUserName(loginName);
 				user.setPassword(loginPwd);
 				session.setAttribute(UserBean.SESSION_BEAN, user);

@@ -23,7 +23,7 @@
 			</a> <a class="brand">UU-Talk管理系统</a>
 			<div class="nav-collapse">
 				<ul class="nav pull-right">
-					<li class="<%=Pages.gift_manage.name().equals(pageName) ? "active" : ""%>"><a href="/angola/admin/giftmanage">赠送管理</a></li>
+					<li class="<%=Pages.gift_manage.name().equals(pageName) ? "active" : ""%>"><a href="/angola/admin/giftmanage">邀请赠送管理</a></li>
 				</ul>
 			</div>
 		</div>

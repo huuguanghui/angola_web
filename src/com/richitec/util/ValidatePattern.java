@@ -10,6 +10,7 @@ public class ValidatePattern {
 	private static final String phoneAndMobilePattern = "(^[0]\\d{2,3}\\-\\d{7,8})|(^[1-9]\\d{6,7})|(^[0]\\d{10,11})|(^[1][\\d]{10})";
 	private static final String mobilePhonePattern = "^[1][\\d]{10}";
 	private static final String numberPattern = "[0-9]+";
+	private static final String moneyPattern = "([0-9]+)|([0-9]+\\.[0-9]{1,2})";
 	private static final String faxPattern="(^[0]\\d{2,3}\\-\\d{7,8})|(^[1-9]\\d{6,7})|(^[0]\\d{10,11})";
 	private static final String postCodePattern = "^[1-9]\\d{5}";
 	private static final String datePattern = "^(?:(?!0000)[0-9]{4}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-8])|(?:0[13-9]|1[0-2])-"
@@ -88,5 +89,9 @@ public class ValidatePattern {
 	
 	public static boolean isNumber(String number) {
 		return Pattern.matches(numberPattern, number);
+	}
+	
+	public static boolean isValidMoney(String money) {
+		return Pattern.matches(moneyPattern, money);
 	}
 }

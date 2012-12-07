@@ -1,6 +1,7 @@
 package com.angolacall.mvc.controller;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.angolacall.framework.ContextLoader;
+import com.richitec.ucenter.model.UserDAO;
 import com.richitec.vos.client.VOSClient;
 import com.richitec.vos.client.VOSHttpResponse;
 
@@ -34,7 +36,12 @@ public class CallController {
 			@RequestParam(value = "countryCode") String countryCode, 
 			@RequestParam(value = "vosPhoneNumber") String vosPhoneNumber,
 			@RequestParam(value = "vosPhonePassword") String vosPhonePassword) throws IOException {
-		VOSHttpResponse vosResponse = vosClient.doCallBack(callee, userName, countryCode, vosPhoneNumber, vosPhonePassword);
+		UserDAO userDao = ContextLoader.getUserDAO();
+		Map<String, Object> user = userDao.getUser(countryCode, userName);
+		String bindPhone = (String) user.get("bindphone");
+		String bindPhoneCountryCode = (String) user.get("bindphone_country_code");
+		
+		VOSHttpResponse vosResponse = vosClient.doCallBack(callee, bindPhone, bindPhoneCountryCode, vosPhoneNumber, vosPhonePassword);
 		if (vosResponse.getHttpStatusCode() != 200
 				|| !vosResponse.isOperationSuccess()) {
 			log.error("\nCannot do callback for user : " + countryCode + userName

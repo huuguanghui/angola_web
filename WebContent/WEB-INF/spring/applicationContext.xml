@@ -150,4 +150,8 @@
 	<bean id="common_config_dao" class="com.richitec.ucenter.model.CommonConfigDao">
 		<property name="dataSource" ref="dataSource_mysql_c3p0"></property>
 	</bean>
+	
+	<bean id="uutalk_config_manager" class="com.angolacall.mvc.admin.model.UUTalkConfigManager">
+		<property name="commonConfigDao" ref="common_config_dao"></property>
+	</bean>
 </beans>

@@ -286,11 +286,11 @@ public class VOSClient {
 		return balance;
 	}
 	
-	public VOSHttpResponse doCallBack(String callee, String userName, String countryCode, String vosPhoneNumber, String vosPhonePassword) {
+	public VOSHttpResponse doCallBack(String callee, String caller, String callerCountryCode, String vosPhoneNumber, String vosPhonePassword) {
 		List<NameValuePair> params = new LinkedList<NameValuePair>();
 		params.add(new BasicNameValuePair(P_loginName, loginName));
 		params.add(new BasicNameValuePair(P_loginPassword, loginPassword));
-		params.add(new BasicNameValuePair(P_caller, countryCode + userName));
+		params.add(new BasicNameValuePair(P_caller, callerCountryCode + caller));
 		params.add(new BasicNameValuePair(P_callee, callee));
 		params.add(new BasicNameValuePair(P_number, "9999"));
 		params.add(new BasicNameValuePair(P_password, "9999"));
