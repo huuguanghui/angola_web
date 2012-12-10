@@ -11,7 +11,9 @@
 	<jsp:include page="common/afterlogin_navibar.jsp"></jsp:include>
 	
 	<%
-		String regGiftValue = (String) request.getAttribute(UUTalkConfigKeys.reg_gift_value.name());
+			String regGiftValue = (String) request
+					.getAttribute(UUTalkConfigKeys.reg_gift_value.name());
+			String regGiftDesc = (String) request.getAttribute(UUTalkConfigKeys.reg_gift_desc_text.name());
 	%>
 	
 	<div class="container">
@@ -29,17 +31,27 @@
                     <div id="pane-reg-gift-config" class="tab-pane active">
                         <h3>注册赠送配置</h3>
                         <hr>
-                         <div id="reg_gift_ctrlgroup" class="control-group">
-	                       	<label class="control-label" for="reg_gift_input">通过邀请成功注册赠送金额</label>
-	                        <div class="controls">
-		                         <div class="input-append float-left">
-			                         <input id="reg_gift_input" class="span2" type="text" value="<%=regGiftValue %>"/>
-			                         <button id="edit_reg_gift_btn" class="btn" type="button" >修改</button>
-		                       	 </div>
-		                       	 <span id="reg_gift_edit_text" class="help-inline"></span>
-	                       	 </div>
-                       	 </div>
-                    </div>  
+						<div id="reg_gift_ctrlgroup" class="control-group">
+							<label class="control-label" for="reg_gift_input">通过邀请成功注册赠送金额</label>
+							<div class="controls">
+								<div class="input-append float-left">
+									<input id="reg_gift_input" class="span2" type="text"
+										value="<%=regGiftValue%>" />
+									<button id="edit_reg_gift_btn" class="btn" type="button">保存</button>
+								</div>
+								<span id="reg_gift_edit_text" class="help-inline"></span>
+							</div>
+						</div>
+		
+						<div id="reg_gift_desc_ctrlgroup" class="control-group">
+							<label class="control-label" for="reg_gift_desc_ta">客户端显示信息</label>
+							<div class="controls">
+								<textarea id="reg_gift_desc_ta" wrap="virtual" rows="4" cols="10" ><%=regGiftDesc %></textarea>
+								<span id="reg_gift_desc_text" class="help-inline"></span>
+							</div>
+							<button id="reg_gift_desc_button" class="btn" type="button">保存</button>
+						</div>
+					</div>  
                     
 					<div id="pane-charge-gift-config" class="tab-pane">
 						<h3>充值赠送配置</h3>
@@ -76,7 +88,7 @@
 						$("#reg_gift_ctrlgroup").removeClass("warning");
 						$("#reg_gift_ctrlgroup").removeClass("error");
 						$("#reg_gift_edit_text").html("金额修改成功！");
-					},
+				},
 				error : function(jqXHR, textStatus) {
 					switch(jqXHR.status) {
 					case 406: 
@@ -89,11 +101,30 @@
 						break;
 					}
 				}	
-				
-				
 			});
 		});
 	
+	
+		$("#reg_gift_desc_button").click(function() {
+			var descText = $("#reg_gift_desc_ta").val();
+			$("#reg_gift_desc_ctrlgroup").removeClass("error");
+			$("#reg_gift_desc_text").html("");
+			$.ajax({
+				type : "post",
+				url : "/angola/admin/giftmanage/editRegGiftDesc",
+				dataType : "json",
+				data : {
+					regGiftDesc : descText
+				},
+				success : function(jqxhr, textStatus) {
+					$("#reg_gift_desc_text").html("信息保存成功");
+				},
+				error : function(jqXHR, textStatus) {
+					$("#reg_gift_desc_ctrlgroup").addClass("error");
+					$("#reg_gift_desc_text").html("系统内部出错(STATUS CODE: " + jqXHR.status + ")");
+				}
+			});
+		});
 	</script>
 </body>
 </html>

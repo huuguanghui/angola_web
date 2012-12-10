@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.alipay.client.base.PartnerConfig;
 import com.alipay.client.security.RSASignature;
+import com.angolacall.constants.UUTalkConfigKeys;
 import com.angolacall.framework.ContextLoader;
+import com.angolacall.mvc.admin.model.UUTalkConfigManager;
 import com.richitec.ucenter.model.UserDAO;
 import com.richitec.util.CryptoUtil;
 import com.richitec.util.MyRC4;
@@ -141,5 +143,14 @@ public class ProfileApiController {
 			@RequestParam(value = "bindphone") String bindPhone) {
 		userDao.setBindPhone(countryCode, userName, bindPhoneCountryCode,
 				bindPhone);
+	}
+	
+	@RequestMapping("/regInviteDesc")
+	public void getRegInviteDescription(HttpServletResponse response, @RequestParam(value = "countryCode") String countryCode,
+			@RequestParam(value = "username") String userName) throws JSONException, IOException {
+		UUTalkConfigManager ucm = ContextLoader.getUUTalkConfigManager();
+		JSONObject ret = new JSONObject();
+		ret.put(UUTalkConfigKeys.reg_gift_desc_text.name(), ucm.getRegGiftDescription());
+		response.getWriter().print(ret.toString());
 	}
 }

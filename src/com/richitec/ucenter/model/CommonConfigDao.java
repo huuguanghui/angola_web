@@ -28,7 +28,7 @@ public class CommonConfigDao {
 		String sql = "SELECT attri_value FROM common_config WHERE attri_key = ?";
 		String ret = null;
 		try {
-			jdbc.queryForObject(sql, new Object[] { key }, String.class);
+			ret = jdbc.queryForObject(sql, new Object[] { key }, String.class);
 		} catch (Exception e) {
 			log.info(e.getMessage());
 		}

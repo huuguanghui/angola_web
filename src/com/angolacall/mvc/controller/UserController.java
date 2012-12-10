@@ -24,6 +24,7 @@ import com.angolacall.constants.ChargeType;
 import com.angolacall.constants.UserAccountStatus;
 import com.angolacall.framework.Configuration;
 import com.angolacall.framework.ContextLoader;
+import com.angolacall.mvc.admin.model.UUTalkConfigManager;
 import com.angolacall.mvc.model.charge.ChargeUtil;
 import com.angolacall.web.user.UserBean;
 import com.richitec.sms.client.SMSClient;
@@ -366,7 +367,8 @@ public class UserController extends ExceptionController {
 			
 			// give money to referrer
 			if (!referrer.equals("") && !referrerCountryCode.equals("")) {
-				ChargeUtil.giveMoneyToReferrer(ChargeType.invitereg, referrerCountryCode, referrer, config.getInviteRegGivingAmount(), countryCode, phoneNumber);
+				UUTalkConfigManager ucm = ContextLoader.getUUTalkConfigManager();
+				ChargeUtil.giveMoneyToReferrer(ChargeType.invitereg, referrerCountryCode, referrer, Double.parseDouble(ucm.getRegGiftValue()), countryCode, phoneNumber);
 			}
 		}
 

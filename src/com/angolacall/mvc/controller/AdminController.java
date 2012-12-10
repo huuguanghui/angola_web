@@ -83,6 +83,7 @@ public class AdminController {
 		ModelAndView view = new ModelAndView("admin/giftmanage");
 		view.addObject(WebConstants.page_name.name(), Pages.gift_manage.name());
 		view.addObject(UUTalkConfigKeys.reg_gift_value.name(), ucm.getRegGiftValue());
+		view.addObject(UUTalkConfigKeys.reg_gift_desc_text.name(), ucm.getRegGiftDescription());
 		return view;
 	}
 	
@@ -93,5 +94,10 @@ public class AdminController {
 		} else {
 			response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE);
 		}
+	}
+	
+	@RequestMapping(value = "/giftmanage/editRegGiftDesc", method = RequestMethod.POST)
+	public void editRegGiftDescription(HttpServletResponse response, @RequestParam String regGiftDesc) {
+		ucm.setRegGiftDescription(regGiftDesc);
 	}
 }
