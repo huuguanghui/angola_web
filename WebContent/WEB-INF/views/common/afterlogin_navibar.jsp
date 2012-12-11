@@ -18,7 +18,7 @@
 			<a class="btn btn-navbar" data-toggle="collapse"
 				data-target=".nav-collapse"> <span class="icon-bar"></span> <span
 				class="icon-bar"></span> <span class="icon-bar"></span>
-			</a> <a class="brand" href="#">UU-Talk</a>
+			</a> <a class="brand" href="/angola/">UU-Talk</a>
 			<ul class="nav">
 				<li><a id="username" class="im-attendee-name" title="<%=userBean.getUserName()%>">
 				    <i class="icon-user"></i>&nbsp;<%=userBean.getDisplayName()%></a>

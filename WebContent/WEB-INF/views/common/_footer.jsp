@@ -3,11 +3,10 @@
     
 	    <footer>
 	    	<p>
-	    		<span>客服QQ：<strong></strong></span>
-	    		<span>客服电话：<strong></strong></span>
+	    		<span>版权所有：<strong>（香港）寰宇通科技有限公司</strong></span>
+	    		<span>Copyright: <strong>(HongKong) UuTalk Technology Limited</strong></span>
 	    	</p>
 	    	<p>
-	    		<span>版权所有：<strong>合肥优云信息技术有限公司</strong></span>
-	    		<span>备案信息：<strong></strong></span>
+	    		<span>客服QQ：<strong>707461046</strong></span>
 	    	</p>
 	    </footer>
