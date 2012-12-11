@@ -26,7 +26,6 @@ import com.angolacall.framework.Configuration;
 import com.angolacall.framework.ContextLoader;
 import com.angolacall.web.user.UserBean;
 import com.richitec.sms.client.SMSHttpResponse;
-import com.sun.xml.rpc.processor.modeler.j2ee.xml.exceptionMappingType;
 
 
 @Controller
@@ -35,8 +34,8 @@ public class AngolaWebController {
 	@RequestMapping("/")
 	public ModelAndView index(HttpSession session, HttpServletRequest request) {
 		ModelAndView view = new ModelAndView();
-		view.setViewName("signin");
-		view.addObject(WebConstants.page_name.name(), "signin");
+		view.setViewName("index");
+//		view.addObject(WebConstants.page_name.name(), "index");
 		return view;
 	}
 
