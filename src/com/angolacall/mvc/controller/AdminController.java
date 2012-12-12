@@ -5,7 +5,6 @@ import java.io.IOException;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.ws.rs.GET;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -57,8 +56,8 @@ public class AdminController {
 	@RequestMapping("/login")
 	public ModelAndView login(HttpSession session,
 			@RequestParam String loginName, @RequestParam String loginPwd) {
-		log.info("admin login - loginname: " + loginName + " login pwd: " + loginPwd);
-		
+		log.info("admin login - loginname: " + loginName);
+
 		AdminUserDao aud = ContextLoader.getAdminUserDao();
 		
 		if (aud.validateUser(loginName, loginPwd)) {
