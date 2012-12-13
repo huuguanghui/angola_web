@@ -77,6 +77,12 @@ public class AdminController {
 		}
 	}
 	
+	@RequestMapping("/signout")
+	public String signout(HttpSession session) {
+		session.removeAttribute(AdminUserBean.SESSION_BEAN);
+		return "redirect:/admin/";
+	}
+	
 	@RequestMapping(value = "/giftmanage", method = RequestMethod.GET)
 	public ModelAndView giftManage() {
 		ModelAndView view = new ModelAndView("admin/giftmanage");

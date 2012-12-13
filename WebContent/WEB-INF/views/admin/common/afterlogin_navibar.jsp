@@ -21,6 +21,12 @@
 				data-target=".nav-collapse"> <span class="icon-bar"></span> <span
 				class="icon-bar"></span> <span class="icon-bar"></span>
 			</a> <a class="brand">UU-Talk管理系统</a>
+			<ul class="nav">
+				<li><a id="username" class="im-attendee-name">
+				    <i class="icon-user"></i>&nbsp;<%=userBean.getUserName() %></a>
+				</li>
+				<li><a id="logout" href="/angola/admin/signout">退出登录</a></li>
+			</ul>
 			<div class="nav-collapse">
 				<ul class="nav pull-right">
 					<li class="<%=Pages.gift_manage.name().equals(pageName) ? "active" : ""%>"><a href="/angola/admin/giftmanage">邀请赠送管理</a></li>
