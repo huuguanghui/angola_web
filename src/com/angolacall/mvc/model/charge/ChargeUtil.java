@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import com.angolacall.constants.ChargeStatus;
 import com.angolacall.constants.ChargeType;
 import com.angolacall.framework.ContextLoader;
+import com.angolacall.mvc.admin.model.InviteChargeGiftPlan;
 import com.richitec.util.RandomString;
 import com.richitec.vos.client.VOSClient;
 import com.richitec.vos.client.VOSHttpResponse;
@@ -60,7 +61,7 @@ public class ChargeUtil {
 			String referrer = (String) user.get("referrer");
 			String referrerCountryCode = (String) user.get("referrer_country_code");
 			if (referrer != null && referrerCountryCode != null && !referrer.equals("") && !referrerCountryCode.equals("")) {
-				Double giveAmount = amount * ContextLoader.getConfiguration().getChargeGivingPercentage();
+				Double giveAmount = InviteChargeGiftPlan.calculateGiftMoney(amount);
 				giveMoneyToReferrer(ChargeType.chargecontribute, referrerCountryCode, referrer, giveAmount, countryCode, userName);
 			}
 			

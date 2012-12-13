@@ -15,7 +15,6 @@ public class Configuration {
 	private Double signupGift;
 	private String appvcenterUrl;
 	private String appId;
-	private Float chargeGivingPercentage;
 	private String serverUrl;
 
 	public String getSuite0Id() {
@@ -80,14 +79,6 @@ public class Configuration {
 
 	public void setAppId(String appId) {
 		this.appId = appId;
-	}
-
-	public Float getChargeGivingPercentage() {
-		return chargeGivingPercentage;
-	}
-
-	public void setChargeGivingPercentage(Float chargeGivingPercentage) {
-		this.chargeGivingPercentage = chargeGivingPercentage;
 	}
 
 	public String getServerUrl() {

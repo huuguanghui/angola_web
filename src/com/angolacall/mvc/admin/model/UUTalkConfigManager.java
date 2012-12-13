@@ -37,7 +37,18 @@ public class UUTalkConfigManager {
 	public String getRegGiftDescription() {
 		String desc = commonConfigDao
 				.getValue(UUTalkConfigKeys.reg_gift_desc_text.name());
-		log.info("desc: " + desc);
+		if (desc == null) {
+			desc = "";
+		}
+		return desc;
+	}
+	
+	public void setInviteChargeGiftDescription(String desc) {
+		commonConfigDao.setValue(UUTalkConfigKeys.invite_charge_invite_desc_text.name(), desc);
+	}
+	
+	public String getInviteChargeGiftDescription() {
+		String desc = commonConfigDao.getValue(UUTalkConfigKeys.invite_charge_invite_desc_text.name());
 		if (desc == null) {
 			desc = "";
 		}

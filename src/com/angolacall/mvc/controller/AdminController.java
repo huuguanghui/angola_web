@@ -83,6 +83,7 @@ public class AdminController {
 		view.addObject(WebConstants.page_name.name(), Pages.gift_manage.name());
 		view.addObject(UUTalkConfigKeys.reg_gift_value.name(), ucm.getRegGiftValue());
 		view.addObject(UUTalkConfigKeys.reg_gift_desc_text.name(), ucm.getRegGiftDescription());
+		view.addObject(UUTalkConfigKeys.invite_charge_invite_desc_text.name(), ucm.getInviteChargeGiftDescription());
 		return view;
 	}
 	
@@ -98,5 +99,11 @@ public class AdminController {
 	@RequestMapping(value = "/giftmanage/editRegGiftDesc", method = RequestMethod.POST)
 	public void editRegGiftDescription(HttpServletResponse response, @RequestParam String regGiftDesc) {
 		ucm.setRegGiftDescription(regGiftDesc);
+	}
+	
+	@RequestMapping(value = "/giftmanage/editInviteChargeGiftDesc")
+	public void editInviteChargeGiftDescription(HttpServletResponse response, @RequestParam String inviteChargeGiftDesc) {
+		log.info("editInviteChargeGiftDescription - desc: " + inviteChargeGiftDesc);
+		ucm.setInviteChargeGiftDescription(inviteChargeGiftDesc);
 	}
 }

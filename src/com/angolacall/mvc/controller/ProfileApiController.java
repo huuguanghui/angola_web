@@ -150,7 +150,9 @@ public class ProfileApiController {
 			@RequestParam(value = "username") String userName) throws JSONException, IOException {
 		UUTalkConfigManager ucm = ContextLoader.getUUTalkConfigManager();
 		JSONObject ret = new JSONObject();
-		ret.put(UUTalkConfigKeys.reg_gift_desc_text.name(), ucm.getRegGiftDescription());
+		StringBuffer info = new StringBuffer();
+		info.append(ucm.getRegGiftDescription()).append('\n').append(ucm.getInviteChargeGiftDescription());
+		ret.put(UUTalkConfigKeys.reg_gift_desc_text.name(), info.toString());
 		response.getWriter().print(ret.toString());
 	}
 }

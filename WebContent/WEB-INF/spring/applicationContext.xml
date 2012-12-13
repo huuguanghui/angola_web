@@ -30,9 +30,6 @@
 		<property name="appId">
 		    <value>${app_id}</value>
 		</property>
-		<property name="chargeGivingPercentage">
-		    <value>${charge_giving_percentage}</value>
-		</property>
 		<property name="serverUrl">
 		    <value>${server_url}</value>
 		</property>

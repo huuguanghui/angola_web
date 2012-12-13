@@ -14,6 +14,7 @@
 			String regGiftValue = (String) request
 					.getAttribute(UUTalkConfigKeys.reg_gift_value.name());
 			String regGiftDesc = (String) request.getAttribute(UUTalkConfigKeys.reg_gift_desc_text.name());
+			String inviteChargeGiftDesc = (String) request.getAttribute(UUTalkConfigKeys.invite_charge_invite_desc_text.name());
 	%>
 	
 	<div class="container">
@@ -56,6 +57,14 @@
 					<div id="pane-charge-gift-config" class="tab-pane">
 						<h3>充值赠送配置</h3>
 						<hr>
+						<div id="invite_charge_gift_desc_ctrlgroup" class="control-group">
+							<label class="control-label" for="invite_charge_gift_desc_ta">客户端显示信息</label>
+							<div class="controls">
+								<textarea id="invite_charge_gift_desc_ta" wrap="virtual" rows="4" cols="10" ><%=inviteChargeGiftDesc %></textarea>
+								<span id="invite_charge_gift_desc_text" class="help-inline"></span>
+							</div>
+							<button id="invite_charge_gift_desc_button" class="btn" type="button">保存</button>
+						</div>
 					</div>
 
 				</div>
@@ -122,6 +131,27 @@
 				error : function(jqXHR, textStatus) {
 					$("#reg_gift_desc_ctrlgroup").addClass("error");
 					$("#reg_gift_desc_text").html("系统内部出错(STATUS CODE: " + jqXHR.status + ")");
+				}
+			});
+		});
+		
+		$("#invite_charge_gift_desc_button").click(function() {
+			var descText = $("#invite_charge_gift_desc_ta").val();
+			$("#invite_charge_gift_desc_ctrlgroup").removeClass("error");
+			$("#invite_charge_gift_desc_text").html("");
+			$.ajax({
+				type : "post",
+				url : "/angola/admin/giftmanage/editInviteChargeGiftDesc",
+				dataType : "json",
+				data : {
+					inviteChargeGiftDesc : descText
+				},
+				success : function(jqxhr, textStatus) {
+					$("#invite_charge_gift_desc_text").html("信息保存成功");
+				},
+				error : function(jqXHR, textStatus) {
+					$("#invite_charge_gift_desc_ctrlgroup").addClass("error");
+					$("#invite_charge_gift_desc_text").html("系统内部出错(STATUS CODE: " + jqXHR.status + ")");
 				}
 			});
 		});
