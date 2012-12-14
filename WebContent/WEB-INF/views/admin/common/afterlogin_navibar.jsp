@@ -30,6 +30,7 @@
 			<div class="nav-collapse">
 				<ul class="nav pull-right">
 					<li class="<%=Pages.gift_manage.name().equals(pageName) ? "active" : ""%>"><a href="/angola/admin/giftmanage">邀请赠送管理</a></li>
+					<li class="<%=Pages.charge_manage.name().equals(pageName) ? "active" : ""%>"><a href="/angola/admin/chargemanage">充值管理</a></li>
 				</ul>
 			</div>
 		</div>

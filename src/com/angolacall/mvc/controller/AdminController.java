@@ -112,4 +112,11 @@ public class AdminController {
 		log.info("editInviteChargeGiftDescription - desc: " + inviteChargeGiftDesc);
 		ucm.setInviteChargeGiftDescription(inviteChargeGiftDesc);
 	}
+	
+	@RequestMapping(value = "/chargemanage", method = RequestMethod.GET)
+	public ModelAndView chargeManage() {
+		ModelAndView view = new ModelAndView("admin/chargemanage");
+		view.addObject(WebConstants.page_name.name(), Pages.charge_manage.name());
+		return view;
+	}
 }

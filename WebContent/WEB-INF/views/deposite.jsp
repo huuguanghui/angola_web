@@ -72,7 +72,7 @@
 			    		</form>
 					</div>		
 					<div class="tab-pane" id="pane-zhihuicard">
-						<form id="formCard" action="zhihuicard", method="post">
+						<form id="formCard" action="cardchargepage", method="post">
 							<label>国家代码</label>
 				    		<select name="countryCode">
 				    			<jsp:include page="common/countrycode_options.jsp"></jsp:include>

@@ -78,8 +78,8 @@ public class ChargeAccountController {
 	 * @throws IOException
 	 * @throws SQLException
 	 */
-	@RequestMapping(value = "/zhihuicard", method = RequestMethod.POST)
-	public ModelAndView zhihuiCard(HttpServletResponse response,
+	@RequestMapping(value = "/cardchargepage", method = RequestMethod.POST)
+	public ModelAndView cardchargepage(HttpServletResponse response,
 			@RequestParam(value = "countryCode") String countryCode,
 			@RequestParam(value = "account_name") String account,
 			@RequestParam(value = "pin") String pin,
