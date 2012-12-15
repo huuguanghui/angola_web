@@ -3,6 +3,8 @@
     pageEncoding="utf-8"%>
 <% 
 	String accountName = request.getParameter("account_name");
+	String countryCode = request.getParameter("countryCode");
+	accountName = countryCode + accountName;
 	String pin = request.getParameter("pin");
 	VOSHttpResponse vosResp = (VOSHttpResponse)request.getAttribute("vosResponse");
 %>
@@ -47,10 +49,17 @@
 	    		<hr>
 	    		<div class="alert alert-error">
 					<h2>充值账户：<%=accountName %></h2>
-					<h2>充值卡号：<%=pin %></h2>	    		
-	    			<h2>内部状态：<%=vosResp.getHttpStatusCode() %></h2>
-	    			<h2>操作结果：<%=vosResp.getVOSStatusCode() %></h2>
-	    			<h2>错误信息：<%=vosResp.getVOSResponseInfo() %></h2>
+					<h2>充值卡号：<%=pin %></h2>	    	
+					<%
+						String errorInfo = "充值失败！";
+						if (vosResp.getVOSStatusCode() == -10079) {
+							errorInfo = "充值卡卡号或密码错误！";
+						} else if (vosResp.getVOSStatusCode() == -10078) {
+							errorInfo = "对不起，此充值卡已被使用！";
+						}
+					
+					%>	
+	    			<h2>错误信息：<%=errorInfo %></h2>
 	    		</div>
 				<div class="alert alert-info">
 	    			<h2>如需帮助，请联系客服。电话：0551-2379997&nbsp;&nbsp;QQ：1622122511</h2>

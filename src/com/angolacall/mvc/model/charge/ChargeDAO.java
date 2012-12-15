@@ -43,7 +43,8 @@ public class ChargeDAO {
 	}
 	
 	public void addChargeRecord(String chargeId, String countryCode, String userName, Double money, ChargeStatus status) {
-		String sql = "INSERT INTO im_charge_history(chargeId, username, money, status, countryCode) VALUES(?, ?, ?, ?, ?)";
+		log.info("addChargeRecord - countrycode: " + countryCode);
+		String sql = "INSERT INTO im_charge_history(chargeId, username, money, status, countrycode) VALUES(?, ?, ?, ?, ?)";
 		jdbc.update(sql, chargeId, userName, money, status.name(), countryCode);
 	}	
 

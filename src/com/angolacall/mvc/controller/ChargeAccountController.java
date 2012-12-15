@@ -106,11 +106,11 @@ public class ChargeAccountController {
 			return mv;
 		}
 
-		String chargeId = ChargeType.card.name() + pin + "_" + RandomString.genRandomChars(10);
+		String chargeId = getCardChargeId(pin);
 		VOSHttpResponse vosResp = vosClient.depositeByCard(countryCode
 				+ account, pin, password);
 		if (vosResp.getHttpStatusCode() != 200 || !vosResp.isOperationSuccess()) {
-			chargeDao.addChargeRecord(countryCode, chargeId, account, value,
+			chargeDao.addChargeRecord(chargeId, countryCode, account, value,
 					ChargeStatus.vos_fail);
 			log.error("\nCannot deposite to account <" + account
 					+ "> with card <" + pin + ">" + "<" + password + ">"
@@ -127,9 +127,10 @@ public class ChargeAccountController {
 			 * DepositeCardInfo(vosResp.getVOSResponseInfo());
 			 * mv.addObject("despositeInfo", info);
 			 */
-			chargeDao.addChargeRecord(countryCode, chargeId, account, value,
+			chargeDao.addChargeRecord(chargeId, countryCode, account, value,
 					ChargeStatus.success);
-			smsClient.sendTextMessage(account, "您的智会账户已成功充值" + value + "元，谢谢！");
+			smsClient.sendTextMessage(account, "您的UU-Talk账户已成功充值" + value
+					+ "元，谢谢！");
 		}
 
 		mv.setViewName("accountcharge/vosComplete");
@@ -148,8 +149,10 @@ public class ChargeAccountController {
 				.getAttribute(UserBean.SESSION_BEAN);
 
 		// get account balance
-		view.addObject(WebConstants.balance.name(),
-				vosClient.getAccountBalance(userBean.getCountryCode() + userBean.getUserName()));
+		view.addObject(
+				WebConstants.balance.name(),
+				vosClient.getAccountBalance(userBean.getCountryCode()
+						+ userBean.getUserName()));
 
 		// get charge history list
 		int total = chargeDao.getChargeListTotalCount(
@@ -198,7 +201,7 @@ public class ChargeAccountController {
 		}
 		return params;
 	}
-	
+
 	/**
 	 * 支付宝异步返回URL
 	 * 
@@ -211,18 +214,19 @@ public class ChargeAccountController {
 	String aliPayComplete(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		log.info("****** alipay complete ******");
-//		Map<String, String> params = new HashMap<String, String>();
-//		Map requestParams = request.getParameterMap();
-//		for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext();) {
-//			String name = (String) iter.next();
-//			String[] values = (String[]) requestParams.get(name);
-//			String valueStr = "";
-//			for (int i = 0; i < values.length; i++) {
-//				valueStr = (i == values.length - 1) ? valueStr + values[i]
-//						: valueStr + values[i] + ",";
-//			}
-//			params.put(name, valueStr);
-//		}
+		// Map<String, String> params = new HashMap<String, String>();
+		// Map requestParams = request.getParameterMap();
+		// for (Iterator iter = requestParams.keySet().iterator();
+		// iter.hasNext();) {
+		// String name = (String) iter.next();
+		// String[] values = (String[]) requestParams.get(name);
+		// String valueStr = "";
+		// for (int i = 0; i < values.length; i++) {
+		// valueStr = (i == values.length - 1) ? valueStr + values[i]
+		// : valueStr + values[i] + ",";
+		// }
+		// params.put(name, valueStr);
+		// }
 		Map<String, String> params = getParameterMap(request);
 
 		String order_no = request.getParameter("out_trade_no"); // 获取订单号
@@ -260,20 +264,21 @@ public class ChargeAccountController {
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("accountcharge/receive");
 		// 获取支付宝GET过来反馈信息
-//		Map<String, String> params = new HashMap<String, String>();
-//		Map requestParams = request.getParameterMap();
-//		for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext();) {
-//			String name = (String) iter.next();
-//			String[] values = (String[]) requestParams.get(name);
-//			String valueStr = "";
-//			for (int i = 0; i < values.length; i++) {
-//				valueStr = (i == values.length - 1) ? valueStr + values[i]
-//						: valueStr + values[i] + ",";
-//			}
-//			params.put(name, valueStr);
-//		}
+		// Map<String, String> params = new HashMap<String, String>();
+		// Map requestParams = request.getParameterMap();
+		// for (Iterator iter = requestParams.keySet().iterator();
+		// iter.hasNext();) {
+		// String name = (String) iter.next();
+		// String[] values = (String[]) requestParams.get(name);
+		// String valueStr = "";
+		// for (int i = 0; i < values.length; i++) {
+		// valueStr = (i == values.length - 1) ? valueStr + values[i]
+		// : valueStr + values[i] + ",";
+		// }
+		// params.put(name, valueStr);
+		// }
 		Map<String, String> params = getParameterMap(request);
-		
+
 		String order_no = request.getParameter("out_trade_no"); // 获取订单号
 		String total_fee = request.getParameter("total_fee"); // 获取总金额
 		String trade_status = request.getParameter("trade_status"); // 交易状态
@@ -354,6 +359,7 @@ public class ChargeAccountController {
 
 		Double value = 0.0;
 		String cardValue = pin.substring(0, 4);
+		log.info("card value: " + cardValue);
 		try {
 			value = Double.parseDouble(cardValue);
 		} catch (NumberFormatException e) {
@@ -361,11 +367,21 @@ public class ChargeAccountController {
 			return;
 		}
 
-		String chargeId = pin + "_" + RandomString.genRandomChars(10);
+		String chargeId = getCardChargeId(pin);
+		log.info("charge id: " + chargeId);
+
 		VOSHttpResponse vosResp = vosClient.depositeByCard(countryCode
 				+ userName, pin, password);
+
+		// log.info("\n deposite to account <" + userName + "> with card <" +
+		// pin
+		// + ">" + "<" + password + ">" + "\nVOS Http Response : "
+		// + vosResp.getHttpStatusCode() + "\nVOS Status Code : "
+		// + vosResp.getVOSStatusCode() + "\nVOS Response Info ："
+		// + vosResp.getVOSResponseInfo());
+
 		if (vosResp.getHttpStatusCode() != 200 || !vosResp.isOperationSuccess()) {
-			chargeDao.addChargeRecord(countryCode, chargeId, userName, value,
+			chargeDao.addChargeRecord(chargeId, countryCode, userName, value,
 					ChargeStatus.vos_fail);
 			log.error("\nCannot deposite to account <" + userName
 					+ "> with card <" + pin + ">" + "<" + password + ">"
@@ -375,15 +391,24 @@ public class ChargeAccountController {
 		}
 
 		if (vosResp.isOperationSuccess()) {
-			chargeDao.addChargeRecord(countryCode, chargeId, userName, value,
+			chargeDao.addChargeRecord(chargeId, countryCode, userName, value,
 					ChargeStatus.success);
-			smsClient
-					.sendTextMessage(userName, "您的智会账户已成功充值" + value + "元，谢谢！");
+			smsClient.sendTextMessage(userName, "您的UU-Talk账户已成功充值" + value
+					+ "元，谢谢！");
 			response.setStatus(HttpServletResponse.SC_OK);
-		} else {
+		} else if (vosResp.getVOSStatusCode() == -10079) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+		} else if (vosResp.getVOSStatusCode() == -10078) {
 			response.sendError(HttpServletResponse.SC_CONFLICT);
+		} else {
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 
+	}
+	
+	private String getCardChargeId(String pin) {
+		return ChargeType.card.name() + pin + "_"
+				+ RandomString.genRandomChars(10);
 	}
 
 	@RequestMapping("/alipayClientComplete")
@@ -395,7 +420,7 @@ public class ChargeAccountController {
 		// 获得通知签名
 		String sign = (String) ((Object[]) map.get("sign"))[0];
 		log.info("sign: " + sign);
-		
+
 		String notify_data = (String) ((Object[]) map.get("notify_data"))[0];
 		log.info("notify data: " + notify_data);
 
