@@ -7,6 +7,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import com.angolacall.mvc.admin.model.ChargeMoneyConfigDao;
 import com.angolacall.mvc.admin.model.UUTalkConfigManager;
 import com.angolacall.mvc.model.charge.ChargeDAO;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
@@ -87,5 +88,9 @@ public class ContextLoader extends ContextLoaderListener {
 	
 	public static UUTalkConfigManager getUUTalkConfigManager() {
 		return (UUTalkConfigManager) appContext.getBean("uutalk_config_manager");
+	}
+	
+	public static ChargeMoneyConfigDao getChargeMoneyConfigDao() {
+		return (ChargeMoneyConfigDao) appContext.getBean("charge_money_config_dao");
 	}
 }

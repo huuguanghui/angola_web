@@ -148,4 +148,8 @@
 	<bean id="uutalk_config_manager" class="com.angolacall.mvc.admin.model.UUTalkConfigManager">
 		<property name="commonConfigDao" ref="common_config_dao"></property>
 	</bean>
+	
+	<bean id="charge_money_config_dao" class="com.angolacall.mvc.admin.model.ChargeMoneyConfigDao">
+		<property name="dataSource" ref="dataSource_mysql_c3p0"></property>
+	</bean>
 </beans>

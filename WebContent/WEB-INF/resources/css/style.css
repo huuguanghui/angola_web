@@ -69,6 +69,10 @@ footer span {
 	float: left;
 }
 
+.float-right {
+	float: right;
+}
+
 #reg_gift_desc_ctrlgroup {
 	margin-top: 50px;
 }

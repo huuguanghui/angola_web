@@ -8,6 +8,8 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,6 +20,7 @@ import com.angolacall.constants.Pages;
 import com.angolacall.constants.UUTalkConfigKeys;
 import com.angolacall.constants.WebConstants;
 import com.angolacall.framework.ContextLoader;
+import com.angolacall.mvc.admin.model.ChargeMoneyConfigDao;
 import com.angolacall.mvc.admin.model.UUTalkConfigManager;
 import com.angolacall.web.user.AdminUserBean;
 import com.richitec.ucenter.model.AdminUserDao;
@@ -27,39 +30,39 @@ import com.richitec.util.ValidatePattern;
 @RequestMapping("/admin")
 public class AdminController {
 	private static Log log = LogFactory.getLog(AdminController.class);
-	
+
 	private UUTalkConfigManager ucm;
-	
+
 	@PostConstruct
 	public void init() {
 		ucm = ContextLoader.getUUTalkConfigManager();
 	}
-	
+
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	public ModelAndView index() {
 		ModelAndView view = new ModelAndView("admin/index");
 		return view;
 	}
-	
+
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public ModelAndView index_() {
 		ModelAndView view = new ModelAndView("admin/index");
 		return view;
 	}
-	
+
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
 	public ModelAndView index__() {
 		ModelAndView view = new ModelAndView("admin/index");
- 		return view;
+		return view;
 	}
-	
+
 	@RequestMapping("/login")
 	public ModelAndView login(HttpSession session,
 			@RequestParam String loginName, @RequestParam String loginPwd) {
 		log.info("admin login - loginname: " + loginName);
 
 		AdminUserDao aud = ContextLoader.getAdminUserDao();
-		
+
 		if (aud.validateUser(loginName, loginPwd)) {
 			AdminUserBean user = new AdminUserBean();
 			user.setUserName(loginName);
@@ -76,47 +79,104 @@ public class AdminController {
 			return view;
 		}
 	}
-	
+
 	@RequestMapping("/signout")
 	public String signout(HttpSession session) {
 		session.removeAttribute(AdminUserBean.SESSION_BEAN);
 		return "redirect:/admin/";
 	}
-	
+
 	@RequestMapping(value = "/giftmanage", method = RequestMethod.GET)
 	public ModelAndView giftManage() {
 		ModelAndView view = new ModelAndView("admin/giftmanage");
 		view.addObject(WebConstants.page_name.name(), Pages.gift_manage.name());
-		view.addObject(UUTalkConfigKeys.reg_gift_value.name(), ucm.getRegGiftValue());
-		view.addObject(UUTalkConfigKeys.reg_gift_desc_text.name(), ucm.getRegGiftDescription());
-		view.addObject(UUTalkConfigKeys.invite_charge_invite_desc_text.name(), ucm.getInviteChargeGiftDescription());
+		view.addObject(UUTalkConfigKeys.reg_gift_value.name(),
+				ucm.getRegGiftValue());
+		view.addObject(UUTalkConfigKeys.reg_gift_desc_text.name(),
+				ucm.getRegGiftDescription());
+		view.addObject(UUTalkConfigKeys.invite_charge_invite_desc_text.name(),
+				ucm.getInviteChargeGiftDescription());
 		return view;
 	}
-	
+
 	@RequestMapping(value = "/giftmanage/editRegGiftValue", method = RequestMethod.POST)
-	public void editRegGiftValue(HttpServletResponse response, @RequestParam String regGiftValue) throws IOException {
+	public void editRegGiftValue(HttpServletResponse response,
+			@RequestParam String regGiftValue) throws IOException {
 		if (ValidatePattern.isValidMoney(regGiftValue)) {
 			ucm.setRegGiftValue(regGiftValue);
 		} else {
 			response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE);
 		}
 	}
-	
+
 	@RequestMapping(value = "/giftmanage/editRegGiftDesc", method = RequestMethod.POST)
-	public void editRegGiftDescription(HttpServletResponse response, @RequestParam String regGiftDesc) {
+	public void editRegGiftDescription(HttpServletResponse response,
+			@RequestParam String regGiftDesc) {
 		ucm.setRegGiftDescription(regGiftDesc);
 	}
-	
+
 	@RequestMapping(value = "/giftmanage/editInviteChargeGiftDesc")
-	public void editInviteChargeGiftDescription(HttpServletResponse response, @RequestParam String inviteChargeGiftDesc) {
-		log.info("editInviteChargeGiftDescription - desc: " + inviteChargeGiftDesc);
+	public void editInviteChargeGiftDescription(HttpServletResponse response,
+			@RequestParam String inviteChargeGiftDesc) {
+		log.info("editInviteChargeGiftDescription - desc: "
+				+ inviteChargeGiftDesc);
 		ucm.setInviteChargeGiftDescription(inviteChargeGiftDesc);
 	}
-	
+
 	@RequestMapping(value = "/chargemanage", method = RequestMethod.GET)
 	public ModelAndView chargeManage() {
 		ModelAndView view = new ModelAndView("admin/chargemanage");
-		view.addObject(WebConstants.page_name.name(), Pages.charge_manage.name());
+		view.addObject(WebConstants.page_name.name(),
+				Pages.charge_manage.name());
+		view.addObject("charge_money_list", ContextLoader
+				.getChargeMoneyConfigDao().getChargeMoneyList());
 		return view;
+	}
+
+	@RequestMapping(value = "/chargemanage/addChargeMoney", method = RequestMethod.POST)
+	public void addChargeMoney(HttpServletResponse response,
+			@RequestParam(value = "charge_money") String chargeMoney,
+			@RequestParam(value = "gift_money") String giftMoney,
+			@RequestParam(value = "description") String description) throws JSONException, IOException {
+		JSONObject ret = new JSONObject();
+		if (!ValidatePattern.isValidMoney(chargeMoney)) {
+			ret.put("result", "invalid_charge_money");
+			response.getWriter().print(ret.toString());
+			return;
+		}
+		
+		if (!ValidatePattern.isValidMoney(giftMoney)) {
+			ret.put("result", "invalid_gift_money");
+			response.getWriter().print(ret.toString());
+			return;
+		}
+		
+		ChargeMoneyConfigDao cmcd = ContextLoader.getChargeMoneyConfigDao();
+		cmcd.addChargeMoney(chargeMoney, giftMoney, description);
+		ret.put("result", "ok");
+		response.getWriter().print(ret.toString());
+	}
+	
+	@RequestMapping(value = "/chargemanage/editChargeMoney", method = RequestMethod.POST)
+	public void editChargeMoney(HttpServletResponse response, @RequestParam(value = "id") String id, @RequestParam(value = "charge_money") String chargeMoney,
+			@RequestParam(value = "gift_money") String giftMoney,
+			@RequestParam(value = "description") String description) throws IOException, JSONException {
+		JSONObject ret = new JSONObject();
+		if (!ValidatePattern.isValidMoney(chargeMoney)) {
+			ret.put("result", "invalid_charge_money");
+			response.getWriter().print(ret.toString());
+			return;
+		}
+		
+		if (!ValidatePattern.isValidMoney(giftMoney)) {
+			ret.put("result", "invalid_gift_money");
+			response.getWriter().print(ret.toString());
+			return;
+		}
+		
+		ChargeMoneyConfigDao cmcd = ContextLoader.getChargeMoneyConfigDao();
+		cmcd.editChargeMoney(id, chargeMoney, giftMoney, description);
+		ret.put("result", "ok");
+		response.getWriter().print(ret.toString());
 	}
 }
