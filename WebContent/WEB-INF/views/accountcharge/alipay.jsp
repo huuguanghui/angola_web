@@ -1,3 +1,4 @@
+<%@page import="com.angolacall.constants.ChargeStatus"%>
 <%@page import="com.angolacall.constants.ChargeType"%>
 <%@page import="com.angolacall.framework.ContextLoader"%>
 <%@page import="com.angolacall.constants.WebConstants"%>
@@ -40,9 +41,11 @@
 	//订单名称，显示在支付宝收银台里的“商品名称”里，显示在支付宝的交易管理的“商品名称”的列表里。
 	String body = "UUTalk账户充值";
 	//订单总金额，显示在支付宝收银台里的“应付总额”里
-	String total_fee = request.getParameter("charge_amount");
+	String chargeMoneyId = request.getParameter("charge_money_id");
+	Map<String, Object> chargeMoneyRecord = ContextLoader.getChargeMoneyConfigDao().getChargeMoneyRecord(Integer.parseInt(chargeMoneyId));
+	Float chargeMoney = (Float) chargeMoneyRecord.get("charge_money");
 	
-	ContextLoader.getChargeDAO().addChargeRecord(out_trade_no, countryCode, accountName, Double.valueOf(total_fee));
+	ContextLoader.getChargeDAO().addChargeRecord(out_trade_no, countryCode, accountName, chargeMoney.doubleValue(), ChargeStatus.processing, chargeMoneyId);
 	
 	//把请求参数打包成数组
 	Map<String, String> sParaTemp = new HashMap<String, String>();
@@ -50,7 +53,7 @@
 	sParaTemp.put("out_trade_no", out_trade_no);
 	sParaTemp.put("subject", out_trade_no);
 	sParaTemp.put("body", body);
-	sParaTemp.put("total_fee", total_fee);
+	sParaTemp.put("total_fee", chargeMoney.toString());
 
 	//构造函数，生成请求URL
 	String sHtmlText = AlipayService

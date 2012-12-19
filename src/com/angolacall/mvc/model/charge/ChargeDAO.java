@@ -26,11 +26,11 @@ public class ChargeDAO {
 		return jdbc.queryForInt(sql, userName, ChargeStatus.success.name());
 	}
 
-	public List<Map<String, Object>> getChargeList(String countryCode, String userName, int offset,
-			int pageSize) {
-		String sql = "SELECT chargeId, money, DATE_FORMAT(time, '%Y-%m-%d %H:%i') as charge_time " +
-				"FROM im_charge_history WHERE username = ? AND status = ? " +
-				"ORDER BY time DESC LIMIT ?, ?";
+	public List<Map<String, Object>> getChargeList(String countryCode,
+			String userName, int offset, int pageSize) {
+		String sql = "SELECT chargeId, money, DATE_FORMAT(time, '%Y-%m-%d %H:%i') as charge_time "
+				+ "FROM im_charge_history WHERE username = ? AND status = ? "
+				+ "ORDER BY time DESC LIMIT ?, ?";
 		int startIndex = (offset - 1) * pageSize;
 		List<Map<String, Object>> list = null;
 		try {
@@ -41,21 +41,33 @@ public class ChargeDAO {
 		}
 		return list;
 	}
-	
-	public void addChargeRecord(String chargeId, String countryCode, String userName, Double money, ChargeStatus status) {
-		log.info("addChargeRecord - countrycode: " + countryCode);
+
+	public void addChargeRecord(String chargeId, String countryCode,
+			String userName, Double money, ChargeStatus status) {
 		String sql = "INSERT INTO im_charge_history(chargeId, username, money, status, countrycode) VALUES(?, ?, ?, ?, ?)";
 		jdbc.update(sql, chargeId, userName, money, status.name(), countryCode);
-	}	
+	}
 
-	public void addChargeRecord(String chargeId, String countryCode, String userName, Double money) {
+	public void addChargeRecord(String chargeId, String countryCode,
+			String userName, Double money, ChargeStatus status,
+			String chargeMoneyId) {
+		String sql = "INSERT INTO im_charge_history(chargeId, username, money, status, countrycode, charge_money_cfg_id) VALUES(?, ?, ?, ?, ?, ?)";
+		jdbc.update(sql, chargeId, userName, money, status.name(), countryCode,
+				chargeMoneyId);
+	}
+
+	public void addChargeRecord(String chargeId, String countryCode,
+			String userName, Double money) {
 		String sql = "INSERT INTO im_charge_history(chargeId, username, money, countrycode) VALUES(?, ?, ?, ?)";
 		jdbc.update(sql, chargeId, userName, money, countryCode);
 	}
-	
-	public void addChargeRecord(String chargeId, String countryCode, String userName, Double money, String contributorCountryCode, String contributor, ChargeStatus status) {
+
+	public void addChargeRecord(String chargeId, String countryCode,
+			String userName, Double money, String contributorCountryCode,
+			String contributor, ChargeStatus status) {
 		String sql = "INSERT INTO im_charge_history(chargeId, username, money, countrycode, status, contributor_country_code, contributor) VALUES(?, ?, ?, ?, ? ,?, ?)";
-		jdbc.update(sql, chargeId, userName, money, countryCode, status.name(), contributorCountryCode, contributor);	
+		jdbc.update(sql, chargeId, userName, money, countryCode, status.name(),
+				contributorCountryCode, contributor);
 	}
 
 	public void updateChargeRecord(String chargeId, ChargeStatus status) {
@@ -72,5 +84,18 @@ public class ChargeDAO {
 			log.info(e.getMessage());
 		}
 		return info;
+	}
+
+	public Double getGiftMoney(String chargeId) {
+		String sql = "SELECT cmc.gift_money FROM im_charge_history AS ich, charge_money_config AS cmc "
+				+ "WHERE ich.chargeId = ? AND ich.charge_money_cfg_id = cmc.id AND ich.money = cmc.charge_money ";
+		try {
+			Float giftMoney = jdbc.queryForObject(sql,
+					new Object[] { chargeId }, Float.class);
+			return giftMoney.doubleValue();
+		} catch (Exception e) {
+			log.info(e.getMessage());
+		}
+		return null;
 	}
 }

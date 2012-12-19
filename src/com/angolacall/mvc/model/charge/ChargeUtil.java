@@ -51,7 +51,7 @@ public class ChargeUtil {
 		
 		Double amount = Double.valueOf(money);
 		VOSClient vosClient = ContextLoader.getVOSClient();
-		VOSHttpResponse response = vosClient.deposite(countryCode + userName, amount);
+		VOSHttpResponse response = vosClient.deposite(countryCode + userName, amount); // deposit charged money
 		if (response.isOperationSuccess()) {
 			log.info("vos deposite success");
 			chargeDao.updateChargeRecord(chargeId, ChargeStatus.success);
@@ -65,11 +65,28 @@ public class ChargeUtil {
 				giveMoneyToReferrer(ChargeType.chargecontribute, referrerCountryCode, referrer, giveAmount, countryCode, userName);
 			}
 			
+			// check if there is gift money, if has, deposit to user
+			checkAndDepositGiftMoneyToCharger(chargeId, countryCode, userName);
+			
 			return countryCode + userName;
 		} else {
 			log.info("vos deposite fail");
 			chargeDao.updateChargeRecord(chargeId, ChargeStatus.vos_fail);
 			return null;
+		}
+	}
+	
+	private static void checkAndDepositGiftMoneyToCharger(String chargeId, String countryCode, String userName) {
+		ChargeDAO chargeDao = ContextLoader.getChargeDAO();
+		VOSClient vosClient = ContextLoader.getVOSClient();
+		Double giftMoney = chargeDao.getGiftMoney(chargeId);
+		if (giftMoney != null) {
+			// deposit gift money to user
+			VOSHttpResponse response = vosClient.deposite(countryCode + userName, giftMoney);
+			if (response.isOperationSuccess()) {
+				String giftChargeId = getOrderNumber(ChargeType.chargegift.name(), countryCode, userName);
+				chargeDao.addChargeRecord(giftChargeId, countryCode, userName, giftMoney, ChargeStatus.success);
+			}
 		}
 	}
 	

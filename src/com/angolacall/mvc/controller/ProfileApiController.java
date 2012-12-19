@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.alipay.client.base.PartnerConfig;
 import com.alipay.client.security.RSASignature;
+import com.angolacall.constants.ChargeStatus;
 import com.angolacall.constants.UUTalkConfigKeys;
 import com.angolacall.framework.ContextLoader;
 import com.angolacall.mvc.admin.model.ChargeMoneyConfigDao;
@@ -93,6 +94,7 @@ public class ProfileApiController {
 
 	@RequestMapping("/alipaysign")
 	public void alipayClientParamSign(HttpServletResponse response,
+			@RequestParam (value = "charge_money_id") String chargeMoneyId,
 			@RequestParam String content, @RequestParam String out_trade_no,
 			@RequestParam String total_fee,
 			@RequestParam(value = "countryCode") String countryCode,
@@ -100,7 +102,7 @@ public class ProfileApiController {
 			throws IOException {
 		log.info("content: " + content);
 		ContextLoader.getChargeDAO().addChargeRecord(out_trade_no, countryCode,
-				userName, Double.valueOf(total_fee));
+				userName, Double.valueOf(total_fee), ChargeStatus.processing, chargeMoneyId);
 		response.getWriter().print(
 				RSASignature.sign(content, PartnerConfig.RSA_PRIVATE));
 	}

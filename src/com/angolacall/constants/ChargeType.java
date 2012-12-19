@@ -5,4 +5,5 @@ public enum ChargeType {
 	card,
 	invitereg,
 	chargecontribute,
+	chargegift
 }

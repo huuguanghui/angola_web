@@ -25,17 +25,22 @@ public class ChargeMoneyConfigDao {
 	}
 	
 	public List<Map<String, Object>> getChargeMoneyList() {
-		String sql = "SELECT * FROM charge_money_config ORDER BY charge_money ASC";
+		String sql = "SELECT * FROM charge_money_config WHERE status = 'visible' ORDER BY charge_money ASC";
 		return jdbc.queryForList(sql);
 	}
 	
 	public void deleteChargeMoney(String id) {
-		String sql = "DELETE FROM charge_money_config WHERE id = ?";
+		String sql = "UPDATE charge_money_config SET status = 'hidden' WHERE id = ?";
 		jdbc.update(sql, id);
 	}
 	
 	public void editChargeMoney(String id, String chargeMoney, String giftMoney, String description) {
-		String sql = "UPDATE charge_money_config SET charge_money = ?, gift_money = ?, description = ? WHERE id = ?";
-		jdbc.update(sql, chargeMoney, giftMoney, description, id);
+		deleteChargeMoney(id);
+		addChargeMoney(chargeMoney, giftMoney, description);
+	}
+	
+	public Map<String, Object> getChargeMoneyRecord(Integer chargeMoneyId) {
+		String sql = "SELECT * FROM charge_money_config WHERE id = ?";
+		return jdbc.queryForMap(sql, chargeMoneyId);
 	}
 }

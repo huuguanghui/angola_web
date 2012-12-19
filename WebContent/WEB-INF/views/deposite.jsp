@@ -1,3 +1,5 @@
+<%@page import="java.util.Map"%>
+<%@page import="java.util.List"%>
 <%@page import="com.angolacall.web.user.UserBean"%>
 <%@ page language="java" contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
@@ -13,6 +15,8 @@
 	
 	<%
 		UserBean userBean = (UserBean) session.getAttribute(UserBean.SESSION_BEAN);
+	
+		List<Map<String, Object>> chargeMoneyList = (List<Map<String, Object>>) request.getAttribute("charge_money_list");
 	%>
 
     <div class="container">
@@ -49,23 +53,20 @@
 				    		name="account_name"	pattern="[0-9]{11}" maxlength="11"
 				    		value="<%=userBean != null ? userBean.getUserName() : ""%>" />
 				    		
-							<label>请选择充值金额（RMB&nbsp;单位：元）</label>
-							<select name="charge_amount">
-							    <option value="10.00">10</option>
-							    <option value="30.00">30</option>
-								<option value="50.00">50</option>
-								<option value="100.00" selected="selected">100</option>
-								<option value="200.00">200</option>
-								<option value="300.00">300</option>
-								<option value="400.00">400</option>
-								<option value="500.00">500</option>
-								<option value="600.00">600</option>
-								<option value="700.00">700</option>
-								<option value="800.00">800</option>
-								<option value="900.00">900</option>
-								<option value="1000.00">1000</option>
-								<option value="2000.00">2000</option>
-								<option value="3000.00">3000</option>
+							<label>请选择充值金额（单位：元）</label>
+							<select name="charge_money_id">
+								<%
+									if (chargeMoneyList != null) {
+										for (Map<String, Object> item : chargeMoneyList) {
+											Integer id = (Integer) item.get("id");
+											Float chargeMoney = (Float) item.get("charge_money");
+											String description = (String) item.get("description");
+											%>
+											<option value="<%=id.toString() %>"><%=chargeMoney.toString() + "(" + description + ")" %></option>
+											<%
+										}
+									}
+								%>
 							</select>
 							<hr>
 							<button id="btnGoToAlipay" type="submit" class="btn btn-warning">去支付宝充值</button>

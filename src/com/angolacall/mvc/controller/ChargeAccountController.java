@@ -32,6 +32,7 @@ import com.angolacall.constants.ChargeStatus;
 import com.angolacall.constants.ChargeType;
 import com.angolacall.constants.WebConstants;
 import com.angolacall.framework.ContextLoader;
+import com.angolacall.mvc.admin.model.ChargeMoneyConfigDao;
 import com.angolacall.mvc.model.charge.ChargeDAO;
 import com.angolacall.mvc.model.charge.ChargeUtil;
 import com.angolacall.web.user.UserBean;
@@ -64,6 +65,7 @@ public class ChargeAccountController {
 		ModelAndView view = new ModelAndView();
 		view.setViewName("deposite");
 		view.addObject(WebConstants.page_name.name(), "deposite");
+		view.addObject("charge_money_list", ContextLoader.getChargeMoneyConfigDao().getChargeMoneyList());
 		return view;
 	}
 
@@ -173,7 +175,7 @@ public class ChargeAccountController {
 	public ModelAndView aliPay(HttpSession session,
 			@RequestParam(value = "countryCode") String countryCode,
 			@RequestParam(value = "account_name") String accountName,
-			@RequestParam(value = "charge_amount") String chargeAmount)
+			@RequestParam(value = "charge_money_id") String chargeMoneyId)
 			throws Exception {
 		log.info("****** prepay alipay ******");
 		boolean isExist = userDao.isExistsLoginName(countryCode, accountName);
