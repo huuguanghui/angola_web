@@ -1,6 +1,7 @@
 package com.angolacall.mvc.controller;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -8,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
@@ -18,6 +20,7 @@ import com.alipay.client.base.PartnerConfig;
 import com.alipay.client.security.RSASignature;
 import com.angolacall.constants.UUTalkConfigKeys;
 import com.angolacall.framework.ContextLoader;
+import com.angolacall.mvc.admin.model.ChargeMoneyConfigDao;
 import com.angolacall.mvc.admin.model.UUTalkConfigManager;
 import com.richitec.ucenter.model.UserDAO;
 import com.richitec.util.CryptoUtil;
@@ -153,6 +156,35 @@ public class ProfileApiController {
 		StringBuffer info = new StringBuffer();
 		info.append(ucm.getRegGiftDescription()).append('\n').append(ucm.getInviteChargeGiftDescription());
 		ret.put(UUTalkConfigKeys.reg_gift_desc_text.name(), info.toString());
+		response.getWriter().print(ret.toString());
+	}
+	
+	@RequestMapping("/getChargeMoneyList")
+	public void getChargeMoneyList(HttpServletResponse response) throws IOException {
+		ChargeMoneyConfigDao cmcd = ContextLoader.getChargeMoneyConfigDao();
+		List<Map<String, Object>> list = cmcd.getChargeMoneyList();
+		JSONArray ret = new JSONArray();
+		
+		if (list != null) {
+			for (Map<String, Object> item : list) {
+				Integer id = (Integer) item.get("id");
+				Float chargeMoney = (Float) item.get("charge_money");
+				Float giftMoney = (Float) item.get("gift_money");
+				String description = (String) item.get("description");
+				try {
+					JSONObject record = new JSONObject();
+					record.put("id", id.intValue());
+					record.put("charge_money", chargeMoney.floatValue());
+					record.put("gift_money", giftMoney.floatValue());
+					record.put("description", description);
+					ret.put(record);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				
+			}
+		}
+		
 		response.getWriter().print(ret.toString());
 	}
 }

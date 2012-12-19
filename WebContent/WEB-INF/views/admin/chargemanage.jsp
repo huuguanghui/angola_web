@@ -77,7 +77,7 @@
 	<!-- dialog  -->
 	<div id="new_charge_money_dlg" class="modal hide fade">
 		<div class="modal-header">
-			<h4>创建新金额</h4>
+			<h4>添加新金额</h4>
 		</div>
 		<div class="modal-body">
 			<form id="new_money_form" class="span3 offset1" method="post" action="">
@@ -284,7 +284,27 @@
 		});
 		
 		$("#charge_money_list").delegate(".op_delete_li", "click", function() {
+			var $tr = $(this).parent().parent().parent().parent();
+			var chargeMoneyId = $tr.attr("id");
+			var description = $tr.find(".description_td").html();
 			
+			if (confirm("确定要删除'" + description + "'这条记录？")) {
+				$.ajax({
+					type : "post",
+					url : "/angola/admin/chargemanage/deleteChargeMoney",
+					dataType : "json",
+					data : {
+						id : chargeMoneyId,
+					},
+					success : function(data, textStatus, jqxhr) {
+						location = "/angola/admin/chargemanage";
+					},
+					error : function(jqXHR, textStatus) {
+						alert("系统内部错误（STATUS CODE: " + jqXHR.status + ")");
+					}
+				});
+				
+			}
 		});
 	</script>
 </body>

@@ -179,4 +179,10 @@ public class AdminController {
 		ret.put("result", "ok");
 		response.getWriter().print(ret.toString());
 	}
+	
+	@RequestMapping(value = "/chargemanage/deleteChargeMoney", method = RequestMethod.POST)
+	public void deleteChargeMoney(HttpServletResponse response, @RequestParam(value = "id") String id) {
+		ChargeMoneyConfigDao cmcd = ContextLoader.getChargeMoneyConfigDao();
+		cmcd.deleteChargeMoney(id);
+	}
 }
