@@ -274,6 +274,58 @@ public class VOSClient {
 		return null;		
 	}
 	
+	public List<OrderSuiteInfo> getOrderSuites(String account) {
+		List<NameValuePair> params = new LinkedList<NameValuePair>();
+		params.add(new BasicNameValuePair(P_loginName, loginName));
+		params.add(new BasicNameValuePair(P_loginPassword, loginPassword));
+		params.add(new BasicNameValuePair(P_account, account));
+		
+		HttpEntity entity = new UrlEncodedFormEntity(params, Consts.UTF_8);
+		HttpPost post = new HttpPost(this.baseURI + "getsuiteorder.jsp");
+		post.setEntity(entity);
+		
+		VOSHttpResponse response = execute(post);
+		List<OrderSuiteInfo> orderSuites = new LinkedList<OrderSuiteInfo>();
+		if (response.getHttpStatusCode() == 200 && 
+			response.isOperationSuccess()){
+			System.out.println("getOrderSuites response: " + response.getVOSResponseInfo());
+			String[] suites = response.getVOSResponseInfo().split("&");
+			if (suites != null) {
+				for (String suite : suites) {
+					OrderSuiteInfo osi = new OrderSuiteInfo(suite);
+					orderSuites.add(osi);
+				}
+			}
+		}
+		return orderSuites;		
+	}
+	
+	public List<SuiteInfo> getAllSuites() {
+		List<NameValuePair> params = new LinkedList<NameValuePair>();
+		params.add(new BasicNameValuePair(P_loginName, loginName));
+		params.add(new BasicNameValuePair(P_loginPassword, loginPassword));
+		
+		HttpEntity entity = new UrlEncodedFormEntity(params, Consts.UTF_8);
+		HttpPost post = new HttpPost(this.baseURI + "getsuite.jsp");
+		post.setEntity(entity);
+		
+		VOSHttpResponse response = execute(post);
+		List<SuiteInfo> suiteList = new LinkedList<SuiteInfo>();
+		if (response.getHttpStatusCode() == 200 && 
+			response.isOperationSuccess()){
+			System.out.println("getAllSuites response: " + response.getVOSResponseInfo());
+			String[] suites = response.getVOSResponseInfo().split("&");
+			if (suites != null) {
+				for (String suite : suites) {
+					SuiteInfo suiteInfo = new SuiteInfo(suite);
+					System.out.println("suite: " + suiteInfo.toJSONObject().toString());
+					suiteList.add(suiteInfo);
+				}
+			}
+		}
+		return suiteList;		
+	}
+	
 	public Double getAccountBalance(String account){
 		Double balance = null;
 		AccountInfo accountInfo = getAccountInfo(account);
@@ -308,44 +360,48 @@ public class VOSClient {
 	
 	public static void main(String [] args){
 		VOSClient client = new VOSClient();
-		client.setBaseUri("http://192.168.1.3/thirdparty/");
+		client.setBaseUri("http://vos.uu-talk.com/thirdparty/");
 		client.setLoginName("admin");
-		client.setLoginPassword("admin");
-		VOSHttpResponse resp = client.addAccount("123456");
-		System.out.println(resp.getHttpStatusCode());
-		System.out.println(resp.getVOSStatusCode());
-		System.out.println(resp.getVOSResponseInfo());
-		System.out.println();
+		client.setLoginPassword("uutalk123");
+//		VOSHttpResponse resp = client.addAccount("123456");
+//		System.out.println(resp.getHttpStatusCode());
+//		System.out.println(resp.getVOSStatusCode());
+//		System.out.println(resp.getVOSResponseInfo());
+//		System.out.println();
 		
 //		VOSHttpResponse depositeResp = client.deposite("123456", -100.123);
 //		System.out.println(depositeResp.getHttpStatusCode());
 //		System.out.println(depositeResp.getVOSStatusCode());
 //		System.out.println(depositeResp.getVOSResponseInfo());
 		
-		VOSHttpResponse addPhoneResponse = client.addPhoneToAccount("123456", "10123456", "123132");
-		System.out.println(addPhoneResponse.getHttpStatusCode());
-		System.out.println(addPhoneResponse.getVOSStatusCode());
-		System.out.println(addPhoneResponse.getVOSResponseInfo());		
-		System.out.println();
+//		VOSHttpResponse addPhoneResponse = client.addPhoneToAccount("123456", "10123456", "123132");
+//		System.out.println(addPhoneResponse.getHttpStatusCode());
+//		System.out.println(addPhoneResponse.getVOSStatusCode());
+//		System.out.println(addPhoneResponse.getVOSResponseInfo());		
+//		System.out.println();
+//		
+//		VOSHttpResponse addSuiteResponse = client.addSuiteToAccount("123456", "252");
+//		System.out.println(addSuiteResponse.getHttpStatusCode());
+//		System.out.println(addSuiteResponse.getVOSStatusCode());
+//		System.out.println(addSuiteResponse.getVOSResponseInfo());		
+//		System.out.println();
+//		
+//		AccountInfo accountInfo = client.getAccountInfo("123456");
+//		System.out.println(accountInfo.getAccountID());
+//		System.out.println(accountInfo.getAccountName());
+//		System.out.println(accountInfo.getExpireTime());
+//		System.out.println(accountInfo.getBalance());
+//		System.out.println(accountInfo.getOverdraft());
+//		System.out.println();
+//		
+//		CurrentSuiteInfo suiteInfo = client.getCurrentSuite("123456");
+//		System.out.println("suiteId : " + suiteInfo.getSuiteId());
+//		System.out.println("name : " + suiteInfo.getSuiteName());
+//		System.out.println("gift : " + suiteInfo.getGiftBalance());
+//		System.out.println("orderId : " + suiteInfo.getOrderId());
 		
-		VOSHttpResponse addSuiteResponse = client.addSuiteToAccount("123456", "252");
-		System.out.println(addSuiteResponse.getHttpStatusCode());
-		System.out.println(addSuiteResponse.getVOSStatusCode());
-		System.out.println(addSuiteResponse.getVOSResponseInfo());		
-		System.out.println();
+		client.getAllSuites();
+//		List<OrderSuiteInfo> orderSuites = client.getOrderSuites("008613813005146");
 		
-		AccountInfo accountInfo = client.getAccountInfo("123456");
-		System.out.println(accountInfo.getAccountID());
-		System.out.println(accountInfo.getAccountName());
-		System.out.println(accountInfo.getExpireTime());
-		System.out.println(accountInfo.getBalance());
-		System.out.println(accountInfo.getOverdraft());
-		System.out.println();
-		
-		CurrentSuiteInfo suiteInfo = client.getCurrentSuite("123456");
-		System.out.println("suiteId : " + suiteInfo.getSuiteId());
-		System.out.println("name : " + suiteInfo.getSuiteName());
-		System.out.println("gift : " + suiteInfo.getGiftBalance());
-		System.out.println("orderId : " + suiteInfo.getOrderId());
 	}
 }
