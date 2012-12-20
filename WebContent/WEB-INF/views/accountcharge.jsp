@@ -63,6 +63,8 @@
 								  type = "系统赠送[您邀请的用户成功注册]";
 							  } else if (chargeId.startsWith(ChargeType.chargecontribute.name())) {
 								  type = "系统赠送[您邀请的用户成功充值]";
+							  } else if (chargeId.startsWith(ChargeType.chargegift.name())) {
+								  type = "充值赠送";
 							  }
 						  }
 					%>

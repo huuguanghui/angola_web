@@ -66,7 +66,8 @@ public class ChargeUtil {
 			}
 			
 			// check if there is gift money, if has, deposit to user
-			checkAndDepositGiftMoneyToCharger(chargeId, countryCode, userName);
+			Integer chargeMoneyCfgId = (Integer) chargeInfo.get("charge_money_cfg_id");
+			checkAndDepositGiftMoneyToCharger(chargeMoneyCfgId, countryCode, userName);
 			
 			return countryCode + userName;
 		} else {
@@ -76,16 +77,21 @@ public class ChargeUtil {
 		}
 	}
 	
-	private static void checkAndDepositGiftMoneyToCharger(String chargeId, String countryCode, String userName) {
+	private static void checkAndDepositGiftMoneyToCharger(Integer chargeMoneyCfgId, String countryCode, String userName) {
+		if (chargeMoneyCfgId == null) {
+			return;
+		}
+		
 		ChargeDAO chargeDao = ContextLoader.getChargeDAO();
 		VOSClient vosClient = ContextLoader.getVOSClient();
-		Double giftMoney = chargeDao.getGiftMoney(chargeId);
+		Map<String, Object> record = ContextLoader.getChargeMoneyConfigDao().getChargeMoneyRecord(chargeMoneyCfgId);
+		Float giftMoney = (Float) record.get("gift_money");
 		if (giftMoney != null) {
 			// deposit gift money to user
-			VOSHttpResponse response = vosClient.deposite(countryCode + userName, giftMoney);
+			VOSHttpResponse response = vosClient.deposite(countryCode + userName, giftMoney.doubleValue());
 			if (response.isOperationSuccess()) {
 				String giftChargeId = getOrderNumber(ChargeType.chargegift.name(), countryCode, userName);
-				chargeDao.addChargeRecord(giftChargeId, countryCode, userName, giftMoney, ChargeStatus.success);
+				chargeDao.addChargeRecord(giftChargeId, countryCode, userName, giftMoney.doubleValue(), ChargeStatus.success);
 			}
 		}
 	}
