@@ -33,6 +33,9 @@
 		<property name="serverUrl">
 		    <value>${server_url}</value>
 		</property>
+		<property name="callbackPrefix">
+		    <value>${callback_prefix}</value>
+		</property>
 	</bean>
 	
 	<bean id="sms_client" class="com.richitec.sms.client.SMSClient">

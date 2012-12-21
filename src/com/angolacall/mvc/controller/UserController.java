@@ -82,7 +82,8 @@ public class UserController extends ExceptionController {
 				json.put("vosphone", user.getVosPhone());
 				json.put("vosphone_pwd", user.getVosPhonePwd());
 				json.put("bindphone", user.getBindPhone());
-				json.put("bindphone_country_code", user.getBindPhoneCountryCode());
+				json.put("bindphone_country_code",
+						user.getBindPhoneCountryCode());
 				user.setUserName(loginName);
 				user.setPassword(loginPwd);
 				session.setAttribute(UserBean.SESSION_BEAN, user);
@@ -225,51 +226,7 @@ public class UserController extends ExceptionController {
 				password, confirmPassword);
 
 		if ("0".equals(result)) { // insert success
-			Map<String, Object> vosPhoneInfoMap = userDao.getVOSPhone(countryCode,
-					phoneNumber);
-			Long vosPhoneNumber = (Long) vosPhoneInfoMap.get("vosphone");
-			String vosPhonePwd = (String) vosPhoneInfoMap.get("vosphone_pwd");
-			result = addUserToVOS(countryCode + phoneNumber,
-					vosPhoneNumber.toString(), vosPhonePwd);
-
-			if ("0".equals(result)) {
-				int affectedRows = userDao.updateUserAccountStatus(countryCode,
-						phoneNumber, UserAccountStatus.success);
-				if (affectedRows > 0) {
-					result = "0";
-				} else {
-					result = "1";
-				}
-			}
-
-			else if ("2001".equals(result)) {
-				userDao.updateUserAccountStatus(countryCode, phoneNumber,
-						UserAccountStatus.vos_account_error);
-			} else if ("2002".equals(result)) {
-				userDao.updateUserAccountStatus(countryCode, phoneNumber,
-						UserAccountStatus.vos_phone_error);
-			} else if ("2003".equals(result)) {
-				userDao.updateUserAccountStatus(countryCode, phoneNumber,
-						UserAccountStatus.vos_suite_error);
-			}
-		}
-
-		if ("0".equals(result)) {
-			Double money = config.getSignupGift();
-			if (money != null && money > 0) {
-				VOSHttpResponse depositeResp = vosClient.deposite(countryCode
-						+ phoneNumber, money);
-				if (depositeResp.getHttpStatusCode() != 200
-						|| !depositeResp.isOperationSuccess()) {
-					log.error("\nCannot deposite gift for user : "
-							+ phoneNumber + "\nVOS Http Response : "
-							+ depositeResp.getHttpStatusCode()
-							+ "\nVOS Status Code : "
-							+ depositeResp.getVOSStatusCode()
-							+ "\nVOS Response Info ："
-							+ depositeResp.getVOSResponseInfo());
-				}
-			}
+			result = finishVosRegister(countryCode, phoneNumber);
 		}
 
 		if ("0".equals(result)) {
@@ -321,54 +278,18 @@ public class UserController extends ExceptionController {
 				referrerCountryCode, referrer, password, confirmPassword);
 
 		if ("0".equals(result)) { // insert success
-			Map<String, Object> vosPhoneInfoMap = userDao.getVOSPhone(countryCode,
-					phoneNumber);
-			Long vosPhoneNumber = (Long) vosPhoneInfoMap.get("vosphone");
-			String vosPhonePwd = (String) vosPhoneInfoMap.get("vosphone_pwd");
-			result = addUserToVOS(countryCode + phoneNumber,
-					vosPhoneNumber.toString(), vosPhonePwd);
+			result = finishVosRegister(countryCode, phoneNumber);
 
-			if ("0".equals(result)) {
-				int affectedRows = userDao.updateUserAccountStatus(countryCode,
-						phoneNumber, UserAccountStatus.success);
-				if (affectedRows > 0) {
-					result = "0";
-				} else {
-					result = "1";
+			if (result.equals("0")) {
+				// give money to referrer
+				if (!referrer.equals("") && !referrerCountryCode.equals("")) {
+					UUTalkConfigManager ucm = ContextLoader
+							.getUUTalkConfigManager();
+					ChargeUtil.giveMoneyToReferrer(ChargeType.invitereg,
+							referrerCountryCode, referrer,
+							Double.parseDouble(ucm.getRegGiftValue()),
+							countryCode, phoneNumber);
 				}
-			} else if ("2001".equals(result)) {
-				userDao.updateUserAccountStatus(countryCode, phoneNumber,
-						UserAccountStatus.vos_account_error);
-			} else if ("2002".equals(result)) {
-				userDao.updateUserAccountStatus(countryCode, phoneNumber,
-						UserAccountStatus.vos_phone_error);
-			} else if ("2003".equals(result)) {
-				userDao.updateUserAccountStatus(countryCode, phoneNumber,
-						UserAccountStatus.vos_suite_error);
-			}
-		}
-
-		if ("0".equals(result)) {
-			Double money = config.getSignupGift();
-			if (money != null && money > 0) {
-				VOSHttpResponse depositeResp = vosClient.deposite(countryCode
-						+ phoneNumber, money);
-				if (depositeResp.getHttpStatusCode() != 200
-						|| !depositeResp.isOperationSuccess()) {
-					log.error("\nCannot deposite gift for user : "
-							+ phoneNumber + "\nVOS Http Response : "
-							+ depositeResp.getHttpStatusCode()
-							+ "\nVOS Status Code : "
-							+ depositeResp.getVOSStatusCode()
-							+ "\nVOS Response Info ："
-							+ depositeResp.getVOSResponseInfo());
-				}
-			}
-			
-			// give money to referrer
-			if (!referrer.equals("") && !referrerCountryCode.equals("")) {
-				UUTalkConfigManager ucm = ContextLoader.getUUTalkConfigManager();
-				ChargeUtil.giveMoneyToReferrer(ChargeType.invitereg, referrerCountryCode, referrer, Double.parseDouble(ucm.getRegGiftValue()), countryCode, phoneNumber);
 			}
 		}
 
@@ -451,59 +372,7 @@ public class UserController extends ExceptionController {
 		}
 
 		if ("0".equals(result)) { // insert success
-			Map<String, Object> vosPhoneInfoMap = userDao.getVOSPhone(countryCode,
-					phone);
-			Long vosPhoneNumber = (Long) vosPhoneInfoMap.get("vosphone");
-			String vosPhonePwd = (String) vosPhoneInfoMap.get("vosphone_pwd");
-			result = addUserToVOS(countryCode + phone,
-					vosPhoneNumber.toString(), vosPhonePwd);
-
-			if ("0".equals(result)) {
-				int affectedRows = userDao.updateUserAccountStatus(countryCode,
-						phone, UserAccountStatus.success);
-				if (affectedRows > 0) {
-					result = "0";
-				} else {
-					result = "1";
-				}
-			} else if ("2001".equals(result)) {
-				userDao.updateUserAccountStatus(countryCode, phone,
-						UserAccountStatus.vos_account_error);
-			} else if ("2002".equals(result)) {
-				userDao.updateUserAccountStatus(countryCode, phone,
-						UserAccountStatus.vos_phone_error);
-			} else if ("2003".equals(result)) {
-				userDao.updateUserAccountStatus(countryCode, phone,
-						UserAccountStatus.vos_suite_error);
-			}
-		}
-
-		if ("0".equals(result)) {
-			Double money = config.getSignupGift();
-			if (money != null && money > 0) {
-				VOSHttpResponse depositeResp = vosClient.deposite(countryCode
-						+ phone, money);
-				if (depositeResp.getHttpStatusCode() != 200
-						|| !depositeResp.isOperationSuccess()) {
-					log.error("\nCannot deposite gift for user : " + phone
-							+ "\nVOS Http Response : "
-							+ depositeResp.getHttpStatusCode()
-							+ "\nVOS Status Code : "
-							+ depositeResp.getVOSStatusCode()
-							+ "\nVOS Response Info ："
-							+ depositeResp.getVOSResponseInfo());
-				} else {
-					// try {
-					// smsClient
-					// .sendTextMessage(
-					// phone,
-					// "欢迎您成为智会用户，"
-					// + "您的账户已获赠10元。更多信息请访问 http://www.wetalking.net/help");
-					// } catch (Exception e) {
-					// log.error("Cannot send SMS to new user: " + phone);
-					// }
-				}
-			}
+			result = finishVosRegister(countryCode, phone);
 		}
 
 		JSONObject jsonUser = new JSONObject();
@@ -515,7 +384,8 @@ public class UserController extends ExceptionController {
 		response.getWriter().print(jsonUser.toString());
 	}
 
-	private String addUserToVOS(String fullUserName, String vosPhoneNumber, String vosPhonePwd) {
+	private String addUserToVOS(String fullUserName, String vosPhoneNumber,
+			String vosPhonePwd) {
 		// create new account in VOS
 		VOSHttpResponse addAccountResp = vosClient.addAccount(fullUserName);
 		if (addAccountResp.getHttpStatusCode() != 200
@@ -600,4 +470,77 @@ public class UserController extends ExceptionController {
 		}
 	}
 
+	@RequestMapping(value = "/clientdirectreg", method = RequestMethod.POST)
+	public void clientDirectReg(HttpServletResponse response,
+			@RequestParam String phoneNumber, @RequestParam String countryCode,
+			@RequestParam String password) throws IOException {
+		String result = "0";
+		result = userDao.checkRegisterPhone(countryCode, phoneNumber);
+
+		if (result.equals("0")) {
+			result = userDao.regUser(countryCode, phoneNumber, "", "",
+					password, password);
+		}
+
+		if ("0".equals(result)) { // insert success
+			result = finishVosRegister(countryCode, phoneNumber);
+		}
+
+		JSONObject jsonUser = new JSONObject();
+		try {
+			jsonUser.put("result", result);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		response.getWriter().print(jsonUser.toString());
+	}
+
+	private String finishVosRegister(String countryCode, String phoneNumber) {
+		String result = "0";
+		Map<String, Object> vosPhoneInfoMap = userDao.getVOSPhone(countryCode,
+				phoneNumber);
+		Long vosPhoneNumber = (Long) vosPhoneInfoMap.get("vosphone");
+		String vosPhonePwd = (String) vosPhoneInfoMap.get("vosphone_pwd");
+		result = addUserToVOS(countryCode + phoneNumber,
+				vosPhoneNumber.toString(), vosPhonePwd);
+
+		if ("0".equals(result)) {
+			int affectedRows = userDao.updateUserAccountStatus(countryCode,
+					phoneNumber, UserAccountStatus.success);
+			if (affectedRows > 0) {
+				result = "0";
+			} else {
+				result = "1";
+			}
+		} else if ("2001".equals(result)) {
+			userDao.updateUserAccountStatus(countryCode, phoneNumber,
+					UserAccountStatus.vos_account_error);
+		} else if ("2002".equals(result)) {
+			userDao.updateUserAccountStatus(countryCode, phoneNumber,
+					UserAccountStatus.vos_phone_error);
+		} else if ("2003".equals(result)) {
+			userDao.updateUserAccountStatus(countryCode, phoneNumber,
+					UserAccountStatus.vos_suite_error);
+		}
+
+		if ("0".equals(result)) {
+			Double money = config.getSignupGift();
+			if (money != null && money > 0) {
+				VOSHttpResponse depositeResp = vosClient.deposite(countryCode
+						+ phoneNumber, money);
+				if (depositeResp.getHttpStatusCode() != 200
+						|| !depositeResp.isOperationSuccess()) {
+					log.error("\nCannot deposite gift for user : "
+							+ phoneNumber + "\nVOS Http Response : "
+							+ depositeResp.getHttpStatusCode()
+							+ "\nVOS Status Code : "
+							+ depositeResp.getVOSStatusCode()
+							+ "\nVOS Response Info ："
+							+ depositeResp.getVOSResponseInfo());
+				}
+			}
+		}
+
+		return result;
+	}
 }

@@ -26,6 +26,7 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
+import com.angolacall.framework.ContextLoader;
 import com.richitec.util.RandomString;
 
 
@@ -339,11 +340,13 @@ public class VOSClient {
 	}
 	
 	public VOSHttpResponse doCallBack(String callee, String caller, String callerCountryCode, String vosPhoneNumber, String vosPhonePassword) {
+		String callbackPrefix = ContextLoader.getConfiguration().getCallbackPrefix();
+		
 		List<NameValuePair> params = new LinkedList<NameValuePair>();
 		params.add(new BasicNameValuePair(P_loginName, loginName));
 		params.add(new BasicNameValuePair(P_loginPassword, loginPassword));
-		params.add(new BasicNameValuePair(P_caller, callerCountryCode + caller));
-		params.add(new BasicNameValuePair(P_callee, callee));
+		params.add(new BasicNameValuePair(P_caller, callbackPrefix + callerCountryCode + caller));
+		params.add(new BasicNameValuePair(P_callee, callbackPrefix + callee));
 		params.add(new BasicNameValuePair(P_number, "9999"));
 		params.add(new BasicNameValuePair(P_password, "9999"));
 		params.add(new BasicNameValuePair(P_callbackBillingNumber, vosPhoneNumber));
