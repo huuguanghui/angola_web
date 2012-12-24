@@ -58,7 +58,7 @@ public class AngolaWebController {
 	@RequestMapping(value = "/invitejoin/{inviterId}", method = RequestMethod.GET)
 	public ModelAndView inviteJoin(HttpServletResponse response, @PathVariable String inviterId) throws IOException {
 		ModelAndView view = new ModelAndView();
-		view.setViewName("invitejoin");
+		view.setViewName("invitejoin_directreg");
 		
 		Map<String, Object> inviterMap = null;
 		try {

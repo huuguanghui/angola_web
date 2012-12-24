@@ -300,6 +300,63 @@ public class UserController extends ExceptionController {
 
 	}
 
+	@RequestMapping("/regViaInviteDirectReg")
+	public void regViaInviteDirectReg(
+			HttpServletResponse response,
+			HttpSession session,
+			@RequestParam(value = "referrer") String referrer,
+			@RequestParam(value = "referrerCountryCode") String referrerCountryCode,
+			@RequestParam(value = "countryCode", defaultValue = "") String countryCode,
+			@RequestParam(value = "phoneNumber") String phoneNumber,
+			@RequestParam(value = "password") String password,
+			@RequestParam(value = "confirmPassword") String confirmPassword)
+			throws IOException, JSONException {
+
+		String result = userDao.regUser(countryCode, phoneNumber,
+				referrerCountryCode, referrer, password, confirmPassword);
+
+		if ("0".equals(result)) { // insert success
+			result = finishVosRegister(countryCode, phoneNumber);
+
+			if (result.equals("0")) {
+				// give money to referrer
+				if (!referrer.equals("") && !referrerCountryCode.equals("")) {
+					UUTalkConfigManager ucm = ContextLoader
+							.getUUTalkConfigManager();
+					ChargeUtil.giveMoneyToReferrer(ChargeType.invitereg,
+							referrerCountryCode, referrer,
+							Double.parseDouble(ucm.getRegGiftValue()),
+							countryCode, phoneNumber);
+				}
+			}
+		}
+
+		JSONObject ret = new JSONObject();
+		if ("0".equals(result)) {
+			ret.put("result", "ok");
+			response.getWriter().print(ret.toString());
+		} else if ("1".equals(result)) {
+			ret.put("result", "empty_phone");
+			response.getWriter().print(ret.toString());
+		} else if ("2".equals(result)) {
+			ret.put("result", "invalid_phone");
+			response.getWriter().print(ret.toString());
+		} else if ("3".equals(result)) {
+			ret.put("result", "existed");
+			response.getWriter().print(ret.toString());
+		} else if ("4".equals(result)) {
+			ret.put("result", "empty_password");
+			response.getWriter().print(ret.toString());
+		} else if ("5".equals(result)) {
+			ret.put("result", "password_different_to_confirm_password");
+			response.getWriter().print(ret.toString());
+		} else {
+			ret.put("result", "server_error");
+			response.getWriter().print(ret.toString());
+		}
+
+	}
+
 	/**
 	 * 用户从手机注册获取验证码请求。
 	 * 
