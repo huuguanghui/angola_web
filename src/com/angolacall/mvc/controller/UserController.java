@@ -285,10 +285,13 @@ public class UserController extends ExceptionController {
 				if (!referrer.equals("") && !referrerCountryCode.equals("")) {
 					UUTalkConfigManager ucm = ContextLoader
 							.getUUTalkConfigManager();
-					ChargeUtil.giveMoneyToReferrer(ChargeType.invitereg,
-							referrerCountryCode, referrer,
-							Double.parseDouble(ucm.getRegGiftValue()),
-							countryCode, phoneNumber);
+					double regGiftMoney = Double.parseDouble(ucm
+							.getRegGiftValue());
+					if (regGiftMoney > 0) {
+						ChargeUtil.giveMoneyToReferrer(ChargeType.invitereg,
+								referrerCountryCode, referrer, regGiftMoney,
+								countryCode, phoneNumber);
+					}
 				}
 			}
 		}
@@ -323,10 +326,13 @@ public class UserController extends ExceptionController {
 				if (!referrer.equals("") && !referrerCountryCode.equals("")) {
 					UUTalkConfigManager ucm = ContextLoader
 							.getUUTalkConfigManager();
-					ChargeUtil.giveMoneyToReferrer(ChargeType.invitereg,
-							referrerCountryCode, referrer,
-							Double.parseDouble(ucm.getRegGiftValue()),
-							countryCode, phoneNumber);
+					double regGiftMoney = Double.parseDouble(ucm
+							.getRegGiftValue());
+					if (regGiftMoney > 0) {
+						ChargeUtil.giveMoneyToReferrer(ChargeType.invitereg,
+								referrerCountryCode, referrer, regGiftMoney,
+								countryCode, phoneNumber);
+					}
 				}
 			}
 		}
