@@ -24,7 +24,7 @@
     		<div class="span4">
     			<h1>UU-Talk&nbsp;<small>最好用的网络电话</small></h1>
     			<ul>
-    				<li><h2><small>免费下载,免费注册,即可获10元话费</small></h2></li>
+    				<li><h2><small>免费下载,免费注册,即可获赠话费</small></h2></li>
 	    			<li><h2><small>高清语音质量</small></h2></li>
 	    			<li><h2><small>0月租0漫游0功能费0负担放心使用</h2></li>
 	    			<li><h2><small>操作快捷方便</small></h2></li>

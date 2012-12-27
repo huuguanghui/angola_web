@@ -289,11 +289,12 @@ public class VOSClient {
 		List<OrderSuiteInfo> orderSuites = new LinkedList<OrderSuiteInfo>();
 		if (response.getHttpStatusCode() == 200 && 
 			response.isOperationSuccess()){
-			System.out.println("getOrderSuites response: " + response.getVOSResponseInfo());
+//			System.out.println("getOrderSuites response: " + response.getVOSResponseInfo());
 			String[] suites = response.getVOSResponseInfo().split("&");
 			if (suites != null) {
 				for (String suite : suites) {
 					OrderSuiteInfo osi = new OrderSuiteInfo(suite);
+//					System.out.println("order suite: " + osi.toJSONObject().toString());
 					orderSuites.add(osi);
 				}
 			}
@@ -314,12 +315,12 @@ public class VOSClient {
 		List<SuiteInfo> suiteList = new LinkedList<SuiteInfo>();
 		if (response.getHttpStatusCode() == 200 && 
 			response.isOperationSuccess()){
-			System.out.println("getAllSuites response: " + response.getVOSResponseInfo());
+//			System.out.println("getAllSuites response: " + response.getVOSResponseInfo());
 			String[] suites = response.getVOSResponseInfo().split("&");
 			if (suites != null) {
 				for (String suite : suites) {
 					SuiteInfo suiteInfo = new SuiteInfo(suite);
-					System.out.println("suite: " + suiteInfo.toJSONObject().toString());
+//					System.out.println("suite: " + suiteInfo.toJSONObject().toString());
 					suiteList.add(suiteInfo);
 				}
 			}
@@ -403,8 +404,8 @@ public class VOSClient {
 //		System.out.println("gift : " + suiteInfo.getGiftBalance());
 //		System.out.println("orderId : " + suiteInfo.getOrderId());
 		
-		client.getAllSuites();
-//		List<OrderSuiteInfo> orderSuites = client.getOrderSuites("008613813005146");
+//		client.getAllSuites();
+		List<OrderSuiteInfo> orderSuites = client.getOrderSuites("008613813005146");
 		
 	}
 }

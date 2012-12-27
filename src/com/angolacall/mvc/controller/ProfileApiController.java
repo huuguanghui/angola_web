@@ -26,6 +26,9 @@ import com.angolacall.mvc.admin.model.UUTalkConfigManager;
 import com.richitec.ucenter.model.UserDAO;
 import com.richitec.util.CryptoUtil;
 import com.richitec.util.MyRC4;
+import com.richitec.vos.client.OrderSuiteInfo;
+import com.richitec.vos.client.SuiteInfo;
+import com.richitec.vos.client.VOSClient;
 
 @Controller
 @RequestMapping("/profile")
@@ -185,6 +188,39 @@ public class ProfileApiController {
 				}
 				
 			}
+		}
+		
+		response.getWriter().print(ret.toString());
+	}
+	
+	@RequestMapping("/getSuites")
+	public void getSuites(HttpServletResponse response, @RequestParam(value = "countryCode") String countryCode,
+			@RequestParam(value = "username") String userName) throws JSONException, IOException {
+		VOSClient vosClient = ContextLoader.getVOSClient();
+		List<OrderSuiteInfo> orderSuites = vosClient.getOrderSuites(countryCode + userName);
+		List<SuiteInfo> allSuites = vosClient.getAllSuites();
+		
+		JSONObject ret = new JSONObject();
+		if (orderSuites != null) {
+			JSONArray orderSuiteArray = new JSONArray();
+			for (OrderSuiteInfo osi : orderSuites) {
+				if ("suite0".equals(osi.getSuiteName())) {
+					continue;
+				}
+				orderSuiteArray.put(osi.toJSONObject());
+			}
+			ret.put("my_suites", orderSuiteArray);
+		}
+		
+		if (allSuites != null) {
+			JSONArray allSuitesArray = new JSONArray();
+			for (SuiteInfo si : allSuites) {
+				if ("suite0".equals(si.getSuiteName())) {
+					continue;
+				}
+				allSuitesArray.put(si.toJSONObject());
+			}
+			ret.put("all_suites", allSuitesArray);
 		}
 		
 		response.getWriter().print(ret.toString());

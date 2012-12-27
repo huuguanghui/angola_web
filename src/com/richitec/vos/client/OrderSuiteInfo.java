@@ -10,18 +10,37 @@ public class OrderSuiteInfo {
 	private String suiteId = "";
 	private String suiteName = "";
 	private String rentMoney = "";
+	private String comment = "";
 
 	public OrderSuiteInfo(String suiteInfo) {
 		String[] list = suiteInfo.split(";");
 		if (null == list)
 			return;
-		
-		if (list.length > 0) orderId = list[0];
-		if (list.length > 1) availableTime = list[1];
-		if (list.length > 2) expireTime = list[2];
-		if (list.length > 3) suiteId = list[3];
-		if (list.length > 4) suiteName = list[4];
-		if (list.length > 7) rentMoney = list[7];
+
+		if (list.length > 0)
+			orderId = list[0];
+		if (list.length > 1) {
+			availableTime = list[1];
+			if (availableTime.length() > 11) {
+				availableTime = availableTime.substring(0, 11);
+			}
+		}
+		if (list.length > 2) {
+			expireTime = list[2];
+			if (expireTime.indexOf("-") == 4 && expireTime.length() > 11) {
+				expireTime = expireTime.substring(0, 11);
+			} else {
+				expireTime = "never";
+			}
+		}
+		if (list.length > 3)
+			suiteId = list[3];
+		if (list.length > 4)
+			suiteName = list[4];
+		if (list.length > 7)
+			rentMoney = list[7];
+		if (list.length > 9)
+			comment = list[9];
 	}
 
 	public String getOrderId() {
@@ -72,6 +91,14 @@ public class OrderSuiteInfo {
 		this.rentMoney = rentMoney;
 	}
 
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
 	public JSONObject toJSONObject() {
 		JSONObject obj = new JSONObject();
 		try {
@@ -81,6 +108,7 @@ public class OrderSuiteInfo {
 			obj.put("suiteId", suiteId);
 			obj.put("suiteName", suiteName);
 			obj.put("rentMoney", rentMoney);
+			obj.put("comment", comment);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
