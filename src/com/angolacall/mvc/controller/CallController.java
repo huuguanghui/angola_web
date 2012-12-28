@@ -33,25 +33,31 @@ public class CallController {
 	public void doCallBack(HttpServletResponse response,
 			@RequestParam(value = "callee") String callee,
 			@RequestParam(value = "username") String userName,
-			@RequestParam(value = "countryCode") String countryCode, 
+			@RequestParam(value = "countryCode") String countryCode,
 			@RequestParam(value = "vosPhoneNumber") String vosPhoneNumber,
-			@RequestParam(value = "vosPhonePassword") String vosPhonePassword) throws IOException {
+			@RequestParam(value = "vosPhonePassword") String vosPhonePassword)
+			throws IOException {
 		UserDAO userDao = ContextLoader.getUserDAO();
 		Map<String, Object> user = userDao.getUser(countryCode, userName);
 		String bindPhone = (String) user.get("bindphone");
-		String bindPhoneCountryCode = (String) user.get("bindphone_country_code");
-		
-		VOSHttpResponse vosResponse = vosClient.doCallBack(callee, bindPhone, bindPhoneCountryCode, vosPhoneNumber, vosPhonePassword);
+		String bindPhoneCountryCode = (String) user
+				.get("bindphone_country_code");
+
+		VOSHttpResponse vosResponse = vosClient.doCallBack(callee, bindPhone,
+				bindPhoneCountryCode, vosPhoneNumber, vosPhonePassword);
 		if (vosResponse.getHttpStatusCode() != 200
 				|| !vosResponse.isOperationSuccess()) {
-			log.error("\nCannot do callback for user : " + countryCode + userName
-					+ "\nVOS Http Response : "
-					+ vosResponse.getHttpStatusCode()
-					+ "\nVOS Status Code : "
-					+ vosResponse.getVOSStatusCode()
-					+ "\nVOS Response Info ："
+			log.error("\nCannot do callback for user : " + countryCode
+					+ userName + "\nVOS Http Response : "
+					+ vosResponse.getHttpStatusCode() + "\nVOS Status Code : "
+					+ vosResponse.getVOSStatusCode() + "\nVOS Response Info ："
 					+ vosResponse.getVOSResponseInfo());
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			if (vosResponse.getVOSStatusCode() == -2) {
+				response.sendError(HttpServletResponse.SC_PAYMENT_REQUIRED);
+			} else {
+				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
+
 			return;
 		}
 	}

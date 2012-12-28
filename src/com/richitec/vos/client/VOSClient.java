@@ -294,7 +294,7 @@ public class VOSClient {
 			if (suites != null) {
 				for (String suite : suites) {
 					OrderSuiteInfo osi = new OrderSuiteInfo(suite);
-//					System.out.println("order suite: " + osi.toJSONObject().toString());
+					System.out.println("order suite: " + osi.toJSONObject().toString());
 					orderSuites.add(osi);
 				}
 			}
@@ -320,7 +320,7 @@ public class VOSClient {
 			if (suites != null) {
 				for (String suite : suites) {
 					SuiteInfo suiteInfo = new SuiteInfo(suite);
-//					System.out.println("suite: " + suiteInfo.toJSONObject().toString());
+					System.out.println("suite: " + suiteInfo.toJSONObject().toString());
 					suiteList.add(suiteInfo);
 				}
 			}

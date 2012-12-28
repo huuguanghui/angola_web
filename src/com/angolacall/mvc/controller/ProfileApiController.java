@@ -196,6 +196,7 @@ public class ProfileApiController {
 	@RequestMapping("/getSuites")
 	public void getSuites(HttpServletResponse response, @RequestParam(value = "countryCode") String countryCode,
 			@RequestParam(value = "username") String userName) throws JSONException, IOException {
+		log.info("getSuites");
 		VOSClient vosClient = ContextLoader.getVOSClient();
 		List<OrderSuiteInfo> orderSuites = vosClient.getOrderSuites(countryCode + userName);
 		List<SuiteInfo> allSuites = vosClient.getAllSuites();

@@ -53,7 +53,7 @@ public class APIAuthInterceptor implements HandlerInterceptor {
 		String countryCode = request.getParameter(AuthConstant.countryCode.name());
 		String sig = request.getParameter(AuthConstant.sig.name());
 		
-		log.debug("username: " + username + " sig: " + sig);
+		log.debug("countrycode: " + countryCode + " username: " + username + " sig: " + sig);
 		
 		if (username == null || sig == null || username.equals("")
 				|| sig.equals("")) {
