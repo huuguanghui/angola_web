@@ -97,7 +97,7 @@ public class ProfileApiController {
 
 	@RequestMapping("/alipaysign")
 	public void alipayClientParamSign(HttpServletResponse response,
-			@RequestParam (value = "charge_money_id") String chargeMoneyId,
+			@RequestParam(value = "charge_money_id") String chargeMoneyId,
 			@RequestParam String content, @RequestParam String out_trade_no,
 			@RequestParam String total_fee,
 			@RequestParam(value = "countryCode") String countryCode,
@@ -105,7 +105,8 @@ public class ProfileApiController {
 			throws IOException {
 		log.info("content: " + content);
 		ContextLoader.getChargeDAO().addChargeRecord(out_trade_no, countryCode,
-				userName, Double.valueOf(total_fee), ChargeStatus.processing, chargeMoneyId);
+				userName, Double.valueOf(total_fee), ChargeStatus.processing,
+				chargeMoneyId);
 		response.getWriter().print(
 				RSASignature.sign(content, PartnerConfig.RSA_PRIVATE));
 	}
@@ -152,24 +153,28 @@ public class ProfileApiController {
 		userDao.setBindPhone(countryCode, userName, bindPhoneCountryCode,
 				bindPhone);
 	}
-	
+
 	@RequestMapping("/regInviteDesc")
-	public void getRegInviteDescription(HttpServletResponse response, @RequestParam(value = "countryCode") String countryCode,
-			@RequestParam(value = "username") String userName) throws JSONException, IOException {
+	public void getRegInviteDescription(HttpServletResponse response,
+			@RequestParam(value = "countryCode") String countryCode,
+			@RequestParam(value = "username") String userName)
+			throws JSONException, IOException {
 		UUTalkConfigManager ucm = ContextLoader.getUUTalkConfigManager();
 		JSONObject ret = new JSONObject();
 		StringBuffer info = new StringBuffer();
-		info.append(ucm.getRegGiftDescription()).append('\n').append(ucm.getInviteChargeGiftDescription());
+		info.append(ucm.getRegGiftDescription()).append('\n')
+				.append(ucm.getInviteChargeGiftDescription());
 		ret.put(UUTalkConfigKeys.reg_gift_desc_text.name(), info.toString());
 		response.getWriter().print(ret.toString());
 	}
-	
+
 	@RequestMapping("/getChargeMoneyList")
-	public void getChargeMoneyList(HttpServletResponse response) throws IOException {
+	public void getChargeMoneyList(HttpServletResponse response)
+			throws IOException {
 		ChargeMoneyConfigDao cmcd = ContextLoader.getChargeMoneyConfigDao();
 		List<Map<String, Object>> list = cmcd.getChargeMoneyList();
 		JSONArray ret = new JSONArray();
-		
+
 		if (list != null) {
 			for (Map<String, Object> item : list) {
 				Integer id = (Integer) item.get("id");
@@ -186,21 +191,33 @@ public class ProfileApiController {
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
-				
+
 			}
 		}
-		
+
 		response.getWriter().print(ret.toString());
 	}
-	
+
+	/**
+	 * get the ordered suites and the available suites to order
+	 * 
+	 * @param response
+	 * @param countryCode
+	 * @param userName
+	 * @throws JSONException
+	 * @throws IOException
+	 */
 	@RequestMapping("/getSuites")
-	public void getSuites(HttpServletResponse response, @RequestParam(value = "countryCode") String countryCode,
-			@RequestParam(value = "username") String userName) throws JSONException, IOException {
+	public void getSuites(HttpServletResponse response,
+			@RequestParam(value = "countryCode") String countryCode,
+			@RequestParam(value = "username") String userName)
+			throws JSONException, IOException {
 		log.info("getSuites");
 		VOSClient vosClient = ContextLoader.getVOSClient();
-		List<OrderSuiteInfo> orderSuites = vosClient.getOrderSuites(countryCode + userName);
+		List<OrderSuiteInfo> orderSuites = vosClient.getOrderSuites(countryCode
+				+ userName);
 		List<SuiteInfo> allSuites = vosClient.getAllSuites();
-		
+
 		JSONObject ret = new JSONObject();
 		if (orderSuites != null) {
 			JSONArray orderSuiteArray = new JSONArray();
@@ -212,18 +229,38 @@ public class ProfileApiController {
 			}
 			ret.put("my_suites", orderSuiteArray);
 		}
-		
+
 		if (allSuites != null) {
 			JSONArray allSuitesArray = new JSONArray();
 			for (SuiteInfo si : allSuites) {
 				if ("suite0".equals(si.getSuiteName())) {
 					continue;
 				}
-				allSuitesArray.put(si.toJSONObject());
+
+				boolean isOrdered = false;
+				for (OrderSuiteInfo osi : orderSuites) {
+					if (si.getSuiteId().equals(osi.getSuiteId())) {
+						isOrdered = true;
+						break;
+					}
+				}
+
+				if (!isOrdered) {
+					allSuitesArray.put(si.toJSONObject());
+				}
 			}
 			ret.put("all_suites", allSuitesArray);
 		}
-		
+
 		response.getWriter().print(ret.toString());
+	}
+
+	@RequestMapping("/subscribeSuite")
+	public void subscribeSuite(HttpServletResponse response,
+			@RequestParam(value = "countryCode") String countryCode,
+			@RequestParam(value = "username") String userName,
+			@RequestParam(value = "suiteId") String suiteId,
+			@RequestParam(value = "open_time_type") String openTimeType) {
+		
 	}
 }
