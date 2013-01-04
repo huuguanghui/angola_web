@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,7 +38,7 @@ public class CallController {
 			@RequestParam(value = "countryCode") String countryCode,
 			@RequestParam(value = "vosPhoneNumber") String vosPhoneNumber,
 			@RequestParam(value = "vosPhonePassword") String vosPhonePassword)
-			throws IOException {
+			throws IOException, JSONException {
 		UserDAO userDao = ContextLoader.getUserDAO();
 		Map<String, Object> user = userDao.getUser(countryCode, userName);
 		String bindPhone = (String) user.get("bindphone");
@@ -52,12 +54,11 @@ public class CallController {
 					+ vosResponse.getHttpStatusCode() + "\nVOS Status Code : "
 					+ vosResponse.getVOSStatusCode() + "\nVOS Response Info ："
 					+ vosResponse.getVOSResponseInfo());
-			if (vosResponse.getVOSStatusCode() == -2) {
-				response.sendError(HttpServletResponse.SC_PAYMENT_REQUIRED);
-			} else {
-				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			}
-
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			JSONObject ret = new JSONObject();
+			ret.put("vos_status_code", vosResponse.getVOSStatusCode());
+			ret.put("vos_info", vosResponse.getVOSResponseInfo());
+			response.getWriter().print(ret.toString());
 			return;
 		}
 	}

@@ -1,6 +1,9 @@
 package com.angolacall.mvc.controller;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +32,7 @@ import com.richitec.util.MyRC4;
 import com.richitec.vos.client.OrderSuiteInfo;
 import com.richitec.vos.client.SuiteInfo;
 import com.richitec.vos.client.VOSClient;
+import com.richitec.vos.client.VOSHttpResponse;
 
 @Controller
 @RequestMapping("/profile")
@@ -237,17 +241,17 @@ public class ProfileApiController {
 					continue;
 				}
 
-				boolean isOrdered = false;
-				for (OrderSuiteInfo osi : orderSuites) {
-					if (si.getSuiteId().equals(osi.getSuiteId())) {
-						isOrdered = true;
-						break;
-					}
-				}
-
-				if (!isOrdered) {
+//				boolean isOrdered = false;
+//				for (OrderSuiteInfo osi : orderSuites) {
+//					if (si.getSuiteId().equals(osi.getSuiteId())) {
+//						isOrdered = true;
+//						break;
+//					}
+//				}
+//
+//				if (!isOrdered) {
 					allSuitesArray.put(si.toJSONObject());
-				}
+//				}
 			}
 			ret.put("all_suites", allSuitesArray);
 		}
@@ -255,12 +259,84 @@ public class ProfileApiController {
 		response.getWriter().print(ret.toString());
 	}
 
+	/**
+	 * subscribe suite
+	 * 
+	 * @param response
+	 * @param countryCode
+	 * @param userName
+	 * @param suiteId
+	 * @param openTimeType
+	 *            - "at_once" open the suite at once, "next_month" open the
+	 *            suite next month
+	 * @throws JSONException
+	 * @throws IOException
+	 */
 	@RequestMapping("/subscribeSuite")
 	public void subscribeSuite(HttpServletResponse response,
 			@RequestParam(value = "countryCode") String countryCode,
 			@RequestParam(value = "username") String userName,
 			@RequestParam(value = "suiteId") String suiteId,
-			@RequestParam(value = "open_time_type") String openTimeType) {
-		
+			@RequestParam(value = "open_time_type") String openTimeType)
+			throws JSONException, IOException {
+
+		String availableTime = "";
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date now = new Date();
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(now);
+		if (openTimeType.equals("at_once")) {
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 0);
+		} else {
+			cal.add(Calendar.MONTH, cal.get(Calendar.MONTH) + 1);
+			cal.set(Calendar.DAY_OF_MONTH, 1);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 0);
+		}
+		availableTime = df.format(cal.getTime());
+		log.info("available time: " + availableTime);
+		VOSHttpResponse vosResponse = ContextLoader.getVOSClient()
+				.subscribeSuite(countryCode + userName, suiteId, availableTime);
+		if (vosResponse.getHttpStatusCode() != 200
+				|| !vosResponse.isOperationSuccess()) {
+			log.error("\nCannot do callback for user : " + countryCode
+					+ userName + "\nVOS Http Response : "
+					+ vosResponse.getHttpStatusCode() + "\nVOS Status Code : "
+					+ vosResponse.getVOSStatusCode() + "\nVOS Response Info ："
+					+ vosResponse.getVOSResponseInfo());
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			JSONObject ret = new JSONObject();
+			ret.put("vos_status_code", vosResponse.getVOSStatusCode());
+			ret.put("vos_info", vosResponse.getVOSResponseInfo());
+			response.getWriter().print(ret.toString());
+			return;
+		}
+
+	}
+
+	@RequestMapping("/unsubscribeSuite")
+	public void unsubscribeSuite(HttpServletResponse response,
+			@RequestParam(value = "countryCode") String countryCode,
+			@RequestParam(value = "username") String userName,
+			@RequestParam(value = "orderSuiteId") String orderSuiteId) throws JSONException, IOException {
+		VOSHttpResponse vosResponse = ContextLoader.getVOSClient()
+				.unsubscribeSuite(orderSuiteId);
+		if (vosResponse.getHttpStatusCode() != 200
+				|| !vosResponse.isOperationSuccess()) {
+			log.error("\nCannot do callback for user : " + countryCode
+					+ userName + "\nVOS Http Response : "
+					+ vosResponse.getHttpStatusCode() + "\nVOS Status Code : "
+					+ vosResponse.getVOSStatusCode() + "\nVOS Response Info ："
+					+ vosResponse.getVOSResponseInfo());
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			JSONObject ret = new JSONObject();
+			ret.put("vos_status_code", vosResponse.getVOSStatusCode());
+			ret.put("vos_info", vosResponse.getVOSResponseInfo());
+			response.getWriter().print(ret.toString());
+			return;
+		}
 	}
 }
