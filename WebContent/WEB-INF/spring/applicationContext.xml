@@ -33,8 +33,11 @@
 		<property name="serverUrl">
 		    <value>${server_url}</value>
 		</property>
-		<property name="callbackPrefix">
-		    <value>${callback_prefix}</value>
+		<property name="callbackCalleePrefix">
+		    <value>${callback_callee_prefix}</value>
+		</property>
+		<property name="callbackCallerPrefix">
+		    <value>${callback_caller_prefix}</value>
 		</property>
 	</bean>
 	

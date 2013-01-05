@@ -16,8 +16,8 @@ public class Configuration {
 	private String appvcenterUrl;
 	private String appId;
 	private String serverUrl;
-	private String callbackPrefix;
-	
+	private String callbackCalleePrefix;
+	private String callbackCallerPrefix;
 	public String getSuite0Id() {
 		return this.suite0Id;
 	}
@@ -90,11 +90,20 @@ public class Configuration {
 		this.serverUrl = serverUrl;
 	}
 
-	public String getCallbackPrefix() {
-		return callbackPrefix;
+	public String getCallbackCalleePrefix() {
+		return callbackCalleePrefix;
 	}
 
-	public void setCallbackPrefix(String callbackPrefix) {
-		this.callbackPrefix = callbackPrefix;
+	public void setCallbackCalleePrefix(String callbackCalleePrefix) {
+		this.callbackCalleePrefix = callbackCalleePrefix;
 	}
+
+	public String getCallbackCallerPrefix() {
+		return callbackCallerPrefix;
+	}
+
+	public void setCallbackCallerPrefix(String callbackCallerPrefix) {
+		this.callbackCallerPrefix = callbackCallerPrefix;
+	}
+
 }

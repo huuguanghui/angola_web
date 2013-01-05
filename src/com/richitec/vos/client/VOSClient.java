@@ -27,6 +27,7 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
+import com.angolacall.framework.Configuration;
 import com.angolacall.framework.ContextLoader;
 import com.richitec.util.RandomString;
 
@@ -188,7 +189,7 @@ public class VOSClient {
 		params.add(new BasicNameValuePair(P_loginPassword, loginPassword));
 		params.add(new BasicNameValuePair(P_operationType, "2"));
 		params.add(new BasicNameValuePair(P_id, orderSuiteId));
-		
+
 		HttpEntity entity = new UrlEncodedFormEntity(params, Consts.UTF_8);
 		HttpPost post = new HttpPost(this.baseURI + "setsuiteorder.jsp");
 		post.setEntity(entity);
@@ -331,8 +332,8 @@ public class VOSClient {
 		List<OrderSuiteInfo> orderSuites = new LinkedList<OrderSuiteInfo>();
 		if (response.getHttpStatusCode() == 200
 				&& response.isOperationSuccess()) {
-			 System.out.println("getOrderSuites response: " +
-			 response.getVOSResponseInfo());
+			System.out.println("getOrderSuites response: "
+					+ response.getVOSResponseInfo());
 			String[] suites = response.getVOSResponseInfo().split("&");
 			if (suites != null) {
 				for (String suite : suites) {
@@ -388,15 +389,15 @@ public class VOSClient {
 	public VOSHttpResponse doCallBack(String callee, String caller,
 			String callerCountryCode, String vosPhoneNumber,
 			String vosPhonePassword) {
-		String callbackPrefix = ContextLoader.getConfiguration()
-				.getCallbackPrefix();
+		Configuration config = ContextLoader.getConfiguration();
 
 		List<NameValuePair> params = new LinkedList<NameValuePair>();
 		params.add(new BasicNameValuePair(P_loginName, loginName));
 		params.add(new BasicNameValuePair(P_loginPassword, loginPassword));
-		params.add(new BasicNameValuePair(P_caller, callbackPrefix
-				+ callerCountryCode + caller));
-		params.add(new BasicNameValuePair(P_callee, callbackPrefix + callee));
+		params.add(new BasicNameValuePair(P_caller, config
+				.getCallbackCallerPrefix() + callerCountryCode + caller));
+		params.add(new BasicNameValuePair(P_callee, config
+				.getCallbackCalleePrefix() + callee));
 		params.add(new BasicNameValuePair(P_number, "9999"));
 		params.add(new BasicNameValuePair(P_password, "9999"));
 		params.add(new BasicNameValuePair(P_callbackBillingNumber,

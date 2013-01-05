@@ -185,4 +185,11 @@ public class AdminController {
 		ChargeMoneyConfigDao cmcd = ContextLoader.getChargeMoneyConfigDao();
 		cmcd.deleteChargeMoney(id);
 	}
+	
+	@RequestMapping(value = "/noticemanage", method = RequestMethod.GET)
+	public ModelAndView noticeManage() {
+		ModelAndView view = new ModelAndView("admin/noticemanage");
+		view.addObject(WebConstants.page_name.name(), Pages.notice_manage.name());
+		return view;
+	}
 }
