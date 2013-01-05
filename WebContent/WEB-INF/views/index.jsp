@@ -33,7 +33,7 @@
     			<div>
     				<a class="btn" href="/appvcenter/downloadapp/2/android">
     					<div>
-    						<img class="pull-left" alt="app store" src="./img/android.png">
+    						<img class="pull-left" alt="android" src="./img/android.png">
     						<div class="pull-right">
     							<p><strong>&nbsp;UU-Talk Android 版</strong><br>下载 apk 文件</p>
     						</div>
@@ -49,7 +49,7 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="/imeeting/js/lib/jquery-1.8.0.min.js"></script>
-    <script src="/imeeting/js/lib/bootstrap.min.js"></script>
+    <script src="/angola/js/lib/jquery-1.8.0.min.js"></script>
+    <script src="/angola/js/lib/bootstrap.min.js"></script>
   </body>
 </html>

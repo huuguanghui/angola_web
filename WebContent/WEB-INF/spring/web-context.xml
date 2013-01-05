@@ -32,6 +32,8 @@
 		    <mvc:mapping path="/admin/giftmanage/**"/>
 			<mvc:mapping path="/admin/chargemanage"/>
 			<mvc:mapping path="/admin/chargemanage/**"/>
+			<mvc:mapping path="/admin/noticemanage/"/>
+			<mvc:mapping path="/admin/noticemanage/**"/>
 		    <bean class="com.angolacall.mvc.AdminUserInterceptor"></bean>
 		</mvc:interceptor>
 		<mvc:interceptor>

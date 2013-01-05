@@ -190,6 +190,27 @@ public class AdminController {
 	public ModelAndView noticeManage() {
 		ModelAndView view = new ModelAndView("admin/noticemanage");
 		view.addObject(WebConstants.page_name.name(), Pages.notice_manage.name());
+		view.addObject("notices", ContextLoader.getNoticeDao().getNotices());
 		return view;
+	}
+	
+	@RequestMapping(value = "/noticemanage/addNotice", method = RequestMethod.POST)
+	public void addNotice(HttpServletResponse response, @RequestParam( value = "content") String content) {
+		ContextLoader.getNoticeDao().addNotice(content);
+	}
+	
+	@RequestMapping(value = "/noticemanage/delNotice", method = RequestMethod.POST)
+	public void deleteNotice(HttpServletResponse response, @RequestParam(value = "noticeId") String noticeId) {
+		ContextLoader.getNoticeDao().hideNotice(Integer.parseInt(noticeId));
+	}
+	
+	@RequestMapping(value = "/noticemanage/pubNotice", method = RequestMethod.POST)
+	public void publishNotice(HttpServletResponse response, @RequestParam (value = "noticeId") String noticeId) {
+		ContextLoader.getNoticeDao().publishNotice(Integer.parseInt(noticeId));
+	}
+	
+	@RequestMapping(value = "/noticemanage/editNotice", method = RequestMethod.POST)
+	public void editNotice(HttpServletResponse response, @RequestParam (value = "noticeId") String noticeId, @RequestParam(value = "content") String content) {
+		ContextLoader.getNoticeDao().saveNotice(Integer.parseInt(noticeId), content);
 	}
 }

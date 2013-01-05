@@ -58,7 +58,7 @@
 							  if (chargeId.startsWith(ChargeType.alipay.name())){
 								  type = "支付宝";
 							  } else if (chargeId.startsWith(ChargeType.card.name())) {
-								  type = "UUTalk充值卡";
+								  type = "UU-Talk充值卡";
 							  } else if (chargeId.startsWith(ChargeType.invitereg.name())) {
 								  type = "系统赠送[您邀请的用户成功注册]";
 							  } else if (chargeId.startsWith(ChargeType.chargecontribute.name())) {
