@@ -7,6 +7,6 @@
 	    		<span>Copyright: <strong>(HongKong) UuTalk Technology Limited</strong></span>
 	    	</p>
 	    	<p>
-	    		<span>客服QQ：<strong>707461046</strong></span>
+	    		<span>客服QQ：<strong>1622122511</strong></span>
 	    	</p>
 	    </footer>

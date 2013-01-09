@@ -23,7 +23,7 @@
     	<div class="row">
     		<div class="span6 offset3">
     			<h2>请选择你喜欢的充值方式</h2>
-    			<small>如需帮助请联系客服，QQ： 1622122511，电话： 0551-2379996</small>
+    			<small>如需帮助请联系客服，QQ： 1622122511</small>
 	    		<hr>
     		</div>
     		<div class="tabbable span6 offset3">
