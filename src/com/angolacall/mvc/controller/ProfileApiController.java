@@ -241,17 +241,17 @@ public class ProfileApiController {
 					continue;
 				}
 
-//				boolean isOrdered = false;
-//				for (OrderSuiteInfo osi : orderSuites) {
-//					if (si.getSuiteId().equals(osi.getSuiteId())) {
-//						isOrdered = true;
-//						break;
-//					}
-//				}
-//
-//				if (!isOrdered) {
-					allSuitesArray.put(si.toJSONObject());
-//				}
+				// boolean isOrdered = false;
+				// for (OrderSuiteInfo osi : orderSuites) {
+				// if (si.getSuiteId().equals(osi.getSuiteId())) {
+				// isOrdered = true;
+				// break;
+				// }
+				// }
+				//
+				// if (!isOrdered) {
+				allSuitesArray.put(si.toJSONObject());
+				// }
 			}
 			ret.put("all_suites", allSuitesArray);
 		}
@@ -321,7 +321,8 @@ public class ProfileApiController {
 	public void unsubscribeSuite(HttpServletResponse response,
 			@RequestParam(value = "countryCode") String countryCode,
 			@RequestParam(value = "username") String userName,
-			@RequestParam(value = "orderSuiteId") String orderSuiteId) throws JSONException, IOException {
+			@RequestParam(value = "orderSuiteId") String orderSuiteId)
+			throws JSONException, IOException {
 		VOSHttpResponse vosResponse = ContextLoader.getVOSClient()
 				.unsubscribeSuite(orderSuiteId);
 		if (vosResponse.getHttpStatusCode() != 200
@@ -339,4 +340,6 @@ public class ProfileApiController {
 			return;
 		}
 	}
+
+	
 }

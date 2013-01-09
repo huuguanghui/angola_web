@@ -1,6 +1,7 @@
 package com.angolacall.mvc.controller;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -141,5 +143,25 @@ public class AngolaWebController {
 		String appId = config.getAppId();
 		versionUrl = versionUrl + "/" + appId + "/" + device;
 		response.addHeader("Location", versionUrl);
+	}
+	
+	@RequestMapping("/getNewNotice")
+	public void getNewNotice(HttpServletResponse response, @RequestParam(value = "maxId") String maxId) throws JSONException, IOException {
+		List<Map<String, Object>> noticeList = ContextLoader.getNoticeDao().getNewPublishedNotices(Integer.parseInt(maxId));
+		JSONArray ret = new JSONArray();
+		if (noticeList != null) {
+			for (Map<String, Object> map : noticeList) {
+				Integer id = (Integer) map.get("id");
+				String content = (String) map.get("content");
+				Long time = (Long) map.get("time");
+				
+				JSONObject notice = new JSONObject();
+				notice.put("id", id.intValue());
+				notice.put("content", content);
+				notice.put("create_time", time.longValue());
+				ret.put(notice);
+			}
+		}
+		response.getWriter().print(ret.toString());
 	}
 }

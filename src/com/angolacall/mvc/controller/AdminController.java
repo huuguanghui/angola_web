@@ -213,4 +213,5 @@ public class AdminController {
 	public void editNotice(HttpServletResponse response, @RequestParam (value = "noticeId") String noticeId, @RequestParam(value = "content") String content) {
 		ContextLoader.getNoticeDao().saveNotice(Integer.parseInt(noticeId), content);
 	}
+	
 }
