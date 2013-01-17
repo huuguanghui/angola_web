@@ -53,6 +53,7 @@
 		<li><a href="#">充值中心</a></li>
 		<li><a href="http://www.uu-talk.com/a/zifeishuoming/">资费说明</a></li>
 		<li><a href="http://www.uu-talk.com/a/bangzhu/">帮助</a></li>
+		<li><a href="http://www.uu-talk.com/a/hezuojiameng/">合作加盟</a></li>
 		</ul>
 	</div>
 </div>
@@ -106,7 +107,7 @@
 				<div class="youhui-item">
 					<input type="radio" name="depositeId" value="<%=id %>" 
 						<%if(!checked) {%>checked="checked"<% checked=true;} %>/>
-					<span><%=chargeMoney.toString() + "(" + description + ")" %></span>				
+					<span>￥<%=chargeMoney.toString() + "&nbsp;--&nbsp;" + description%></span>				
 				</div>
 				<%
 						}
