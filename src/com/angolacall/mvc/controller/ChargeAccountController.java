@@ -203,9 +203,9 @@ public class ChargeAccountController {
 	 * 充值卡号前四位表示该卡的面额
 	 * 
 	 * @param response
-	 * @param account
+	 * @param accountName
 	 * @param pin
-	 * @param password
+	 * @param cardPwd
 	 * @return
 	 * @throws IOException
 	 * @throws SQLException
@@ -213,25 +213,25 @@ public class ChargeAccountController {
 	@RequestMapping(value = "/cardchargepage", method = RequestMethod.POST)
 	public ModelAndView cardchargepage(HttpServletResponse response,
 			@RequestParam(value = "countryCode") String countryCode,
-			@RequestParam(value = "account_name") String account,
-			@RequestParam(value = "pin") String pin,
-			@RequestParam(value = "password") String password)
+			@RequestParam(value = "accountName") String accountName,
+			@RequestParam(value = "cardNumber") String cardNumber,
+			@RequestParam(value = "cardPwd") String cardPwd)
 			throws IOException, SQLException {
 		ModelAndView mv = new ModelAndView();
-		boolean isExist = userDao.isExistsLoginName(countryCode, account);
+		boolean isExist = userDao.isExistsLoginName(countryCode, accountName);
 		if (!isExist) {
 			mv.setViewName("accountcharge/invalidAccount");
 			return mv;
 		}
 
-		Double value = getCardValue(pin);
+		Double value = getCardValue(cardNumber);
 		if (null == value){
 			mv.setViewName("accountcharge/invalidPin");
 			return mv;
 		}
 		
-		VOSHttpResponse vosResp = depositeToVOS(countryCode, account,
-				pin, password, value);
+		VOSHttpResponse vosResp = depositeToVOS(countryCode, accountName,
+				cardNumber, cardPwd, value);
 
 		mv.addObject("vosResponse", vosResp);
 		mv.setViewName("accountcharge/vosComplete");
@@ -273,8 +273,8 @@ public class ChargeAccountController {
 	@RequestMapping(value = "/alipay", method = RequestMethod.POST)
 	public ModelAndView aliPay(HttpSession session,
 			@RequestParam(value = "countryCode") String countryCode,
-			@RequestParam(value = "account_name") String accountName,
-			@RequestParam(value = "charge_money_id") String chargeMoneyId)
+			@RequestParam(value = "accountName") String accountName,
+			@RequestParam(value = "depositeId") String depositeId)
 			throws Exception {
 		log.info("****** prepay alipay ******");
 		boolean isExist = userDao.isExistsLoginName(countryCode, accountName);

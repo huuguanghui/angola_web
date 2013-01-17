@@ -50,11 +50,11 @@
 			    		
 				    		<label>请输入要充值的账户名</label>
 				    		<input id="account_name_input" type="text" 
-				    		name="account_name"	pattern="[0-9]{11}" maxlength="11"
+				    		name="accountName"	pattern="[0-9]{11}" maxlength="11"
 				    		value="<%=userBean != null ? userBean.getUserName() : ""%>" />
 				    		
 							<label>请选择充值金额（单位：元）</label>
-							<select name="charge_money_id">
+							<select name="depositeId">
 								<%
 									if (chargeMoneyList != null) {
 										for (Map<String, Object> item : chargeMoneyList) {
@@ -80,12 +80,12 @@
 				    		</select>
 							<label>请输入要充值的账户名</label>
 				    		<input id="iptCardAccounName" type="text" 
-				    		name="account_name" pattern="[0-9]{11}" maxlength="11"
+				    		name="accountName" pattern="[0-9]{11}" maxlength="11"
 				    		value="<%=userBean != null ? userBean.getUserName() : ""%>" />						
 							<label>请输入充值卡卡号</label>
-							<input id="iptCardPin" type="text" name="pin" />
+							<input id="iptCardPin" type="text" name="cardNumber" />
 							<label>请输入充值卡密码</label>
-							<input id="iptCardPassword" type="text" name="password" />
+							<input id="iptCardPassword" type="text" name="cardPwd" />
 							<hr>
 							<button id="btnCardSubmit" type="submit" class="btn btn-success">确&nbsp;定</button>						
 						</form>
