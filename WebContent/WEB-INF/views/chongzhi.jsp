@@ -74,7 +74,7 @@
 			</select>
 			<label>输入充值账户</label>
 			<input id="iptAccountName" name="accountName" type="text" 
-				pattern="[0-9]{11}" maxlength="11" 
+				pattern="\d{9}|\d{11}" maxlength="11" 
 				<%if(null!=accountName) %>value="<%=accountName %>" />
 			<%if(null!=accountError) { %>
 			<span class="red">账户不存在</span>
@@ -176,32 +176,6 @@ $(function(){
 			//do nothing;
 		}		
 	});
-	
-	/*
-	var country_code = $("#iptCountryCodeSelect").val();
-	var account_name = $("#iptAccountName").val();
-	var deposite_type = $("#divDepositeTypeList :radio").val();
-	var deposite_id = $("#divAlipayPanel :radio").val();
-	var card_number = $("#iptCardNumber").val();
-	var card_pwd = $("#iptCardPwd").val();
-	$("#depositeForm").submit(function(){
-		var jqxhr = $.post("/angola/user/login",
-			{
-				countryCode: country_code,
-				accountName: account_name,
-				depositeType: deposite_type,
-				depositeId: deposite_id,
-				cardNumber: card_number,
-				cardPwd: card_pwd
-			}, 
-			function(data){
-				
-			}, 
-			"json");
-		});
-		return false;
-	});
-	*/
 });
 </script>
 

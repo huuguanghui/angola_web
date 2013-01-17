@@ -50,7 +50,7 @@
 			    		
 				    		<label>请输入要充值的账户名</label>
 				    		<input id="account_name_input" type="text" 
-				    		name="accountName"	pattern="[0-9]{11}" maxlength="11"
+				    		name="accountName"	pattern="\d{9}|\d{11}" maxlength="11"
 				    		value="<%=userBean != null ? userBean.getUserName() : ""%>" />
 				    		
 							<label>请选择充值金额（单位：元）</label>
@@ -80,7 +80,7 @@
 				    		</select>
 							<label>请输入要充值的账户名</label>
 				    		<input id="iptCardAccounName" type="text" 
-				    		name="accountName" pattern="[0-9]{11}" maxlength="11"
+				    		name="accountName" pattern="\d{9}|\d{11}" maxlength="11"
 				    		value="<%=userBean != null ? userBean.getUserName() : ""%>" />						
 							<label>请输入充值卡卡号</label>
 							<input id="iptCardPin" type="text" name="cardNumber" />
