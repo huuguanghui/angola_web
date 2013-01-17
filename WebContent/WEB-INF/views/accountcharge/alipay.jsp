@@ -34,14 +34,14 @@
 <title>支付宝即时到帐接口</title>
 </head>
 <%
-	String accountName = request.getParameter("account_name");
+	String accountName = request.getParameter("accountName");
 	String countryCode = request.getParameter("countryCode");
 	//请与贵网站订单系统中的唯一订单号匹配
 	String out_trade_no = ChargeUtil.getOrderNumber(ChargeType.alipay.name(), countryCode, accountName);
 	//订单名称，显示在支付宝收银台里的“商品名称”里，显示在支付宝的交易管理的“商品名称”的列表里。
 	String body = "UUTalk账户充值";
 	//订单总金额，显示在支付宝收银台里的“应付总额”里
-	String chargeMoneyId = request.getParameter("charge_money_id");
+	String chargeMoneyId = request.getParameter("depositeId");
 	Map<String, Object> chargeMoneyRecord = ContextLoader.getChargeMoneyConfigDao().getChargeMoneyRecord(Integer.parseInt(chargeMoneyId));
 	Float chargeMoney = (Float) chargeMoneyRecord.get("charge_money");
 	
