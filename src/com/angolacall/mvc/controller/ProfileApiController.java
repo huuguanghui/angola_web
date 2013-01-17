@@ -166,8 +166,12 @@ public class ProfileApiController {
 		UUTalkConfigManager ucm = ContextLoader.getUUTalkConfigManager();
 		JSONObject ret = new JSONObject();
 		StringBuffer info = new StringBuffer();
-		info.append(ucm.getRegGiftDescription()).append('\n')
-				.append(ucm.getInviteChargeGiftDescription());
+		String regGiftDesc = ucm.getRegGiftDescription();
+		if (!regGiftDesc.equals("")) {
+			info.append(regGiftDesc);
+			info.append('\n');
+		}
+		info.append(ucm.getInviteChargeGiftDescription());
 		ret.put(UUTalkConfigKeys.reg_gift_desc_text.name(), info.toString());
 		response.getWriter().print(ret.toString());
 	}
