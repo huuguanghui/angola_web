@@ -32,7 +32,6 @@ import com.angolacall.constants.ChargeStatus;
 import com.angolacall.constants.ChargeType;
 import com.angolacall.constants.WebConstants;
 import com.angolacall.framework.ContextLoader;
-import com.angolacall.mvc.admin.model.ChargeMoneyConfigDao;
 import com.angolacall.mvc.model.charge.ChargeDAO;
 import com.angolacall.mvc.model.charge.ChargeUtil;
 import com.angolacall.web.user.UserBean;
@@ -68,60 +67,122 @@ public class ChargeAccountController {
 		view.addObject("charge_money_list", ContextLoader.getChargeMoneyConfigDao().getChargeMoneyList());
 		return view;
 	}
-
+	
 	/**
-	 * 充值卡号前四位表示该卡的面额
-	 * 
-	 * @param response
-	 * @param account
-	 * @param pin
-	 * @param password
-	 * @return
-	 * @throws IOException
-	 * @throws SQLException
+	 * UU-Talk充值中心页面
+	 */	
+	@RequestMapping(value = "/chongzhi", method=RequestMethod.GET)
+	public ModelAndView chongzhiGet() {
+		ModelAndView view = new ModelAndView();
+		view.setViewName("chongzhi");
+		view.addObject("charge_money_list", ContextLoader.getChargeMoneyConfigDao().getChargeMoneyList());
+		return view;
+	}
+	
+	/**
+	 * 通过UU-Talk充值中心页面提交充值
+	 * @throws SQLException 
 	 */
-	@RequestMapping(value = "/cardchargepage", method = RequestMethod.POST)
-	public ModelAndView cardchargepage(HttpServletResponse response,
-			@RequestParam(value = "countryCode") String countryCode,
-			@RequestParam(value = "account_name") String account,
-			@RequestParam(value = "pin") String pin,
-			@RequestParam(value = "password") String password)
-			throws IOException, SQLException {
+	@RequestMapping(value="/chongzhi", method=RequestMethod.POST)
+	public ModelAndView chongzhiPost(HttpServletResponse response,
+		@RequestParam(value = "countryCode") String countryCode,
+		@RequestParam(value = "accountName") String accountName,
+		@RequestParam(value = "depositeType") String depositeType,
+		@RequestParam(value = "depositeId", required=false) String depositeId,
+		@RequestParam(value = "cardNumber", required=false) String cardNumber,
+		@RequestParam(value = "cardPwd", required=false) String cardPwd) throws SQLException {
+		
 		ModelAndView mv = new ModelAndView();
-		boolean isExist = userDao.isExistsLoginName(countryCode, account);
+		mv.addObject("charge_money_list", ContextLoader.getChargeMoneyConfigDao().getChargeMoneyList());
+		
+		boolean isExist = userDao.isExistsLoginName(countryCode, accountName);
 		if (!isExist) {
-			mv.setViewName("accountcharge/invalidAccount");
+			mv.setViewName("chongzhi");
+			mv.addObject("accountError", "NoUser");
 			return mv;
 		}
-
-		if (pin.length() < 4) {
-			mv.setViewName("accountcharge/invalidPin");
+		
+		if ("alipay".equals(depositeType)){
+			if (null == depositeId || depositeId.isEmpty()){
+				mv.setViewName("chongzhi");
+				mv.addObject("alipayError", "NoDepositeId");
+				return mv;
+			}
+			
+			mv.setViewName("accountcharge/alipay");
 			return mv;
 		}
-
-		Double value = 0.0;
-		String cardValue = pin.substring(0, 4);
+		
+		if ("uutalk".equals(depositeType)){
+			Double value = getCardValue(cardNumber);
+			if (null == value){
+				mv.setViewName("chongzhi");
+				mv.addObject("uutalkError", "InvalidCardNumber");
+				return mv;
+			}
+			
+			VOSHttpResponse vosResp = depositeToVOS(countryCode, accountName,
+					cardNumber, cardPwd, value);
+			
+			if (vosResp.getHttpStatusCode()!= 200){
+				mv.setViewName("chongzhi");
+				mv.addObject("vosHttpError", vosResp);
+			} else
+			if (!vosResp.isOperationSuccess()){
+				mv.setViewName("chongzhi");
+				mv.addObject("vosError", vosResp);
+				return mv;
+			} else {
+				mv.setViewName("accountcharge/vosComplete");
+				mv.addObject("vosResponse", vosResp);
+				return mv;
+			}
+		}
+		
+		mv.setViewName("chongzhi");
+		return mv;
+	}	
+	
+	/**
+	 * 根据卡号获取充值卡面额
+	 * 卡号前四位为充值卡面额
+	 * 
+	 * @param cardNumber
+	 * @return
+	 */
+	private Double getCardValue(String cardNumber){
+		if (null == cardNumber || cardNumber.length()<4){
+			return null;
+		}
+		
+		Double value = null;
+		String cardValue = cardNumber.substring(0, 4);
 		try {
 			value = Double.parseDouble(cardValue);
 		} catch (NumberFormatException e) {
-			mv.setViewName("accountcharge/invalidPin");
-			return mv;
+			return null;
 		}
-
-		String chargeId = getCardChargeId(pin);
+		
+		return value;
+	}
+	
+	private VOSHttpResponse depositeToVOS(
+			String countryCode, String accountName,
+			String cardNumber, String cardPwd, Double value){
+		
+		String chargeId = getCardChargeId(cardNumber);
 		VOSHttpResponse vosResp = vosClient.depositeByCard(countryCode
-				+ account, pin, password);
+				+ accountName, cardNumber, cardPwd);
 		if (vosResp.getHttpStatusCode() != 200 || !vosResp.isOperationSuccess()) {
-			chargeDao.addChargeRecord(chargeId, countryCode, account, value,
+			chargeDao.addChargeRecord(chargeId, countryCode, accountName, value,
 					ChargeStatus.vos_fail);
-			log.error("\nCannot deposite to account <" + account
-					+ "> with card <" + pin + ">" + "<" + password + ">"
+			log.error("\nCannot deposite to account <" + accountName
+					+ "> with card <" + cardNumber + ">" + "<" + cardPwd + ">"
 					+ "\nVOS Http Response : " + vosResp.getHttpStatusCode()
 					+ "\nVOS Status Code : " + vosResp.getVOSStatusCode()
 					+ "\nVOS Response Info ：" + vosResp.getVOSResponseInfo());
 		}
-
-		mv.addObject("vosResponse", vosResp);
+		
 		if (vosResp.isOperationSuccess()) {
 			/*
 			 * log.info("VOS INFO : " + vosResp.getVOSResponseInfo());
@@ -129,12 +190,50 @@ public class ChargeAccountController {
 			 * DepositeCardInfo(vosResp.getVOSResponseInfo());
 			 * mv.addObject("despositeInfo", info);
 			 */
-			chargeDao.addChargeRecord(chargeId, countryCode, account, value,
+			chargeDao.addChargeRecord(chargeId, countryCode, accountName, value,
 					ChargeStatus.success);
-			smsClient.sendTextMessage(account, "您的UU-Talk账户已成功充值" + value
-					+ "元，谢谢！");
+//			smsClient.sendTextMessage(accountName, "您的UU-Talk账户已成功充值" + value
+//					+ "元，谢谢！");
+		}
+		
+		return vosResp;
+	}
+
+	/**
+	 * 充值卡号前四位表示该卡的面额
+	 * 
+	 * @param response
+	 * @param accountName
+	 * @param pin
+	 * @param cardPwd
+	 * @return
+	 * @throws IOException
+	 * @throws SQLException
+	 */
+	@RequestMapping(value = "/cardchargepage", method = RequestMethod.POST)
+	public ModelAndView cardchargepage(HttpServletResponse response,
+			@RequestParam(value = "countryCode") String countryCode,
+			@RequestParam(value = "accountName") String accountName,
+			@RequestParam(value = "cardNumber") String cardNumber,
+			@RequestParam(value = "cardPwd") String cardPwd)
+			throws IOException, SQLException {
+		ModelAndView mv = new ModelAndView();
+		boolean isExist = userDao.isExistsLoginName(countryCode, accountName);
+		if (!isExist) {
+			mv.setViewName("accountcharge/invalidAccount");
+			return mv;
 		}
 
+		Double value = getCardValue(cardNumber);
+		if (null == value){
+			mv.setViewName("accountcharge/invalidPin");
+			return mv;
+		}
+		
+		VOSHttpResponse vosResp = depositeToVOS(countryCode, accountName,
+				cardNumber, cardPwd, value);
+
+		mv.addObject("vosResponse", vosResp);
 		mv.setViewName("accountcharge/vosComplete");
 		return mv;
 	}
@@ -174,8 +273,8 @@ public class ChargeAccountController {
 	@RequestMapping(value = "/alipay", method = RequestMethod.POST)
 	public ModelAndView aliPay(HttpSession session,
 			@RequestParam(value = "countryCode") String countryCode,
-			@RequestParam(value = "account_name") String accountName,
-			@RequestParam(value = "charge_money_id") String chargeMoneyId)
+			@RequestParam(value = "accountName") String accountName,
+			@RequestParam(value = "depositeId") String depositeId)
 			throws Exception {
 		log.info("****** prepay alipay ******");
 		boolean isExist = userDao.isExistsLoginName(countryCode, accountName);

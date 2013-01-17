@@ -4,11 +4,10 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-<title>智会</title>
+<title>UU-Talk支付宝充值结果</title>
 <jsp:include page="../common/_head.jsp"></jsp:include>
 </head>
 <body>
-	<jsp:include page="../common/beforelogin_navibar.jsp"></jsp:include>
 	<div class="container">
 		<div class="pay_result_center">
 			<div>
@@ -19,7 +18,7 @@
 					String chargeMoney = (String) request.getAttribute(WebConstants.charge_money.name());
 					if (accountName == null) {
 					%>
-						<p>充值出现异常，系统未能成功入账，请联系管理员(QQ：1622122511，电话：0551-2379996)！</p>
+						<p>充值出现异常，系统未能成功入账，请联系管理员(QQ：1622122511)！</p>
 					<%
 					} else {
 					%>
@@ -33,23 +32,17 @@
 			%>
 					<p>用户您好,</p>
 					<br/>
-					<p>您此次充值不成功！</p>
+					<p>对不起，充值失败！</p>
 			<%
 				}
 			%>
 			<div class="link_region">
-				<a href="home">返回首页</a>
-				<a href="deposite">继续充值</a>
+				<a href="http://www.uu-talk.com">返回首页</a>
+				<a href="http://www.uu-talk.com/angola/chongzhi">继续充值</a>
 			</div>
 			</div>
 		</div>
-		<jsp:include page="../common/_footer.jsp"></jsp:include>
 	</div>
 
-
-	<!-- Le javascript
-    ================================================== -->
-	<!-- Placed at the end of the document so the pages load faster -->
-	<script src="/angola/js/lib/jquery-1.8.0.min.js"></script>
-	<script src="/angola/js/lib/bootstrap.js"></script>
 </body>
+</html>
