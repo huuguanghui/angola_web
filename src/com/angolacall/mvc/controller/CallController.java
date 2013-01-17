@@ -59,7 +59,10 @@ public class CallController {
 			ret.put("vos_status_code", vosResponse.getVOSStatusCode());
 			ret.put("vos_info", vosResponse.getVOSResponseInfo());
 			response.getWriter().print(ret.toString());
-			return;
+		} else {
+			JSONObject ret = new JSONObject();
+			ret.put("vos_status_code", 200);
+			response.getWriter().print(ret.toString());
 		}
 	}
 }
