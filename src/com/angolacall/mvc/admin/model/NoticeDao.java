@@ -44,7 +44,7 @@ public class NoticeDao {
 	}
 	
 	public List<Map<String, Object>> getNotices() {
-		String sql = "SELECT id, content, UNIX_TIMESTAMP(createtime) AS time, status FROM notices WHERE status <> ?";
+		String sql = "SELECT id, content, UNIX_TIMESTAMP(createtime) AS time, status FROM notices WHERE status <> ? ORDER BY createtime DESC";
 		return jdbc.queryForList(sql, NoticeStatus.hidden.name());
 	}
 	

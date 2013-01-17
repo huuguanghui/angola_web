@@ -241,17 +241,17 @@ public class ProfileApiController {
 					continue;
 				}
 
-//				boolean isOrdered = false;
-//				for (OrderSuiteInfo osi : orderSuites) {
-//					if (si.getSuiteId().equals(osi.getSuiteId())) {
-//						isOrdered = true;
-//						break;
-//					}
-//				}
-//
-//				if (!isOrdered) {
-					allSuitesArray.put(si.toJSONObject());
-//				}
+				// boolean isOrdered = false;
+				// for (OrderSuiteInfo osi : orderSuites) {
+				// if (si.getSuiteId().equals(osi.getSuiteId())) {
+				// isOrdered = true;
+				// break;
+				// }
+				// }
+				//
+				// if (!isOrdered) {
+				allSuitesArray.put(si.toJSONObject());
+				// }
 			}
 			ret.put("all_suites", allSuitesArray);
 		}
@@ -290,7 +290,7 @@ public class ProfileApiController {
 			cal.set(Calendar.MINUTE, 0);
 			cal.set(Calendar.SECOND, 0);
 		} else {
-			cal.add(Calendar.MONTH, cal.get(Calendar.MONTH) + 1);
+			cal.add(Calendar.MONTH, 1);
 			cal.set(Calendar.DAY_OF_MONTH, 1);
 			cal.set(Calendar.HOUR_OF_DAY, 0);
 			cal.set(Calendar.MINUTE, 0);
@@ -321,7 +321,8 @@ public class ProfileApiController {
 	public void unsubscribeSuite(HttpServletResponse response,
 			@RequestParam(value = "countryCode") String countryCode,
 			@RequestParam(value = "username") String userName,
-			@RequestParam(value = "orderSuiteId") String orderSuiteId) throws JSONException, IOException {
+			@RequestParam(value = "orderSuiteId") String orderSuiteId)
+			throws JSONException, IOException {
 		VOSHttpResponse vosResponse = ContextLoader.getVOSClient()
 				.unsubscribeSuite(orderSuiteId);
 		if (vosResponse.getHttpStatusCode() != 200
@@ -339,4 +340,6 @@ public class ProfileApiController {
 			return;
 		}
 	}
+
+	
 }
