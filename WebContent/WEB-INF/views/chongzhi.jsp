@@ -107,7 +107,7 @@
 				<div class="youhui-item">
 					<input type="radio" name="depositeId" value="<%=id %>" 
 						<%if(!checked) {%>checked="checked"<% checked=true;} %>/>
-					<span><%=chargeMoney.toString() + "(" + description + ")" %></span>				
+					<span>￥<%=chargeMoney.toString() + "&nbsp;--&nbsp;" + description%></span>				
 				</div>
 				<%
 						}
