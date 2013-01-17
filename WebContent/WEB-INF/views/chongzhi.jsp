@@ -73,7 +73,7 @@
 			<select id="iptCountryCodeSelect" name="countryCode">
 				<jsp:include page="common/countrycode_options.jsp"></jsp:include>
 			</select>
-			<label>输入充值账户</label>
+			<label>输入账户名（注册手机号）</label>
 			<input id="iptAccountName" name="accountName" type="text" 
 				pattern="\d{9}|\d{11}" maxlength="11" 
 				<%if(null!=accountName) %>value="<%=accountName %>" />
