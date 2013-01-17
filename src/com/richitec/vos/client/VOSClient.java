@@ -29,6 +29,7 @@ import org.apache.http.util.EntityUtils;
 
 import com.angolacall.framework.Configuration;
 import com.angolacall.framework.ContextLoader;
+import com.richitec.util.CountryManager;
 import com.richitec.util.RandomString;
 
 public class VOSClient {
@@ -396,8 +397,14 @@ public class VOSClient {
 		params.add(new BasicNameValuePair(P_loginPassword, loginPassword));
 		params.add(new BasicNameValuePair(P_caller, config
 				.getCallbackCallerPrefix() + callerCountryCode + caller));
+		
+		String callerCountryABBR = CountryManager.getInstance().getCountryABBR(callerCountryCode);
+		if (callerCountryABBR == null) {
+			callerCountryABBR = "";
+		}
+		
 		params.add(new BasicNameValuePair(P_callee, config
-				.getCallbackCalleePrefix() + callee));
+				.getCallbackCalleePrefix() + callerCountryABBR + callee));
 		params.add(new BasicNameValuePair(P_number, "9999"));
 		params.add(new BasicNameValuePair(P_password, "9999"));
 		params.add(new BasicNameValuePair(P_callbackBillingNumber,
