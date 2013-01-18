@@ -194,6 +194,8 @@ public class ChargeAccountController {
 					ChargeStatus.success);
 //			smsClient.sendTextMessage(accountName, "您的UU-Talk账户已成功充值" + value
 //					+ "元，谢谢！");
+			
+			ChargeUtil.checkAndGiveMoneyToReferrer(countryCode, accountName, value);
 		}
 		
 		return vosResp;
@@ -496,6 +498,8 @@ public class ChargeAccountController {
 					ChargeStatus.success);
 			smsClient.sendTextMessage(userName, "您的UU-Talk账户已成功充值" + value
 					+ "元，谢谢！");
+			
+			ChargeUtil.checkAndGiveMoneyToReferrer(countryCode, userName, value);
 			response.setStatus(HttpServletResponse.SC_OK);
 		} else if (vosResp.getVOSStatusCode() == -10079) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST);

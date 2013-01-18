@@ -282,5 +282,10 @@ public class UserDAO {
 		String sql = "UPDATE im_user SET bindphone = ?, bindphone_country_code = ? WHERE countrycode = ? AND username = ?";
 		return jdbc.update(sql, bindPhone, bindPhoneCountryCode, countryCode, userName);
 	}
+	
+	public int getRegedUserCountViaShare(String countryCode, String userName) {
+		String sql = "SELECT count(*) FROM im_user WHERE referrer = ? AND referrer_country_code = ?";
+		return jdbc.queryForInt(sql, userName, countryCode);
+	}
 
 }

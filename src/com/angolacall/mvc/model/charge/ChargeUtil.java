@@ -62,22 +62,24 @@ public class ChargeUtil {
 			chargeDao.updateChargeRecord(chargeId, ChargeStatus.success);
 
 			// give money to referrer if has
-			Map<String, Object> user = ContextLoader.getUserDAO().getUser(
-					countryCode, userName);
-			String referrer = (String) user.get("referrer");
-			String referrerCountryCode = (String) user
-					.get("referrer_country_code");
-			if (referrer != null && referrerCountryCode != null
-					&& !referrer.equals("") && !referrerCountryCode.equals("")) {
-				Double giveAmount = InviteChargeGiftPlan
-						.calculateGiftMoney(amount);
-				if (giveAmount > 0) {
-					giveMoneyToReferrer(ChargeType.chargecontribute,
-							referrerCountryCode, referrer, giveAmount,
-							countryCode, userName);
-				}
-			}
-
+//			Map<String, Object> user = ContextLoader.getUserDAO().getUser(
+//					countryCode, userName);
+//			String referrer = (String) user.get("referrer");
+//			String referrerCountryCode = (String) user
+//					.get("referrer_country_code");
+//			if (referrer != null && referrerCountryCode != null
+//					&& !referrer.equals("") && !referrerCountryCode.equals("")) {
+//				Double giveAmount = InviteChargeGiftPlan
+//						.calculateGiftMoney(amount);
+//				if (giveAmount > 0) {
+//					giveMoneyToReferrer(ChargeType.chargecontribute,
+//							referrerCountryCode, referrer, giveAmount,
+//							countryCode, userName);
+//				}
+//			}
+			checkAndGiveMoneyToReferrer(countryCode, userName, amount);
+			
+			
 			// check if there is gift money, if has, deposit to user
 			Integer chargeMoneyCfgId = (Integer) chargeInfo
 					.get("charge_money_cfg_id");
@@ -89,6 +91,31 @@ public class ChargeUtil {
 			log.info("vos deposite fail");
 			chargeDao.updateChargeRecord(chargeId, ChargeStatus.vos_fail);
 			return null;
+		}
+	}
+
+	/**
+	 * check the referrer gift money and give it to referrer
+	 * @param countryCode
+	 * @param userName
+	 * @param chargeMoney
+	 */
+	public static void checkAndGiveMoneyToReferrer(String countryCode,
+			String userName, double chargeMoney) {
+		// give money to referrer if has
+		Map<String, Object> user = ContextLoader.getUserDAO().getUser(
+				countryCode, userName);
+		String referrer = (String) user.get("referrer");
+		String referrerCountryCode = (String) user.get("referrer_country_code");
+		if (referrer != null && referrerCountryCode != null
+				&& !referrer.equals("") && !referrerCountryCode.equals("")) {
+			Double giveAmount = InviteChargeGiftPlan
+					.calculateGiftMoney(chargeMoney);
+			if (giveAmount > 0) {
+				giveMoneyToReferrer(ChargeType.chargecontribute,
+						referrerCountryCode, referrer, giveAmount, countryCode,
+						userName);
+			}
 		}
 	}
 

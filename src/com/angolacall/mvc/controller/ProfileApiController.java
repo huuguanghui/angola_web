@@ -345,5 +345,12 @@ public class ProfileApiController {
 		}
 	}
 
+	@RequestMapping("/getRegedUserCountViaShare")
+	public void getRegedUserCountViaShare(HttpServletResponse response, @RequestParam(value = "countryCode") String countryCode,
+			@RequestParam(value = "username") String userName) throws JSONException, IOException {
+		JSONObject ret = new JSONObject();
+		ret.put("shared_user_count", userDao.getRegedUserCountViaShare(countryCode, userName));
+		response.getWriter().print(ret.toString());
+	}
 	
 }

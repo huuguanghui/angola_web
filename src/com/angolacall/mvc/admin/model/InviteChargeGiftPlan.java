@@ -3,7 +3,7 @@ package com.angolacall.mvc.admin.model;
 public class InviteChargeGiftPlan {
 
 	public static double calculateGiftMoney(double money) {
-		return plan1(money);
+		return plan2(money);
 	}
 	
 	public static double plan1(double money) {
@@ -19,5 +19,18 @@ public class InviteChargeGiftPlan {
 			ret = 200 * rate;
 		}
 		return ret;
+	}
+	
+	public static double plan2(double money) {
+		double ret = 0;
+		double baseMoney = 5;
+		ret = ((int)(money / 50)) * baseMoney;
+		return ret;
+	}
+	
+	
+	public static void main(String args[]) {
+		double money = plan2(51);
+		System.out.println("gift money: " + money);
 	}
 }
