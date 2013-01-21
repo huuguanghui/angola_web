@@ -78,7 +78,7 @@
 				pattern="\d{9}|\d{11}" maxlength="11" 
 				<%if(null!=accountName) %>value="<%=accountName %>" />
 			<%if(null!=accountError) { %>
-			<span class="red">账户不存在</span>
+			<span class="red">账户不存在，请检查国家代码和您的手机号码</span>
 			<% } %>
 		</div>
   		
