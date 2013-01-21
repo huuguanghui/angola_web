@@ -89,6 +89,12 @@
 					<% if("alipay".equals(depositeType)){ %>checked="checked"<% } %> /><span>支付宝充值</span>
 				<input type="radio" name="depositeType" value="uutalk" 
 					<% if("uutalk".equals(depositeType)){ %>checked="checked"<% } %>/><span>UU-Talk充值卡充值</span>
+				<input type="radio" name="depositeType" value="szx" 
+					<% if("szx".equals(depositeType)){ %>checked="checked"<% } %>/><span>神州行</span>		
+				<input type="radio" name="depositeType" value="unicom" 
+					<% if("unicom".equals(depositeType)){ %>checked="checked"<% } %>/><span>联通卡</span>
+				<input type="radio" name="depositeType" value="telecom" 
+					<% if("telecom".equals(depositeType)){ %>checked="checked"<% } %>/><span>电信卡</span>					
 			</div>
 			<div id="divAlipayPanel" <% if(!"alipay".equals(depositeType)){ %>class="hidden"<% } %>>
 				<%if(null!=alipayError) { %>
