@@ -46,6 +46,9 @@
 			    		<select id="countryCode" name="countryCode">
 			    			<jsp:include page="common/countrycode_options.jsp"></jsp:include>
 			    		</select>
+			    		<span id="spanCountryCodeInfo" class="help-inline">
+			    		
+			    		</span>
 			    	</div>
 			    </div>
 	    		<div id="divPhoneNumberCtrl" class="control-group">
@@ -114,6 +117,7 @@
 	                if (seconds < 0){
 	                    $btn.html(oldHtml);
 	                    $("#spanPhoneNumberInfo").html("");
+	                    $("#spanCountryCodeInfo").html("");
 	                    clearInterval(itvl);
 	                    $btn.attr("disabled", false);
 	                }
@@ -125,6 +129,14 @@
 				var $divCtrl = $("#divPhoneNumberCtrl");
 				var country_code = $("#countryCode").val();
 				var phoneNumber = $("#iptPhoneNumber").val();
+				
+				if (country_code == "--") {
+					$("#divCountryCode").addClass("error");
+					$("#spanCountryCodeInfo").html("请选择您所在的国家");
+					return false;
+				}
+				$("#divCountryCode").removeClass("error");
+				
 				if (!$.isNumeric(phoneNumber))
 				{
 					$divCtrl.addClass("error");
@@ -169,6 +181,12 @@
 			
 			$("#divError").addClass("hidden");
 			$("#divCountryCode").removeClass("error");
+			
+			if (country_code == "--") {
+				$("#divCountryCode").addClass("error");
+				$("#spanCountryCodeInfo").html("请选择您所在的国家");
+				return false;
+			}
 			
 			if (phone_number == null || phone_number == "") {
 				$("#divPhoneNumberCtrl").addClass("error");

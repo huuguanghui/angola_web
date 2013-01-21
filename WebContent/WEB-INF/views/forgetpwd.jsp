@@ -17,11 +17,11 @@
                 <hr>
                  <div class="control-group">
 			    	<label class="control-label">国家代码</label>
-			    	<div class="controls">
+			    	<div id="divCountryCode" class="control-group">
 			    		<select id="countryCode" name="countryCode">
-			    			<option value="0086" selected="selected">0086 (China 中国)</option>
-			    			<option value="00244">00244 (Angola 安哥拉)</option>
+			    			<jsp:include page="common/countrycode_options.jsp"></jsp:include>
 			    		</select>
+			    		<span id="spanCountryCodeInfo" class="help-block"></span>
 			    	</div>
 			    </div>
                 <div id="divPhoneNumberCtrl" class="control-group">
@@ -127,6 +127,15 @@
     $("#btnGetPhoneCode").click(function(){
         var phoneNumber = $("#iptPhoneNumber").val();
         var country_code = $("#countryCode").val();
+        
+        if (country_code == "--") {
+			$("#divCountryCode").addClass("error");
+			$("#spanCountryCodeInfo").html("请选择您所在的国家");
+			return false;
+		}
+	    $("#divCountryCode").removeClass("error");
+		$("#spanCountryCodeInfo").html("");
+        
         if (!isValidPhoneNumber($_divCtrl, phoneNumber)){
         	return;
         }
