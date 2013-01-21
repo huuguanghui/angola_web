@@ -46,6 +46,8 @@
 			    		<select id="countryCode" name="countryCode">
 			    			<jsp:include page="common/countrycode_options.jsp"></jsp:include>
 			    		</select>
+			    		<span id="spanCountryCodeInfo" class="help-inline">
+			    		</span>
 			    	</div>
 			    </div>
 	    		<div id="divPhoneNumberCtrl" class="control-group">
@@ -103,10 +105,16 @@
 			$("#divError").addClass("hidden");
 			$("#divCountryCode").removeClass("error");
 			
+			$("#spanCountryCodeInfo").html("");
 			$("#spanPhoneNumberInfo").html("");
 			$("#spanPasswordInfo").html("");
 			$("#spanConfirmPasswordInfo").html("");
 			
+			if (country_code == "--") {
+				$("#divCountryCode").addClass("error");
+				$("#spanCountryCodeInfo").html("请选择您所在的国家");
+				return false;
+			}
 			
 			if (phone_number == null || phone_number == "") {
 				$("#divPhoneNumberCtrl").addClass("error");
@@ -159,6 +167,11 @@
 						$("#spanPhoneNumberInfo").html("不是有效的手机号码");
 						break;
 						
+					case "phone_cant_start_with_country_code":
+						$("#divPhoneNumberCtrl").addClass("error");
+						$("#spanPhoneNumberInfo").html("请直接输入手机号码，不要以国家代码开头！");
+						break;
+
 					case "existed":
 						$("#divPhoneNumberCtrl").addClass("error");
 						$("#spanPhoneNumberInfo").html("手机号码已被注册");

@@ -15,10 +15,11 @@
 			<form id="signin-form" action="" class="span4 offset4 well">
 				<div class="control-group">
 			    	<label class="control-label">国家代码</label>
-			    	<div class="controls">
+			    	<div id="divCountryCode" class="control-group">
 			    		<select id="countryCode" name="countryCode">
 							<jsp:include page="common/countrycode_options.jsp"></jsp:include>
 			    		</select>
+			    		<span id="spanCountryCodeInfo" class="help-block"></span>
 			    	</div>
 			    </div>
 			    <div id="divUserNameAlert" class="control-group">
@@ -97,6 +98,15 @@
 			var username = $("#iptUserName").val();
 		    var pwd = $("#iptPassword").val();
 		    var country_code = $("#countryCode").val();
+		    
+		    if (country_code == "--") {
+				$("#divCountryCode").addClass("error");
+				$("#spanCountryCodeInfo").html("请选择您所在的国家");
+				return false;
+			}
+		    $("#divCountryCode").removeClass("error");
+			$("#spanCountryCodeInfo").html("");
+		    
 		    var jqxhr = $.post("/angola/user/login",
 		    	{
 		         loginName: username,

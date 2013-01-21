@@ -19,6 +19,7 @@ import com.angolacall.constants.UserAccountStatus;
 import com.angolacall.framework.ContextLoader;
 import com.angolacall.web.user.UserBean;
 import com.richitec.sms.client.SMSHttpResponse;
+import com.richitec.util.CountryManager;
 import com.richitec.util.CryptoUtil;
 import com.richitec.util.RandomString;
 import com.richitec.util.ValidatePattern;
@@ -81,7 +82,8 @@ public class UserDAO {
 			String vosPhonePwd = RandomString.genRandomNum(6);
 			String sql = "INSERT INTO im_user(username, password, userkey, referrer_country_code, referrer, countrycode, bindphone, bindphone_country_code, vosphone_pwd) VALUES (?,?,?,?,?,?,?,?,?)";
 			Object[] params = new Object[] { phone, CryptoUtil.md5(password),
-					userkey, referrerCountryCode, referrer, countryCode, phone, countryCode, vosPhonePwd };
+					userkey, referrerCountryCode, referrer, countryCode, phone,
+					countryCode, vosPhonePwd };
 			int resultCount = jdbc.update(sql, params);
 			result = resultCount > 0 ? "0" : "1001";
 		}
@@ -104,7 +106,8 @@ public class UserDAO {
 				user.setVosPhone(String.valueOf(rs.getLong("vosphone")));
 				user.setVosPhonePwd(rs.getString("vosphone_pwd"));
 				user.setBindPhone(rs.getString("bindphone"));
-				user.setBindPhoneCountryCode(rs.getString("bindphone_country_code"));
+				user.setBindPhoneCountryCode(rs
+						.getString("bindphone_country_code"));
 				return user;
 			}
 		});
@@ -178,6 +181,8 @@ public class UserDAO {
 				return "4"; // 密码必填
 			} else if (!password.equals(password1)) {
 				return "5"; // 两次密码输入不一�?
+			} else if (CountryManager.getInstance().hasCountryCodePrefix(phone)) {
+				return "7";
 			} else {
 				return "0";
 			}
@@ -277,12 +282,14 @@ public class UserDAO {
 		}
 		return referrer;
 	}
-	
-	public int setBindPhone(String countryCode, String userName, String bindPhoneCountryCode, String bindPhone) {
+
+	public int setBindPhone(String countryCode, String userName,
+			String bindPhoneCountryCode, String bindPhone) {
 		String sql = "UPDATE im_user SET bindphone = ?, bindphone_country_code = ? WHERE countrycode = ? AND username = ?";
-		return jdbc.update(sql, bindPhone, bindPhoneCountryCode, countryCode, userName);
+		return jdbc.update(sql, bindPhone, bindPhoneCountryCode, countryCode,
+				userName);
 	}
-	
+
 	public int getRegedUserCountViaShare(String countryCode, String userName) {
 		String sql = "SELECT count(*) FROM im_user WHERE referrer = ? AND referrer_country_code = ?";
 		return jdbc.queryForInt(sql, userName, countryCode);

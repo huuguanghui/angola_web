@@ -105,12 +105,13 @@
 				<%
 					}
 				%>
-				<div class="control-group">
+				<div id="divCountryCode" class="control-group">
 					<label class="control-label">国家代码</label>
 					<div class="controls">
 						<select id="countryCode" name="countryCode">
 							<jsp:include page="common/countrycode_options.jsp"></jsp:include>
 						</select>
+						<span id="spanCountryCodeInfo" class="help-block"></span>
 					</div>
 				</div>
 				<div id="divPhoneNumberCtrl"
@@ -198,6 +199,15 @@
 				var $divCtrl = $("#divPhoneNumberCtrl");
 				var country_code = $("#countryCode").val();
 				var phoneNumber = $("#iptPhoneNumber").val();
+				
+				if (country_code == "--") {
+					$("#divCountryCode").addClass("error");
+					$("#spanCountryCodeInfo").html("请选择您所在的国家");
+					return false;
+				}
+				$("#divCountryCode").removeClass("error");
+				$("#spanCountryCodeInfo").html("");
+				
 				if (!$.isNumeric(phoneNumber)) {
 					$divCtrl.addClass("error");
 					$span.html("手机号码格式错误");

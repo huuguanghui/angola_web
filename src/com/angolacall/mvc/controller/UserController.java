@@ -356,6 +356,9 @@ public class UserController extends ExceptionController {
 		} else if ("5".equals(result)) {
 			ret.put("result", "password_different_to_confirm_password");
 			response.getWriter().print(ret.toString());
+		} else if ("7".equals(result)) {
+			ret.put("result", "phone_cant_start_with_country_code");
+			response.getWriter().print(ret.toString());
 		} else {
 			ret.put("result", "server_error");
 			response.getWriter().print(ret.toString());
