@@ -1,9 +1,13 @@
 package com.angolacall.mvc.admin.model;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.angolacall.constants.UUTalkConfigKeys;
+import com.angolacall.framework.ContextLoader;
 import com.richitec.ucenter.model.CommonConfigDao;
 
 public class UUTalkConfigManager {
@@ -54,4 +58,28 @@ public class UUTalkConfigManager {
 		}
 		return desc;
 	}
+	
+	public void setDefaultRegisterMoney(String money) {
+		commonConfigDao.setValue(UUTalkConfigKeys.default_register_money.name(), money);
+	}
+	
+	public String getDefaultRegisterMoney() {
+		String money = commonConfigDao
+				.getValue(UUTalkConfigKeys.default_register_money.name());
+		if (money == null) {
+			money = "0";
+		}
+		return money;
+	}
+	
+	public Double getRegisterGivenMoney() {
+		Double defaultMoney = Double.parseDouble(getDefaultRegisterMoney());
+		RegisterActivityDao rad = ContextLoader.getRegisterActivityDao();
+		Date today = new Date();
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		String currentDate = df.format(today);
+		Double giftMoney = rad.getActivityGiftMoney(currentDate);
+		return defaultMoney > giftMoney ? defaultMoney : giftMoney;
+	}
+	
 }

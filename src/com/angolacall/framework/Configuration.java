@@ -12,7 +12,6 @@ public class Configuration {
 	private String suite5Id;
 	private String suite10Id;
 	private String appDonwloadPageUrl;
-	private Double signupGift;
 	private String appvcenterUrl;
 	private String appId;
 	private String serverUrl;
@@ -48,14 +47,6 @@ public class Configuration {
 
 	public void setAppDonwloadPageUrl(String appDonwloadPageUrl) {
 		this.appDonwloadPageUrl = appDonwloadPageUrl;
-	}
-
-	public void setSignupGift(Double value) {
-		this.signupGift = value;
-	}
-
-	public Double getSignupGift() {
-		return signupGift;
 	}
 
 	public String getAppvcenterUrl() {

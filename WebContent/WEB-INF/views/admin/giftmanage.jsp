@@ -22,18 +22,18 @@
 			<div class="span8 offset3 tabbable tabs-left">
 				<ul class="nav nav-tabs">
 					<li class="active">
-						<a data-toggle="tab" href="#pane-reg-gift-config">注册赠送配置</a>
+						<a data-toggle="tab" href="#pane-reg-gift-config">好友注册赠送配置</a>
 					</li>
 					<li class="">
-						<a data-toggle="tab" href="#pane-charge-gift-config">充值赠送配置</a>
+						<a data-toggle="tab" href="#pane-charge-gift-config">好友充值赠送配置</a>
 					</li>
 				</ul>
 				<div class="tab-content">	
                     <div id="pane-reg-gift-config" class="tab-pane active">
-                        <h3>注册赠送配置</h3>
+                        <h3>好友注册赠送配置</h3>
                         <hr>
 						<div id="reg_gift_ctrlgroup" class="control-group">
-							<label class="control-label" for="reg_gift_input">通过邀请成功注册赠送金额</label>
+							<label class="control-label" for="reg_gift_input">通过邀请成功注册赠送邀请者金额</label>
 							<div class="controls">
 								<div class="input-append float-left">
 									<input id="reg_gift_input" class="span2" type="text"
@@ -55,7 +55,7 @@
 					</div>  
                     
 					<div id="pane-charge-gift-config" class="tab-pane">
-						<h3>充值赠送配置</h3>
+						<h3>好友充值赠送配置</h3>
 						<hr>
 						<div id="invite_charge_gift_desc_ctrlgroup" class="control-group">
 							<label class="control-label" for="invite_charge_gift_desc_ta">客户端显示信息</label>

@@ -214,4 +214,13 @@ public class AdminController {
 		ContextLoader.getNoticeDao().saveNotice(Integer.parseInt(noticeId), content);
 	}
 	
+	@RequestMapping(value = "/registermanage", method = RequestMethod.GET)
+	public ModelAndView registerManage() {
+		ModelAndView view = new ModelAndView("admin/register_manage");
+		view.addObject(WebConstants.page_name.name(), Pages.register_manage.name());
+		view.addObject(UUTalkConfigKeys.default_register_money.name(), ucm.getDefaultRegisterMoney());
+		view.addObject("register_activity", ContextLoader.getRegisterActivityDao().getRegisterActivity());
+		return view;
+	}
+	
 }
