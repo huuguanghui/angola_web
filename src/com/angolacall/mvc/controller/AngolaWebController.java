@@ -29,15 +29,15 @@ import com.angolacall.framework.ContextLoader;
 import com.angolacall.web.user.UserBean;
 import com.richitec.sms.client.SMSHttpResponse;
 
-
 @Controller
 public class AngolaWebController {
 	private static Log log = LogFactory.getLog(AngolaWebController.class);
+
 	@RequestMapping("/")
 	public ModelAndView index(HttpSession session, HttpServletRequest request) {
 		ModelAndView view = new ModelAndView();
 		view.setViewName("index");
-//		view.addObject(WebConstants.page_name.name(), "index");
+		// view.addObject(WebConstants.page_name.name(), "index");
 		return view;
 	}
 
@@ -56,15 +56,17 @@ public class AngolaWebController {
 		view.addObject(WebConstants.page_name.name(), "signin");
 		return view;
 	}
-	
+
 	@RequestMapping(value = "/invitejoin/{inviterId}", method = RequestMethod.GET)
-	public ModelAndView inviteJoin(HttpServletResponse response, @PathVariable String inviterId) throws IOException {
+	public ModelAndView inviteJoin(HttpServletResponse response,
+			@PathVariable String inviterId) throws IOException {
 		ModelAndView view = new ModelAndView();
 		view.setViewName("invitejoin_directreg");
-		
+
 		Map<String, Object> inviterMap = null;
 		try {
-			inviterMap = ContextLoader.getRegLinkTagDao().getInviterMap(inviterId);
+			inviterMap = ContextLoader.getRegLinkTagDao().getInviterMap(
+					inviterId);
 		} catch (Exception e) {
 			log.info(e.getMessage());
 		}
@@ -72,10 +74,10 @@ public class AngolaWebController {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 			return view;
 		}
-		
+
 		String inviterName = (String) inviterMap.get("username");
 		String inviterCountryCode = (String) inviterMap.get("country_code");
-		
+
 		view.addObject(AuthConstant.username.name(), inviterName);
 		view.addObject(AuthConstant.countryCode.name(), inviterCountryCode);
 		return view;
@@ -88,30 +90,33 @@ public class AngolaWebController {
 		view.addObject(WebConstants.page_name.name(), "forgetpwd");
 		return view;
 	}
-	
+
 	@RequestMapping(value = "/signout", method = RequestMethod.GET)
 	public String signout(HttpSession session) {
 		session.removeAttribute(UserBean.SESSION_BEAN);
 		return "redirect:/";
 	}
-	
-	@RequestMapping(value="/404")
-	public String page404(){
+
+	@RequestMapping(value = "/404")
+	public String page404() {
 		return "error/404";
 	}
-	
-	@RequestMapping(value="/500")
-	public String page500(){
+
+	@RequestMapping(value = "/500")
+	public String page500() {
 		return "error/500";
-	}	
-	
+	}
+
 	@RequestMapping("/getDownloadPageUrl")
-	public void getDownloadPageUrl(HttpServletResponse response, @RequestParam String phoneNumber) throws JSONException, IOException {
+	public void getDownloadPageUrl(HttpServletResponse response,
+			@RequestParam String phoneNumber) throws JSONException, IOException {
 		String url = ContextLoader.getConfiguration().getAppDonwloadPageUrl();
 		String msgContent = "智会客户端下载地址：" + url;
-		SMSHttpResponse resp = ContextLoader.getSMSClient().sendTextMessage(phoneNumber, msgContent);
-		JSONObject ret = new JSONObject();		
-		log.info("status code: " + resp.getStatusCode() + " code: " + resp.getCode());
+		SMSHttpResponse resp = ContextLoader.getSMSClient().sendTextMessage(
+				phoneNumber, msgContent);
+		JSONObject ret = new JSONObject();
+		log.info("status code: " + resp.getStatusCode() + " code: "
+				+ resp.getCode());
 		if (resp.getCode() == 3) {
 			ret.put("result", "ok");
 		} else {
@@ -119,42 +124,51 @@ public class AngolaWebController {
 		}
 		response.getWriter().print(ret.toString());
 	}
-	
+
 	@RequestMapping("/appdownload")
 	public String appDownloadPage() {
 		return "app_download";
 	}
-	
+
 	@ResponseStatus(HttpStatus.MOVED_TEMPORARILY)
 	@RequestMapping("/downloadAppClient/{device}")
-	public void downloadAppClient(HttpServletResponse response, @PathVariable String device) {
+	public void downloadAppClient(HttpServletResponse response,
+			@PathVariable String device) {
 		Configuration config = ContextLoader.getConfiguration();
 		String downloadUrl = config.getAppDownloadUrl();
 		String appId = config.getAppId();
-		downloadUrl = downloadUrl + "/" + appId + "/" + device; 
+		downloadUrl = downloadUrl + "/" + appId + "/" + device;
 		response.addHeader("Location", downloadUrl);
 	}
-	
+
 	@ResponseStatus(HttpStatus.MOVED_TEMPORARILY)
 	@RequestMapping("/appVersion/{device}")
-	public void appVersion(HttpServletResponse response, @PathVariable String device) {
+	public void appVersion(HttpServletResponse response,
+			@PathVariable String device) {
 		Configuration config = ContextLoader.getConfiguration();
 		String versionUrl = config.getAppVersionUrl();
 		String appId = config.getAppId();
 		versionUrl = versionUrl + "/" + appId + "/" + device;
 		response.addHeader("Location", versionUrl);
 	}
-	
+
 	@RequestMapping("/getNewNotice")
-	public void getNewNotice(HttpServletResponse response, @RequestParam(value = "maxId") String maxId) throws JSONException, IOException {
-		List<Map<String, Object>> noticeList = ContextLoader.getNoticeDao().getNewPublishedNotices(Integer.parseInt(maxId));
+	public void getNewNotice(
+			HttpServletResponse response,
+			@RequestParam(value = "maxId") String maxId,
+			@RequestParam(value = "username", defaultValue = "") String userName,
+			@RequestParam(value = "countryCode", defaultValue = "") String countryCode)
+			throws JSONException, IOException {
+		List<Map<String, Object>> noticeList = ContextLoader.getNoticeDao()
+				.getNewPublishedNotices(Integer.parseInt(maxId), countryCode,
+						userName);
 		JSONArray ret = new JSONArray();
 		if (noticeList != null) {
 			for (Map<String, Object> map : noticeList) {
 				Integer id = (Integer) map.get("id");
 				String content = (String) map.get("content");
 				Long time = (Long) map.get("time");
-				
+
 				JSONObject notice = new JSONObject();
 				notice.put("id", id.intValue());
 				notice.put("content", content);

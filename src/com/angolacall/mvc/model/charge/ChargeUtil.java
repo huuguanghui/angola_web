@@ -12,6 +12,7 @@ import com.angolacall.constants.ChargeStatus;
 import com.angolacall.constants.ChargeType;
 import com.angolacall.framework.ContextLoader;
 import com.angolacall.mvc.admin.model.InviteChargeGiftPlan;
+import com.angolacall.mvc.admin.model.NoticeDao;
 import com.richitec.util.RandomString;
 import com.richitec.vos.client.VOSClient;
 import com.richitec.vos.client.VOSHttpResponse;
@@ -62,21 +63,6 @@ public class ChargeUtil {
 			chargeDao.updateChargeRecord(chargeId, ChargeStatus.success);
 
 			// give money to referrer if has
-//			Map<String, Object> user = ContextLoader.getUserDAO().getUser(
-//					countryCode, userName);
-//			String referrer = (String) user.get("referrer");
-//			String referrerCountryCode = (String) user
-//					.get("referrer_country_code");
-//			if (referrer != null && referrerCountryCode != null
-//					&& !referrer.equals("") && !referrerCountryCode.equals("")) {
-//				Double giveAmount = InviteChargeGiftPlan
-//						.calculateGiftMoney(amount);
-//				if (giveAmount > 0) {
-//					giveMoneyToReferrer(ChargeType.chargecontribute,
-//							referrerCountryCode, referrer, giveAmount,
-//							countryCode, userName);
-//				}
-//			}
 			checkAndGiveMoneyToReferrer(countryCode, userName, amount);
 			
 			
@@ -168,6 +154,18 @@ public class ChargeUtil {
 			ContextLoader.getChargeDAO().addChargeRecord(chargeId,
 					referrerCountryCode, referrer, money,
 					contributorCountryCode, contributor, ChargeStatus.success);
+			
+			// send notice tp referrer
+			NoticeDao noticeDao = ContextLoader.getNoticeDao();
+			String msgContent = String.format("系统赠送给您%.2f元", money.floatValue());
+			if (ChargeType.invitereg == chargetype) {
+				msgContent = "您邀请的用户成功注册，" + msgContent;
+			} else if (ChargeType.chargecontribute == chargetype) {
+				msgContent = "您邀请的用户成功充值，" + msgContent;
+			}
+			
+			noticeDao.sendNoticeToUser(referrerCountryCode, referrer, msgContent);
+			
 		}
 	}
 }
