@@ -41,24 +41,24 @@ public class RegisterActivityDao {
 		}
 	}
 
-	private void setActivityStatus(RegisterActivityStatus status) {
+	private void setActivityStatus(Integer id, RegisterActivityStatus status) {
 		String sql = "UPDATE " + TABLE_NAME + " SET status = ? WHERE id = ?";
-		jdbc.update(sql, status.name(), 0);
+		jdbc.update(sql, status.name(), id);
 	}
 
-	public void closeActivity() {
-		setActivityStatus(RegisterActivityStatus.close);
+	public void closeActivity(Integer id) {
+		setActivityStatus(id, RegisterActivityStatus.close);
 	}
 
-	public void openActivity() {
-		setActivityStatus(RegisterActivityStatus.open);
+	public void openActivity(Integer id) {
+		setActivityStatus(id, RegisterActivityStatus.open);
 	}
 
-	public void editActivity(String startDate, String endDate, String giftMoney) {
+	public void editActivity(Integer id, String startDate, String endDate, String giftMoney) {
 		String sql = "UPDATE "
 				+ TABLE_NAME
 				+ " SET start_date = ?, end_date = ?, gift_money = ? WHERE id = ?";
-		jdbc.update(sql, startDate, endDate, giftMoney, 0);
+		jdbc.update(sql, startDate, endDate, giftMoney, id);
 	}
 
 	/**

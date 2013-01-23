@@ -137,90 +137,140 @@ public class AdminController {
 	public void addChargeMoney(HttpServletResponse response,
 			@RequestParam(value = "charge_money") String chargeMoney,
 			@RequestParam(value = "gift_money") String giftMoney,
-			@RequestParam(value = "description") String description) throws JSONException, IOException {
+			@RequestParam(value = "description") String description)
+			throws JSONException, IOException {
 		JSONObject ret = new JSONObject();
 		if (!ValidatePattern.isValidMoney(chargeMoney)) {
 			ret.put("result", "invalid_charge_money");
 			response.getWriter().print(ret.toString());
 			return;
 		}
-		
+
 		if (!ValidatePattern.isValidMoney(giftMoney)) {
 			ret.put("result", "invalid_gift_money");
 			response.getWriter().print(ret.toString());
 			return;
 		}
-		
+
 		ChargeMoneyConfigDao cmcd = ContextLoader.getChargeMoneyConfigDao();
 		cmcd.addChargeMoney(chargeMoney, giftMoney, description);
 		ret.put("result", "ok");
 		response.getWriter().print(ret.toString());
 	}
-	
+
 	@RequestMapping(value = "/chargemanage/editChargeMoney", method = RequestMethod.POST)
-	public void editChargeMoney(HttpServletResponse response, @RequestParam(value = "id") String id, @RequestParam(value = "charge_money") String chargeMoney,
+	public void editChargeMoney(HttpServletResponse response,
+			@RequestParam(value = "id") String id,
+			@RequestParam(value = "charge_money") String chargeMoney,
 			@RequestParam(value = "gift_money") String giftMoney,
-			@RequestParam(value = "description") String description) throws IOException, JSONException {
+			@RequestParam(value = "description") String description)
+			throws IOException, JSONException {
 		JSONObject ret = new JSONObject();
 		if (!ValidatePattern.isValidMoney(chargeMoney)) {
 			ret.put("result", "invalid_charge_money");
 			response.getWriter().print(ret.toString());
 			return;
 		}
-		
+
 		if (!ValidatePattern.isValidMoney(giftMoney)) {
 			ret.put("result", "invalid_gift_money");
 			response.getWriter().print(ret.toString());
 			return;
 		}
-		
+
 		ChargeMoneyConfigDao cmcd = ContextLoader.getChargeMoneyConfigDao();
 		cmcd.editChargeMoney(id, chargeMoney, giftMoney, description);
 		ret.put("result", "ok");
 		response.getWriter().print(ret.toString());
 	}
-	
+
 	@RequestMapping(value = "/chargemanage/deleteChargeMoney", method = RequestMethod.POST)
-	public void deleteChargeMoney(HttpServletResponse response, @RequestParam(value = "id") String id) {
+	public void deleteChargeMoney(HttpServletResponse response,
+			@RequestParam(value = "id") String id) {
 		ChargeMoneyConfigDao cmcd = ContextLoader.getChargeMoneyConfigDao();
 		cmcd.deleteChargeMoney(id);
 	}
-	
+
 	@RequestMapping(value = "/noticemanage", method = RequestMethod.GET)
 	public ModelAndView noticeManage() {
 		ModelAndView view = new ModelAndView("admin/noticemanage");
-		view.addObject(WebConstants.page_name.name(), Pages.notice_manage.name());
+		view.addObject(WebConstants.page_name.name(),
+				Pages.notice_manage.name());
 		view.addObject("notices", ContextLoader.getNoticeDao().getNotices());
 		return view;
 	}
-	
+
 	@RequestMapping(value = "/noticemanage/addNotice", method = RequestMethod.POST)
-	public void addNotice(HttpServletResponse response, @RequestParam( value = "content") String content) {
+	public void addNotice(HttpServletResponse response,
+			@RequestParam(value = "content") String content) {
 		ContextLoader.getNoticeDao().addNotice(content);
 	}
-	
+
 	@RequestMapping(value = "/noticemanage/delNotice", method = RequestMethod.POST)
-	public void deleteNotice(HttpServletResponse response, @RequestParam(value = "noticeId") String noticeId) {
+	public void deleteNotice(HttpServletResponse response,
+			@RequestParam(value = "noticeId") String noticeId) {
 		ContextLoader.getNoticeDao().hideNotice(Integer.parseInt(noticeId));
 	}
-	
+
 	@RequestMapping(value = "/noticemanage/pubNotice", method = RequestMethod.POST)
-	public void publishNotice(HttpServletResponse response, @RequestParam (value = "noticeId") String noticeId) {
+	public void publishNotice(HttpServletResponse response,
+			@RequestParam(value = "noticeId") String noticeId) {
 		ContextLoader.getNoticeDao().publishNotice(Integer.parseInt(noticeId));
 	}
-	
+
 	@RequestMapping(value = "/noticemanage/editNotice", method = RequestMethod.POST)
-	public void editNotice(HttpServletResponse response, @RequestParam (value = "noticeId") String noticeId, @RequestParam(value = "content") String content) {
-		ContextLoader.getNoticeDao().saveNotice(Integer.parseInt(noticeId), content);
+	public void editNotice(HttpServletResponse response,
+			@RequestParam(value = "noticeId") String noticeId,
+			@RequestParam(value = "content") String content) {
+		ContextLoader.getNoticeDao().saveNotice(Integer.parseInt(noticeId),
+				content);
 	}
-	
+
 	@RequestMapping(value = "/registermanage", method = RequestMethod.GET)
 	public ModelAndView registerManage() {
 		ModelAndView view = new ModelAndView("admin/register_manage");
-		view.addObject(WebConstants.page_name.name(), Pages.register_manage.name());
-		view.addObject(UUTalkConfigKeys.default_register_money.name(), ucm.getDefaultRegisterMoney());
-		view.addObject("register_activity", ContextLoader.getRegisterActivityDao().getRegisterActivity());
+		view.addObject(WebConstants.page_name.name(),
+				Pages.register_manage.name());
+		view.addObject(UUTalkConfigKeys.default_register_money.name(),
+				ucm.getDefaultRegisterMoney());
+		view.addObject("register_activity", ContextLoader
+				.getRegisterActivityDao().getRegisterActivity());
 		return view;
 	}
-	
+
+	@RequestMapping(value = "/registermanage/editRegMoney", method = RequestMethod.POST)
+	public void editRegMoney(HttpServletResponse response,
+			@RequestParam String money) throws IOException {
+		if (ValidatePattern.isValidMoney(money)) {
+			ucm.setDefaultRegisterMoney(money);
+		} else {
+			response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE);
+		}
+	}
+
+	@RequestMapping(value = "/registermanage/closeRegisterActivity", method = RequestMethod.POST)
+	public void closeRegisterActivity(HttpServletResponse response,
+			@RequestParam String id) {
+		ContextLoader.getRegisterActivityDao().closeActivity(
+				Integer.parseInt(id));
+	}
+
+	@RequestMapping(value = "/registermanage/openRegisterActivity", method = RequestMethod.POST)
+	public void openRegisterActivity(HttpServletResponse response,
+			@RequestParam String id) {
+		ContextLoader.getRegisterActivityDao().openActivity(
+				Integer.parseInt(id));
+	}
+
+	@RequestMapping(value = "/registermanage/editRegisterActivity", method = RequestMethod.POST)
+	public void editRegisterActivity(HttpServletResponse response,
+			@RequestParam String id, @RequestParam String startDate,
+			@RequestParam String endDate, @RequestParam String giftMoney) throws IOException {
+		if (ValidatePattern.isValidMoney(giftMoney)) {
+			ContextLoader.getRegisterActivityDao().editActivity(
+					Integer.parseInt(id), startDate, endDate, giftMoney);
+		} else {
+			response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE);
+		}
+	}
 }
