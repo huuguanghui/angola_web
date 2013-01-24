@@ -5,7 +5,7 @@
 
 <html lang="zh">
 <head>
-<title>UU-Talk管理系统</title>
+<title>安中通管理系统</title>
 <jsp:include page="common/_head.jsp"></jsp:include>
 </head>
 <body>

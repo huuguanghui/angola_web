@@ -12,7 +12,7 @@
 <!DOCTYPE html>
 <html lang="zh">
   <head>
-    <title>UU-Talk充值结果</title>
+    <title>安中通充值结果</title>
 	<jsp:include page="../common/_head.jsp"></jsp:include>
   </head>
 
@@ -31,7 +31,7 @@
 				<div class="alert alert-info">
 	    			<h2>如需帮助，请联系客服。QQ：1622122511</h2>
 					<hr>
-					<h2><a href="http://www.uu-talk.com/angola/chongzhi">点击这里返回充值页面</a></h2>	    			
+					<h2><a href="http://www.00244dh.com/angola/chongzhi">点击这里返回充值页面</a></h2>	    			
 	    		</div>
 	    		<% } else if (vosResp.isOperationSuccess()) {%>
 				<h1>恭喜你，充值成功！</h1>
@@ -40,7 +40,7 @@
 					<h2>充值账户：<%=accountName %></h2>
 					<h2>充值卡号：<%=cardNumber %></h2>
 					<hr>
-					<h2><a href="http://www.uu-talk.com/angola/chongzhi">点击这里返回充值页面</a></h2>					
+					<h2><a href="http://www.00244dh.com/angola/chongzhi">点击这里返回充值页面</a></h2>					
 				</div>
 	    		<% } else { %>
 	    		<h1>操作失败，请原谅。</h1>
@@ -62,7 +62,7 @@
 				<div class="alert alert-info">
 	    			<h2>如需帮助，请联系客服。QQ：1622122511</h2>
 					<hr>
-					<h2><a href="http://www.uu-talk.com/angola/chongzhi">点击这里返回充值页面</a></h2>	    			
+					<h2><a href="http://www.00244dh.com/angola/chongzhi">点击这里返回充值页面</a></h2>	    			
 	    		</div>
 	    		<% } %>
 	    	</div>

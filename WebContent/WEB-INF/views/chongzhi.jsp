@@ -39,7 +39,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset={dede:global.cfg_soft_lang/}" />
 <title>充值中心</title>
-<link href="http://www.uu-talk.com/templets/uutalk2/style/uutalk.css" rel="stylesheet" media="screen" type="text/css" />
+<link href="http://www.00244dh.com/templets/00244dh/style/uutalk.css" rel="stylesheet" media="screen" type="text/css" />
 </head>
 <body>
 
@@ -49,11 +49,11 @@
  -->	
 	<div class="nav-bar">
 		<ul>
-		<li><a href="http://www.uu-talk.com">首页</a></li>
+		<li><a href="http://www.00244dh.com">首页</a></li>
 		<li><a href="#">充值中心</a></li>
-		<li><a href="http://www.uu-talk.com/a/zifeishuoming/">资费说明</a></li>
-		<li><a href="http://www.uu-talk.com/a/bangzhu/">帮助</a></li>
-		<li><a href="http://www.uu-talk.com/a/hezuojiameng/">合作加盟</a></li>
+		<li><a href="http://www.00244dh.com/a/zifeishuoming/">资费说明</a></li>
+		<li><a href="http://www.00244dh.com/a/bangzhu/">帮助</a></li>
+		<li><a href="http://www.00244dh.com/a/hezuojiameng/">合作加盟</a></li>
 		</ul>
 	</div>
 </div>
@@ -65,7 +65,7 @@
 		<a class="chongzhi100" href=""></a>
 		<a class="chongzhi200" href=""></a>
 		<a class="chongzhi500" href=""></a>
-		<a class="download-btn" href="http://www.uu-talk.com/appvcenter/downloadapp/2/android"></a>
+		<a class="download-btn" href="http://www.00244dh.com/appvcenter/downloadapp/3/android"></a>
 	</div>
 	<form id="depositeForm" action="chongzhi" method="post">
 		<div id="divAccountInfo" class="chongzhi-form-field">
@@ -88,13 +88,13 @@
 				<input type="radio" name="depositeType" value="alipay" 
 					<% if("alipay".equals(depositeType)){ %>checked="checked"<% } %> /><span>支付宝充值</span>
 				<input type="radio" name="depositeType" value="uutalk" 
-					<% if("uutalk".equals(depositeType)){ %>checked="checked"<% } %>/><span>UU-Talk充值卡充值</span>
+					<% if("uutalk".equals(depositeType)){ %>checked="checked"<% } %>/><span>安中通充值卡</span>
 				<input type="radio" name="depositeType" value="szx" 
 					<% if("szx".equals(depositeType)){ %>checked="checked"<% } %>/><span>神州行</span>		
 				<input type="radio" name="depositeType" value="unicom" 
 					<% if("unicom".equals(depositeType)){ %>checked="checked"<% } %>/><span>联通卡</span>
 				<input type="radio" name="depositeType" value="telecom" 
-					<% if("telecom".equals(depositeType)){ %>checked="checked"<% } %>/><span>电信卡</span>					
+					<% if("telecom".equals(depositeType)){ %>checked="checked"<% } %>/><span>电信卡</span>
 			</div>
 			<div id="divAlipayPanel" <% if(!"alipay".equals(depositeType)){ %>class="hidden"<% } %>>
 				<%if(null!=alipayError) { %>
@@ -119,7 +119,7 @@
 						}
 					}
 				%> 
-				<p>说明：使用UU-Talk充值卡充值享受另外优惠，以上优惠限支付宝充值。</p>				
+				<p>说明：使用安中通充值卡充值享受另外优惠，以上优惠限支付宝充值。</p>				
 			</div>
 			<div id="divUUTalkPanel" <% if(!"uutalk".equals(depositeType)){ %>class="hidden"<% } %>>	
 				<h3>充值卡卡号</h3>

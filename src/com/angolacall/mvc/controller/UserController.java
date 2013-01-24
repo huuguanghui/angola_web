@@ -590,7 +590,7 @@ public class UserController extends ExceptionController {
 		}
 
 		if ("0".equals(result)) {
-			Double money = config.getSignupGift();
+			Double money = ContextLoader.getUUTalkConfigManager().getRegisterGivenMoney();
 			if (money != null && money > 0) {
 				VOSHttpResponse depositeResp = vosClient.deposite(countryCode
 						+ phoneNumber, money);

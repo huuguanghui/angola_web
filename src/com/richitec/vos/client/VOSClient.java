@@ -425,7 +425,7 @@ public class VOSClient {
 
 	public static void main(String[] args) {
 		VOSClient client = new VOSClient();
-		client.setBaseUri("http://vos.uu-talk.com/thirdparty/");
+		client.setBaseUri("http://vos.00244dh.com/thirdparty/");
 		client.setLoginName("admin");
 		client.setLoginPassword("uutalk123");
 		// VOSHttpResponse resp = client.addAccount("123456");

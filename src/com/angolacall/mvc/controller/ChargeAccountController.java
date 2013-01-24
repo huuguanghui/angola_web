@@ -69,7 +69,7 @@ public class ChargeAccountController {
 	}
 	
 	/**
-	 * UU-Talk充值中心页面
+	 * 充值中心页面
 	 */	
 	@RequestMapping(value = "/chongzhi", method=RequestMethod.GET)
 	public ModelAndView chongzhiGet() {
@@ -80,13 +80,13 @@ public class ChargeAccountController {
 	}
 	
 	/**
-	 * 通过UU-Talk充值中心页面提交充值
+	 * 通过充值中心页面提交充值
 	 * @throws SQLException 
 	 */
 	@RequestMapping(value="/chongzhi", method=RequestMethod.POST)
 	public ModelAndView chongzhiPost(HttpServletResponse response,
-		@RequestParam(value = "countryCode") String countryCode,
-		@RequestParam(value = "accountName") String accountName,
+		@RequestParam(value = "countryCode", required=false, defaultValue="") String countryCode,
+		@RequestParam(value = "accountName", required=false, defaultValue="") String accountName,
 		@RequestParam(value = "depositeType") String depositeType,
 		@RequestParam(value = "depositeId", required=false) String depositeId,
 		@RequestParam(value = "cardNumber", required=false) String cardNumber,
@@ -192,7 +192,7 @@ public class ChargeAccountController {
 			 */
 			chargeDao.addChargeRecord(chargeId, countryCode, accountName, value,
 					ChargeStatus.success);
-//			smsClient.sendTextMessage(accountName, "您的UU-Talk账户已成功充值" + value
+//			smsClient.sendTextMessage(accountName, "您的安中通账户已成功充值" + value
 //					+ "元，谢谢！");
 			
 			ChargeUtil.checkAndGiveMoneyToReferrer(countryCode, accountName, value);
@@ -496,7 +496,7 @@ public class ChargeAccountController {
 		if (vosResp.isOperationSuccess()) {
 			chargeDao.addChargeRecord(chargeId, countryCode, userName, value,
 					ChargeStatus.success);
-			smsClient.sendTextMessage(userName, "您的UU-Talk账户已成功充值" + value
+			smsClient.sendTextMessage(userName, "您的安中通账户已成功充值" + value
 					+ "元，谢谢！");
 			
 			ChargeUtil.checkAndGiveMoneyToReferrer(countryCode, userName, value);
