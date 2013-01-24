@@ -28,6 +28,7 @@ import com.angolacall.framework.Configuration;
 import com.angolacall.framework.ContextLoader;
 import com.angolacall.web.user.UserBean;
 import com.richitec.sms.client.SMSHttpResponse;
+import com.richitec.vos.client.AccountInfo;
 
 @Controller
 public class AngolaWebController {
@@ -177,5 +178,16 @@ public class AngolaWebController {
 			}
 		}
 		response.getWriter().print(ret.toString());
+	}
+	
+	/**
+	 * 安中卡余额查询
+	 */
+	@RequestMapping(value="azcardbalance", method=RequestMethod.POST)
+	public String azcardPost(
+			@RequestParam(value="countryCode", required=false, defaultValue="") String countryCode,
+			@RequestParam(value = "username") String userName){
+		AccountInfo accountInfo = ContextLoader.getVOSClient().getAccountInfo(countryCode+userName, 2);
+		return "{balance:"+accountInfo.getBalance()+"}";
 	}
 }
