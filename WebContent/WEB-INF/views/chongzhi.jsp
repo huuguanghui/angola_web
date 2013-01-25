@@ -51,6 +51,7 @@
 		<ul>
 		<li><a href="http://www.00244dh.com">首页</a></li>
 		<li><a href="#">充值中心</a></li>
+		<li><a href="http://www.00244dh.com/a/huiboka/">回拨卡</a></li>
 		<li><a href="http://www.00244dh.com/a/zifeishuoming/">资费说明</a></li>
 		<li><a href="http://www.00244dh.com/a/bangzhu/">帮助</a></li>
 		<li><a href="http://www.00244dh.com/a/hezuojiameng/">合作加盟</a></li>
@@ -88,7 +89,15 @@
 				<input type="radio" name="depositeType" value="alipay" 
 					<% if("alipay".equals(depositeType)){ %>checked="checked"<% } %> /><span>支付宝充值</span>
 				<input type="radio" name="depositeType" value="uutalk" 
-					<% if("uutalk".equals(depositeType)){ %>checked="checked"<% } %>/><span>安中通充值卡充值</span>
+					<% if("uutalk".equals(depositeType)){ %>checked="checked"<% } %>/><span>安中通充值卡</span>
+				<!-- 
+				<input type="radio" name="depositeType" value="szx" 
+					<% if("szx".equals(depositeType)){ %>checked="checked"<% } %>/><span>神州行</span>		
+				<input type="radio" name="depositeType" value="unicom" 
+					<% if("unicom".equals(depositeType)){ %>checked="checked"<% } %>/><span>联通卡</span>
+				<input type="radio" name="depositeType" value="telecom" 
+					<% if("telecom".equals(depositeType)){ %>checked="checked"<% } %>/><span>电信卡</span>
+				 -->
 			</div>
 			<div id="divAlipayPanel" <% if(!"alipay".equals(depositeType)){ %>class="hidden"<% } %>>
 				<%if(null!=alipayError) { %>

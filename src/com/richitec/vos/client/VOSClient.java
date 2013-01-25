@@ -278,10 +278,15 @@ public class VOSClient {
 	 * @return
 	 */
 	public AccountInfo getAccountInfo(String account) {
+		return getAccountInfo(account, 0);
+	}
+	
+	public AccountInfo getAccountInfo(String account, Integer type) {
 		List<NameValuePair> params = new LinkedList<NameValuePair>();
 		params.add(new BasicNameValuePair(P_loginName, loginName));
 		params.add(new BasicNameValuePair(P_loginPassword, loginPassword));
 		params.add(new BasicNameValuePair(P_name, account));
+		params.add(new BasicNameValuePair(P_type, type.toString()));
 
 		HttpEntity entity = new UrlEncodedFormEntity(params, Consts.UTF_8);
 		HttpPost post = new HttpPost(this.baseURI + "getcustomer.jsp");
@@ -293,7 +298,7 @@ public class VOSClient {
 			return new AccountInfo(response.getVOSResponseInfo());
 		}
 		return null;
-	}
+	}	
 
 	/**
 	 * 获取用户当前套餐信息
