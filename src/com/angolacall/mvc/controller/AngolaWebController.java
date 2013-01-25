@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -184,10 +185,19 @@ public class AngolaWebController {
 	 * 安中卡余额查询
 	 */
 	@RequestMapping(value="azcardbalance", method=RequestMethod.POST)
-	public String azcardPost(
+	public @ResponseBody String azcardPost(
 			@RequestParam(value="countryCode", required=false, defaultValue="") String countryCode,
-			@RequestParam(value = "username") String userName){
-		AccountInfo accountInfo = ContextLoader.getVOSClient().getAccountInfo(countryCode+userName, 2);
-		return "{balance:"+accountInfo.getBalance()+"}";
+			@RequestParam(value = "phoneNumber") String phoneNumber){
+		AccountInfo accountInfo = ContextLoader.getVOSClient().getAccountInfo(countryCode+phoneNumber, 2);
+		if (accountInfo != null){
+			return "{\"status\":0, \"balance\":" + String.format("%,.2f",accountInfo.getBalance()) + "}";
+		} else {
+			return "{\"status\":1}";
+		}
+	}
+	
+	@RequestMapping(value="azcard", method=RequestMethod.GET)
+	public String azcardGet(){
+		return "azcard";
 	}
 }

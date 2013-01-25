@@ -51,6 +51,7 @@
 		<ul>
 		<li><a href="http://www.00244dh.com">首页</a></li>
 		<li><a href="#">充值中心</a></li>
+		<li><a href="http://www.00244dh.com/a/huiboka/">回拨卡</a></li>
 		<li><a href="http://www.00244dh.com/a/zifeishuoming/">资费说明</a></li>
 		<li><a href="http://www.00244dh.com/a/bangzhu/">帮助</a></li>
 		<li><a href="http://www.00244dh.com/a/hezuojiameng/">合作加盟</a></li>
