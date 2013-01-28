@@ -22,6 +22,7 @@ import com.richitec.sms.client.SMSHttpResponse;
 import com.richitec.util.CountryManager;
 import com.richitec.util.CryptoUtil;
 import com.richitec.util.RandomString;
+import com.richitec.util.TextUtility;
 import com.richitec.util.ValidatePattern;
 
 public class UserDAO {
@@ -92,9 +93,9 @@ public class UserDAO {
 
 	public UserBean getUserBean(String countryCode, String loginName,
 			final String loginPwd) throws DataAccessException {
-		String sql = "SELECT * FROM im_user WHERE username=? AND countrycode=? AND password=? AND status = ?";
+		String sql = "SELECT * FROM im_user WHERE username=? AND countrycode=? AND password=? AND status IN (?, ?)";
 		Object[] params = new Object[] { loginName, countryCode, loginPwd,
-				UserAccountStatus.success.name() };
+				UserAccountStatus.success.name(), UserAccountStatus.activated.name() };
 		return jdbc.queryForObject(sql, params, new RowMapper<UserBean>() {
 			@Override
 			public UserBean mapRow(ResultSet rs, int rowCount)
@@ -108,15 +109,17 @@ public class UserDAO {
 				user.setBindPhone(rs.getString("bindphone"));
 				user.setBindPhoneCountryCode(rs
 						.getString("bindphone_country_code"));
+				user.setStatus(rs.getString("status"));
+				user.setEmail(rs.getString("email"));
 				return user;
 			}
 		});
 	}
 
 	public Map<String, Object> getUser(String countryCode, String userName) {
-		String sql = "SELECT * FROM im_user WHERE username = ? AND countrycode = ? AND status = ?";
+		String sql = "SELECT * FROM im_user WHERE username = ? AND countrycode = ? AND status IN (?, ?)";
 		return jdbc.queryForMap(sql, userName, countryCode,
-				UserAccountStatus.success.name());
+				UserAccountStatus.success.name(), UserAccountStatus.activated.name());
 	}
 
 	/**
@@ -258,31 +261,6 @@ public class UserDAO {
 		return jdbc.update(sql, status.name(), userName, countryCode);
 	}
 
-	/**
-	 * get referrer of user
-	 * 
-	 * @param userNameList
-	 *            - IN Operation parameter eg. "(x, x, x)"
-	 * @return
-	 */
-	public List<Map<String, Object>> getReferrerInfo(String userNameList) {
-		String sql = "SELECT username, referrer FROM im_user WHERE username IN "
-				+ userNameList;
-		log.info(sql);
-		return jdbc.queryForList(sql);
-	}
-
-	public String getReferrer(String userName) {
-		String referrer = "";
-		String sql = "SELECT referrer FROM im_user WHERE username = ?";
-		try {
-			referrer = jdbc.queryForObject(sql, new Object[] { userName },
-					String.class);
-		} catch (Exception e) {
-		}
-		return referrer;
-	}
-
 	public int setBindPhone(String countryCode, String userName,
 			String bindPhoneCountryCode, String bindPhone) {
 		String sql = "UPDATE im_user SET bindphone = ?, bindphone_country_code = ? WHERE countrycode = ? AND username = ?";
@@ -294,5 +272,29 @@ public class UserDAO {
 		String sql = "SELECT count(*) FROM im_user WHERE referrer = ? AND referrer_country_code = ?";
 		return jdbc.queryForInt(sql, userName, countryCode);
 	}
+	
+	public int setEmail(String countryCode, String userName, String email) {
+		String randomId = CryptoUtil.md5(countryCode + userName + email + System.currentTimeMillis());
+		if (randomId.length() > 10) {
+			randomId = randomId.substring(0, 10);
+		}
+		String sql = "UPDATE im_user SET email = ?, random_id = ? WHERE countrycode = ? AND username = ?";
+		int rows = jdbc.update(sql, email, randomId, countryCode, userName);
+		return rows;
+	}
+	
+	public Map<String, Object> getUserByRandomId(String randomId) {
+		String sql = "SELECT * FROM im_user WHERE random_id = ?";
+		return jdbc.queryForMap(sql, randomId);
+	}
 
+	public void addFrozenMoney(String countryCode, String userName, Double money) {
+		String sql = "UPDATE im_user SET frozen_money = frozen_money + ? WHERE countrycode = ? AND username = ?";
+		jdbc.update(sql, money, countryCode, userName);
+	}
+	
+	public void clearFrozenMoney(String countryCode, String userName) {
+		String sql = "UPDATE im_user SET frozen_money = ? WHERE countrycode = ? AND username = ?";
+		jdbc.update(sql, 0, countryCode, userName);
+	}
 }

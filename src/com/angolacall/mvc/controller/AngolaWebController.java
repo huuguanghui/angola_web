@@ -24,11 +24,15 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.angolacall.constants.AuthConstant;
+import com.angolacall.constants.ChargeType;
+import com.angolacall.constants.UserAccountStatus;
 import com.angolacall.constants.WebConstants;
 import com.angolacall.framework.Configuration;
 import com.angolacall.framework.ContextLoader;
+import com.angolacall.mvc.model.charge.ChargeUtil;
 import com.angolacall.web.user.UserBean;
 import com.richitec.sms.client.SMSHttpResponse;
+import com.richitec.ucenter.model.UserDAO;
 import com.richitec.vos.client.AccountInfo;
 
 @Controller
@@ -180,24 +184,65 @@ public class AngolaWebController {
 		}
 		response.getWriter().print(ret.toString());
 	}
-	
+
 	/**
 	 * 安中卡余额查询
 	 */
-	@RequestMapping(value="azcardbalance", method=RequestMethod.POST)
-	public @ResponseBody String azcardPost(
-			@RequestParam(value="countryCode", required=false, defaultValue="") String countryCode,
-			@RequestParam(value = "phoneNumber") String phoneNumber){
-		AccountInfo accountInfo = ContextLoader.getVOSClient().getAccountInfo(countryCode+phoneNumber, 2);
-		if (accountInfo != null){
-			return "{\"status\":0, \"balance\":" + String.format("%,.2f",accountInfo.getBalance()) + "}";
+	@RequestMapping(value = "azcardbalance", method = RequestMethod.POST)
+	public @ResponseBody
+	String azcardPost(
+			@RequestParam(value = "countryCode", required = false, defaultValue = "") String countryCode,
+			@RequestParam(value = "phoneNumber") String phoneNumber) {
+		AccountInfo accountInfo = ContextLoader.getVOSClient().getAccountInfo(
+				countryCode + phoneNumber, 2);
+		if (accountInfo != null) {
+			return "{\"status\":0, \"balance\":"
+					+ String.format("%,.2f", accountInfo.getBalance()) + "}";
 		} else {
 			return "{\"status\":1}";
 		}
 	}
-	
-	@RequestMapping(value="azcard", method=RequestMethod.GET)
-	public String azcardGet(){
+
+	@RequestMapping(value = "azcard", method = RequestMethod.GET)
+	public String azcardGet() {
 		return "azcard";
+	}
+
+	@RequestMapping(value = "/getFrozenMoneyViaEmailLink/{randomId}")
+	public ModelAndView getFrozenMoneyViaEmailLink(
+			HttpServletResponse response, @PathVariable String randomId) throws IOException {
+		ModelAndView view = new ModelAndView("other/get_activation_money_result");
+		UserDAO userDao = ContextLoader.getUserDAO();
+		Map<String, Object> user = null;
+		try {
+			user = userDao.getUserByRandomId(randomId);
+		} catch (Exception e) {
+			log.info(e.getMessage());
+		}
+		if (user == null) {
+			response.sendError(HttpServletResponse.SC_NOT_FOUND);
+			return view;
+		}
+		
+		String countryCode = (String) user.get("countrycode");
+		String userName = (String) user.get("username");
+		String status = (String) user.get("status");
+		Float frozenMoney = (Float) user.get("frozen_money");
+		
+		if (!UserAccountStatus.activated.name().equals(status)) {
+			boolean ret = ChargeUtil.chargeUser(ChargeType.sysgift, countryCode, userName, frozenMoney.doubleValue());
+			if (ret) {
+				view.addObject("result", "money_get_ok");
+			} else {
+				view.addObject("result", "money_get_failed");
+			}
+		} else {
+			view.addObject("result", "already_activated");
+		}
+		
+		view.addObject("countryCode", countryCode);
+		view.addObject("userName", userName);
+		view.addObject("money", frozenMoney);
+		return view;
 	}
 }

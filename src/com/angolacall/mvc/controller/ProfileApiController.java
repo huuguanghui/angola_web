@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
@@ -19,6 +21,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import scala.Responder;
+
 import com.alipay.client.base.PartnerConfig;
 import com.alipay.client.security.RSASignature;
 import com.angolacall.constants.ChargeStatus;
@@ -29,6 +33,7 @@ import com.angolacall.mvc.admin.model.UUTalkConfigManager;
 import com.richitec.ucenter.model.UserDAO;
 import com.richitec.util.CryptoUtil;
 import com.richitec.util.MyRC4;
+import com.richitec.util.SendMail;
 import com.richitec.vos.client.OrderSuiteInfo;
 import com.richitec.vos.client.SuiteInfo;
 import com.richitec.vos.client.VOSClient;
@@ -346,11 +351,70 @@ public class ProfileApiController {
 	}
 
 	@RequestMapping("/getRegedUserCountViaShare")
-	public void getRegedUserCountViaShare(HttpServletResponse response, @RequestParam(value = "countryCode") String countryCode,
-			@RequestParam(value = "username") String userName) throws JSONException, IOException {
+	public void getRegedUserCountViaShare(HttpServletResponse response,
+			@RequestParam(value = "countryCode") String countryCode,
+			@RequestParam(value = "username") String userName)
+			throws JSONException, IOException {
 		JSONObject ret = new JSONObject();
-		ret.put("shared_user_count", userDao.getRegedUserCountViaShare(countryCode, userName));
+		ret.put("shared_user_count",
+				userDao.getRegedUserCountViaShare(countryCode, userName));
 		response.getWriter().print(ret.toString());
 	}
-	
+
+	@RequestMapping("/setEmail")
+	public void setEmail(HttpServletResponse resposne,
+			@RequestParam String email,
+			@RequestParam(value = "countryCode") String countryCode,
+			@RequestParam(value = "username") String userName)
+			throws JSONException, IOException {
+		int rows = userDao.setEmail(countryCode, userName, email);
+		JSONObject ret = new JSONObject();
+		if (rows > 0) {
+			// email set ok
+			// send activation email to user
+			Map<String, Object> user = userDao.getUser(countryCode, userName);
+			Float frozenMoney = (Float) user.get("frozen_money");
+			if (frozenMoney > 0) {
+				try {
+					sendMoneyGainEmail(user);
+					ret.put("result", "mail send ok");
+					resposne.getWriter().print(ret.toString());
+					return;
+				} catch (Exception e) {
+					e.printStackTrace();
+					ret.put("result", "mail send failed");
+					resposne.getWriter().print(ret.toString());
+					return;
+				}
+			} else {
+				ret.put("result", "email set ok");
+				resposne.getWriter().print(ret.toString());
+				return;
+			}
+		} else {
+			ret.put("result", "email set error");
+			resposne.getWriter().print(ret.toString());
+		}
+	}
+
+	private void sendMoneyGainEmail(Map<String, Object> user)
+			throws AddressException, MessagingException {
+		String countryCode = (String) user.get("countrycode");
+		String userName = (String) user.get("username");
+		Float frozenMoney = (Float) user.get("frozen_money");
+		String email = (String) user.get("email");
+		String randomId = (String) user.get("random_id");
+		String title = "安中通喊你领话费啦";
+		String content = "<h3>亲爱的用户"
+				+ countryCode
+				+ userName
+				+ "，<br/>欢迎您使用安中通网络电话。</h3>"
+				+ "<p><h4>现在点击领取话费，即可获得<font color=\"red\">"
+				+ frozenMoney
+				+ "元</font>话费！</h4><br/>"
+				+ "<a href=\"http://www.00244dh.com/angola/getFrozenMoneyViaEmailLink/" + randomId + "\"><button type=\"button\">领取话费</button></a></p>";
+		SendMail sm = new SendMail();
+		sm.setAddress(email, title, content);
+		sm.send();
+	}
 }

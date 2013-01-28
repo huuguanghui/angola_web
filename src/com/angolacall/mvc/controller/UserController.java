@@ -84,6 +84,8 @@ public class UserController extends ExceptionController {
 				json.put("bindphone", user.getBindPhone());
 				json.put("bindphone_country_code",
 						user.getBindPhoneCountryCode());
+				json.put("status", user.getStatus());
+				json.put("email", user.getEmail());
 				user.setUserName(loginName);
 				user.setPassword(loginPwd);
 				session.setAttribute(UserBean.SESSION_BEAN, user);
@@ -589,23 +591,23 @@ public class UserController extends ExceptionController {
 					UserAccountStatus.vos_suite_error);
 		}
 
-		if ("0".equals(result)) {
-			Double money = ContextLoader.getUUTalkConfigManager().getRegisterGivenMoney();
-			if (money != null && money > 0) {
-				VOSHttpResponse depositeResp = vosClient.deposite(countryCode
-						+ phoneNumber, money);
-				if (depositeResp.getHttpStatusCode() != 200
-						|| !depositeResp.isOperationSuccess()) {
-					log.error("\nCannot deposite gift for user : "
-							+ phoneNumber + "\nVOS Http Response : "
-							+ depositeResp.getHttpStatusCode()
-							+ "\nVOS Status Code : "
-							+ depositeResp.getVOSStatusCode()
-							+ "\nVOS Response Info ："
-							+ depositeResp.getVOSResponseInfo());
-				}
-			}
-		}
+//		if ("0".equals(result)) {
+//			Double money = ContextLoader.getUUTalkConfigManager().getRegisterGivenMoney();
+//			if (money != null && money > 0) {
+//				VOSHttpResponse depositeResp = vosClient.deposite(countryCode
+//						+ phoneNumber, money);
+//				if (depositeResp.getHttpStatusCode() != 200
+//						|| !depositeResp.isOperationSuccess()) {
+//					log.error("\nCannot deposite gift for user : "
+//							+ phoneNumber + "\nVOS Http Response : "
+//							+ depositeResp.getHttpStatusCode()
+//							+ "\nVOS Status Code : "
+//							+ depositeResp.getVOSStatusCode()
+//							+ "\nVOS Response Info ："
+//							+ depositeResp.getVOSResponseInfo());
+//				}
+//			}
+//		}
 
 		return result;
 	}

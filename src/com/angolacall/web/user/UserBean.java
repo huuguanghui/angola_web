@@ -12,6 +12,8 @@ public class UserBean {
 	private String vosPhonePwd;
 	private String bindPhone;
 	private String bindPhoneCountryCode;
+	private String status;
+	private String email;
 	
 	public String getUserName() {
 		return username;
@@ -92,5 +94,20 @@ public class UserBean {
 	public void setBindPhoneCountryCode(String bindPhoneCountryCode) {
 		this.bindPhoneCountryCode = bindPhoneCountryCode;
 	}
-	
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
 }

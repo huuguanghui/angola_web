@@ -64,8 +64,7 @@ public class ChargeUtil {
 
 			// give money to referrer if has
 			checkAndGiveMoneyToReferrer(countryCode, userName, amount);
-			
-			
+
 			// check if there is gift money, if has, deposit to user
 			Integer chargeMoneyCfgId = (Integer) chargeInfo
 					.get("charge_money_cfg_id");
@@ -82,6 +81,7 @@ public class ChargeUtil {
 
 	/**
 	 * check the referrer gift money and give it to referrer
+	 * 
 	 * @param countryCode
 	 * @param userName
 	 * @param chargeMoney
@@ -154,18 +154,44 @@ public class ChargeUtil {
 			ContextLoader.getChargeDAO().addChargeRecord(chargeId,
 					referrerCountryCode, referrer, money,
 					contributorCountryCode, contributor, ChargeStatus.success);
-			
+
 			// send notice tp referrer
 			NoticeDao noticeDao = ContextLoader.getNoticeDao();
-			String msgContent = String.format("系统赠送给您%.2f元", money.floatValue());
+			String msgContent = String
+					.format("系统赠送给您%.2f元", money.floatValue());
 			if (ChargeType.invitereg == chargetype) {
 				msgContent = "您邀请的用户成功注册，" + msgContent;
 			} else if (ChargeType.chargecontribute == chargetype) {
 				msgContent = "您邀请的用户成功充值，" + msgContent;
 			}
-			
-			noticeDao.sendNoticeToUser(referrerCountryCode, referrer, msgContent);
-			
+
+			noticeDao.sendNoticeToUser(referrerCountryCode, referrer,
+					msgContent);
+
 		}
+	}
+
+	/**
+	 * charge user
+	 * @param chargeType
+	 * @param countryCode
+	 * @param userName
+	 * @param money
+	 * @return true - charge successfully, false - charge failed
+	 */
+	public static boolean chargeUser(ChargeType chargeType, String countryCode,
+			String userName, Double money) {
+		String chargeId = getOrderNumber(chargeType.name(), countryCode,
+				userName);
+		VOSClient vosClient = ContextLoader.getVOSClient();
+		VOSHttpResponse response = vosClient.deposite(countryCode + userName,
+				money);
+		if (response.isOperationSuccess()) {
+			ContextLoader.getChargeDAO().addChargeRecord(chargeId, countryCode, userName, money, ChargeStatus.success);
+			return true;
+		} else {
+			return false;
+		}
+		
 	}
 }
