@@ -12,7 +12,7 @@
 
 	String depositeType = (String)request.getParameter("depositeType");
 	if (null == depositeType){
-		depositeType = "alipay";
+		depositeType = "azcard";
 	}
 	
 	String alipayError = (String)request.getAttribute("alipayError");
@@ -86,10 +86,10 @@
 		<div id="divDepositeType" class="chongzhi-form-field">
 			<label>请选择充值方式</label>
 			<div id="divDepositeTypeList">
+				<input type="radio" name="depositeType" value="azcard" 
+					<% if("azcard".equals(depositeType)){ %>checked="checked"<% } %>/><span>安中通充值卡</span>
 				<input type="radio" name="depositeType" value="alipay" 
 					<% if("alipay".equals(depositeType)){ %>checked="checked"<% } %> /><span>支付宝充值</span>
-				<input type="radio" name="depositeType" value="uutalk" 
-					<% if("uutalk".equals(depositeType)){ %>checked="checked"<% } %>/><span>安中通充值卡</span>
 				<!-- 
 				<input type="radio" name="depositeType" value="szx" 
 					<% if("szx".equals(depositeType)){ %>checked="checked"<% } %>/><span>神州行</span>		
@@ -101,7 +101,7 @@
 			</div>
 			<div id="divAlipayPanel" <% if(!"alipay".equals(depositeType)){ %>class="hidden"<% } %>>
 				<%if(null!=alipayError) { %>
-				<span class="red">请选择充值金额</span>
+				<span class="red"><%=alipayError %></span>
 				<% } %>
 				<h3>充值大优惠</h3>
 				<%
@@ -124,7 +124,7 @@
 				%> 
 				<p>说明：使用安中通充值卡充值享受另外优惠，以上优惠限支付宝充值。</p>				
 			</div>
-			<div id="divUUTalkPanel" <% if(!"uutalk".equals(depositeType)){ %>class="hidden"<% } %>>	
+			<div id="divAZCardPanel" <% if(!"azcard".equals(depositeType)){ %>class="hidden"<% } %>>	
 				<h3>充值卡卡号</h3>
 				<input id="iptCardNumber" name="cardNumber" type="text"
 					value="<%=(null!=cardNumber)?cardNumber:""%>" />
@@ -170,18 +170,18 @@
 $(function(){
     var hidden = "hidden";
 	var $divAlipayPanel = $("#divAlipayPanel");
-	var $divUUTalkPanel = $("#divUUTalkPanel");
+	var $divAZCardPanel = $("#divAZCardPanel");
 	$("#divDepositeTypeList :radio").change(function(){
 		var value = $(this).val();
 		if (value == 'alipay'){
 			//show alipay div
 			$divAlipayPanel.removeClass(hidden);
-			$divUUTalkPanel.addClass(hidden);
+			$divAZCardPanel.addClass(hidden);
 		} else 
-		if (value == 'uutalk') {
+		if (value == 'azcard') {
 			//show uutalk div
 			$divAlipayPanel.addClass(hidden);
-			$divUUTalkPanel.removeClass(hidden);			
+			$divAZCardPanel.removeClass(hidden);			
 		} else {
 			//do nothing;
 		}		
