@@ -12,7 +12,7 @@
 
 	String depositeType = (String)request.getParameter("depositeType");
 	if (null == depositeType){
-		depositeType = "alipay";
+		depositeType = "azcard";
 	}
 	
 	String alipayError = (String)request.getAttribute("alipayError");
@@ -88,7 +88,7 @@
 			<div id="divDepositeTypeList">
 				<input type="radio" name="depositeType" value="alipay" 
 					<% if("alipay".equals(depositeType)){ %>checked="checked"<% } %> /><span>支付宝充值</span>
-				<input type="radio" name="depositeType" value="uutalk" 
+				<input type="radio" name="depositeType" value="azcard" 
 					<% if("uutalk".equals(depositeType)){ %>checked="checked"<% } %>/><span>安中通充值卡</span>
 				<!-- 
 				<input type="radio" name="depositeType" value="szx" 
@@ -124,7 +124,7 @@
 				%> 
 				<p>说明：使用安中通充值卡充值享受另外优惠，以上优惠限支付宝充值。</p>				
 			</div>
-			<div id="divUUTalkPanel" <% if(!"uutalk".equals(depositeType)){ %>class="hidden"<% } %>>	
+			<div id="divUUTalkPanel" <% if(!"azcard".equals(depositeType)){ %>class="hidden"<% } %>>	
 				<h3>充值卡卡号</h3>
 				<input id="iptCardNumber" name="cardNumber" type="text"
 					value="<%=(null!=cardNumber)?cardNumber:""%>" />
@@ -178,7 +178,7 @@ $(function(){
 			$divAlipayPanel.removeClass(hidden);
 			$divUUTalkPanel.addClass(hidden);
 		} else 
-		if (value == 'uutalk') {
+		if (value == 'azcard') {
 			//show uutalk div
 			$divAlipayPanel.addClass(hidden);
 			$divUUTalkPanel.removeClass(hidden);			

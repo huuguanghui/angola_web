@@ -113,7 +113,7 @@ public class ChargeAccountController {
 			return mv;
 		}
 		
-		if ("uutalk".equals(depositeType)){
+		if ("azcard".equals(depositeType)){
 			Double value = getCardValue(cardNumber);
 			if (null == value){
 				mv.setViewName("chongzhi");
