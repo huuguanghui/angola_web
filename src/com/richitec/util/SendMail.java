@@ -69,7 +69,7 @@ public class SendMail {
 		String content = "<h3>亲爱的用户，<br/>欢迎您使用安中通网络电话。<h3>" +
 		"<p><h4>现在点击领取话费，即可获得<font color=\"red\">" + 16 + "元</font>话费！</h4><br/>" +
 				"<a href=\"http://www.00244dh.com/\"><button type=\"button\">领取话费</button></a></p>";
-		sm.setAddress("starkingwx@qq.com", title, content);
+		sm.setAddress("a00244dh@163.com", title, content);
 		try {
 			sm.send();
 		} catch (AddressException e) {

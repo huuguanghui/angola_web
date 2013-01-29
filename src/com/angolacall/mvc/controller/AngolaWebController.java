@@ -232,6 +232,7 @@ public class AngolaWebController {
 		if (!UserAccountStatus.activated.name().equals(status)) {
 			boolean ret = ChargeUtil.chargeUser(ChargeType.sysgift, countryCode, userName, frozenMoney.doubleValue());
 			if (ret) {
+				userDao.updateUserAccountStatus(countryCode, userName, UserAccountStatus.activated);
 				view.addObject("result", "money_get_ok");
 			} else {
 				view.addObject("result", "money_get_failed");

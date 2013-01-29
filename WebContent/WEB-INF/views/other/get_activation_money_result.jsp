@@ -40,7 +40,7 @@
 				}
 			%>
 			<div class="link_region">
-				<a href="http://www.00244dh.com">返回首页</a>
+				<a href="http://www.00244dh.com">返回首页</a>(安中通)
 			</div>
 			</div>
 		</div>

@@ -84,8 +84,10 @@ public class UserController extends ExceptionController {
 				json.put("bindphone", user.getBindPhone());
 				json.put("bindphone_country_code",
 						user.getBindPhoneCountryCode());
+				log.info("user status: " + user.getStatus() + " email: " + user.getEmail());
 				json.put("status", user.getStatus());
 				json.put("email", user.getEmail());
+				json.put("reg_given_money", user.getFrozenMoney());
 				user.setUserName(loginName);
 				user.setPassword(loginPwd);
 				session.setAttribute(UserBean.SESSION_BEAN, user);
@@ -563,51 +565,40 @@ public class UserController extends ExceptionController {
 		response.getWriter().print(jsonUser.toString());
 	}
 
-	private String finishVosRegister(String countryCode, String phoneNumber) {
+	private String finishVosRegister(String countryCode, String userName) {
 		String result = "0";
 		Map<String, Object> vosPhoneInfoMap = userDao.getVOSPhone(countryCode,
-				phoneNumber);
+				userName);
 		Long vosPhoneNumber = (Long) vosPhoneInfoMap.get("vosphone");
 		String vosPhonePwd = (String) vosPhoneInfoMap.get("vosphone_pwd");
-		result = addUserToVOS(countryCode + phoneNumber,
+		result = addUserToVOS(countryCode + userName,
 				vosPhoneNumber.toString(), vosPhonePwd);
 
 		if ("0".equals(result)) {
 			int affectedRows = userDao.updateUserAccountStatus(countryCode,
-					phoneNumber, UserAccountStatus.success);
+					userName, UserAccountStatus.success);
 			if (affectedRows > 0) {
 				result = "0";
 			} else {
 				result = "1";
 			}
 		} else if ("2001".equals(result)) {
-			userDao.updateUserAccountStatus(countryCode, phoneNumber,
+			userDao.updateUserAccountStatus(countryCode, userName,
 					UserAccountStatus.vos_account_error);
 		} else if ("2002".equals(result)) {
-			userDao.updateUserAccountStatus(countryCode, phoneNumber,
+			userDao.updateUserAccountStatus(countryCode, userName,
 					UserAccountStatus.vos_phone_error);
 		} else if ("2003".equals(result)) {
-			userDao.updateUserAccountStatus(countryCode, phoneNumber,
+			userDao.updateUserAccountStatus(countryCode, userName,
 					UserAccountStatus.vos_suite_error);
 		}
 
-//		if ("0".equals(result)) {
-//			Double money = ContextLoader.getUUTalkConfigManager().getRegisterGivenMoney();
-//			if (money != null && money > 0) {
-//				VOSHttpResponse depositeResp = vosClient.deposite(countryCode
-//						+ phoneNumber, money);
-//				if (depositeResp.getHttpStatusCode() != 200
-//						|| !depositeResp.isOperationSuccess()) {
-//					log.error("\nCannot deposite gift for user : "
-//							+ phoneNumber + "\nVOS Http Response : "
-//							+ depositeResp.getHttpStatusCode()
-//							+ "\nVOS Status Code : "
-//							+ depositeResp.getVOSStatusCode()
-//							+ "\nVOS Response Info ："
-//							+ depositeResp.getVOSResponseInfo());
-//				}
-//			}
-//		}
+		if ("0".equals(result)) {
+			Double money = ContextLoader.getUUTalkConfigManager().getRegisterGivenMoney();
+			if (money != null && money > 0) {
+				userDao.setFrozenMoney(countryCode, userName, money);
+			}
+		}
 
 		return result;
 	}

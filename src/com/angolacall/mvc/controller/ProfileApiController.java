@@ -27,6 +27,7 @@ import com.alipay.client.base.PartnerConfig;
 import com.alipay.client.security.RSASignature;
 import com.angolacall.constants.ChargeStatus;
 import com.angolacall.constants.UUTalkConfigKeys;
+import com.angolacall.framework.Configuration;
 import com.angolacall.framework.ContextLoader;
 import com.angolacall.mvc.admin.model.ChargeMoneyConfigDao;
 import com.angolacall.mvc.admin.model.UUTalkConfigManager;
@@ -399,20 +400,24 @@ public class ProfileApiController {
 
 	private void sendMoneyGainEmail(Map<String, Object> user)
 			throws AddressException, MessagingException {
+		Configuration config = ContextLoader.getConfiguration();
+
 		String countryCode = (String) user.get("countrycode");
 		String userName = (String) user.get("username");
 		Float frozenMoney = (Float) user.get("frozen_money");
 		String email = (String) user.get("email");
 		String randomId = (String) user.get("random_id");
-		String title = "安中通喊你领话费啦";
-		String content = "<h3>亲爱的用户"
-				+ countryCode
-				+ userName
+		String title = "安中通话费领取通知";
+
+		String content = "<h3>亲爱的用户" + countryCode + userName
 				+ "，<br/>欢迎您使用安中通网络电话。</h3>"
-				+ "<p><h4>现在点击领取话费，即可获得<font color=\"red\">"
-				+ frozenMoney
-				+ "元</font>话费！</h4><br/>"
-				+ "<a href=\"http://www.00244dh.com/angola/getFrozenMoneyViaEmailLink/" + randomId + "\"><button type=\"button\">领取话费</button></a></p>";
+				+ "<p><h4>现在点击领取话费，即可获得<font color=\"red\">" + frozenMoney
+				+ "元</font>话费！</h4><br/>" + "<a href=\""
+				+ config.getServerUrl() + "/getFrozenMoneyViaEmailLink/"
+				+ randomId
+				+ "\"><button type=\"button\">领取话费</button></a><br/><br/>"
+				+ "如果不能点击，请复制以下链接到浏览器。<br/>" + config.getServerUrl()
+				+ "/getFrozenMoneyViaEmailLink/" + randomId + "</p>";
 		SendMail sm = new SendMail();
 		sm.setAddress(email, title, content);
 		sm.send();

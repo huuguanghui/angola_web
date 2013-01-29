@@ -95,7 +95,8 @@ public class UserDAO {
 			final String loginPwd) throws DataAccessException {
 		String sql = "SELECT * FROM im_user WHERE username=? AND countrycode=? AND password=? AND status IN (?, ?)";
 		Object[] params = new Object[] { loginName, countryCode, loginPwd,
-				UserAccountStatus.success.name(), UserAccountStatus.activated.name() };
+				UserAccountStatus.success.name(),
+				UserAccountStatus.activated.name() };
 		return jdbc.queryForObject(sql, params, new RowMapper<UserBean>() {
 			@Override
 			public UserBean mapRow(ResultSet rs, int rowCount)
@@ -111,6 +112,7 @@ public class UserDAO {
 						.getString("bindphone_country_code"));
 				user.setStatus(rs.getString("status"));
 				user.setEmail(rs.getString("email"));
+				user.setFrozenMoney(rs.getFloat("frozen_money"));
 				return user;
 			}
 		});
@@ -119,7 +121,8 @@ public class UserDAO {
 	public Map<String, Object> getUser(String countryCode, String userName) {
 		String sql = "SELECT * FROM im_user WHERE username = ? AND countrycode = ? AND status IN (?, ?)";
 		return jdbc.queryForMap(sql, userName, countryCode,
-				UserAccountStatus.success.name(), UserAccountStatus.activated.name());
+				UserAccountStatus.success.name(),
+				UserAccountStatus.activated.name());
 	}
 
 	/**
@@ -272,9 +275,10 @@ public class UserDAO {
 		String sql = "SELECT count(*) FROM im_user WHERE referrer = ? AND referrer_country_code = ?";
 		return jdbc.queryForInt(sql, userName, countryCode);
 	}
-	
+
 	public int setEmail(String countryCode, String userName, String email) {
-		String randomId = CryptoUtil.md5(countryCode + userName + email + System.currentTimeMillis());
+		String randomId = CryptoUtil.md5(countryCode + userName + email
+				+ System.currentTimeMillis());
 		if (randomId.length() > 10) {
 			randomId = randomId.substring(0, 10);
 		}
@@ -282,7 +286,7 @@ public class UserDAO {
 		int rows = jdbc.update(sql, email, randomId, countryCode, userName);
 		return rows;
 	}
-	
+
 	public Map<String, Object> getUserByRandomId(String randomId) {
 		String sql = "SELECT * FROM im_user WHERE random_id = ?";
 		return jdbc.queryForMap(sql, randomId);
@@ -292,9 +296,13 @@ public class UserDAO {
 		String sql = "UPDATE im_user SET frozen_money = frozen_money + ? WHERE countrycode = ? AND username = ?";
 		jdbc.update(sql, money, countryCode, userName);
 	}
-	
-	public void clearFrozenMoney(String countryCode, String userName) {
+
+	public void setFrozenMoney(String countryCode, String userName, Double money) {
 		String sql = "UPDATE im_user SET frozen_money = ? WHERE countrycode = ? AND username = ?";
-		jdbc.update(sql, 0, countryCode, userName);
+		jdbc.update(sql, money, countryCode, userName);
+	}
+
+	public void clearFrozenMoney(String countryCode, String userName) {
+		setFrozenMoney(countryCode, userName, 0.0);
 	}
 }

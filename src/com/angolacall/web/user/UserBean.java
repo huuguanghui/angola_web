@@ -14,6 +14,7 @@ public class UserBean {
 	private String bindPhoneCountryCode;
 	private String status;
 	private String email;
+	private Float frozenMoney;
 	
 	public String getUserName() {
 		return username;
@@ -110,4 +111,14 @@ public class UserBean {
 	public void setEmail(String email) {
 		this.email = email;
 	}
+
+	public Float getFrozenMoney() {
+		return frozenMoney;
+	}
+
+	public void setFrozenMoney(Float frozenMoney) {
+		this.frozenMoney = frozenMoney;
+	}
+	
+	
 }
