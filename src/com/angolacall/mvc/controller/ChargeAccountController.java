@@ -105,12 +105,17 @@ public class ChargeAccountController {
 		if ("alipay".equals(depositeType)){
 			if (null == depositeId || depositeId.isEmpty()){
 				mv.setViewName("chongzhi");
-				mv.addObject("alipayError", "NoDepositeId");
+				mv.addObject("alipayError", "请选择充值金额");
+				return mv;
+			} else {
+				//支付宝暂时不可用，临时添加
+				mv.setViewName("chongzhi");
+				mv.addObject("alipayError", "支付宝暂时不可用，造成不便敬请谅解！");
 				return mv;
 			}
 			
-			mv.setViewName("accountcharge/alipay");
-			return mv;
+//			mv.setViewName("accountcharge/alipay");
+//			return mv;
 		}
 		
 		if ("azcard".equals(depositeType)){
