@@ -10,7 +10,7 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-public class SendMail {
+public class MailSender {
 	private String host = "smtp.exmail.qq.com"; // smtp服务器
 	private String user = "noreply@00244dh.com"; // 用户名
 	private String pwd = "uutalk123"; // 密码
@@ -19,7 +19,48 @@ public class SendMail {
 	private String subject = ""; // 邮件标题
 	private String content = ""; // 邮件内容
 
-	public void setAddress(String to, String subject, String content) {
+	public MailSender() {
+
+	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public String getUser() {
+		return user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
+	public String getPwd() {
+		return pwd;
+	}
+
+	public void setPwd(String pwd) {
+		this.pwd = pwd;
+	}
+
+	public String getFrom() {
+		return from;
+	}
+
+	public void setFrom(String from) {
+		this.from = from;
+	}
+	
+	public void sendMail(String to, String subject, String content) throws AddressException, MessagingException {
+		setAddressAndContent(to, subject, content);
+		send();
+	}
+
+	public void setAddressAndContent(String to, String subject, String content) {
 		this.to = to;
 		this.subject = subject;
 		this.content = content;
@@ -38,38 +79,39 @@ public class SendMail {
 		session.setDebug(true);
 		// 用session为参数定义消息对象
 		MimeMessage message = new MimeMessage(session);
-//		try {
-			// 加载发件人地址
-			message.setFrom(new InternetAddress(from));
-			// 加载收件人地址
-			message.addRecipient(Message.RecipientType.TO, new InternetAddress(
-					to));
-			// 加载标题
-			message.setSubject(subject);
+		// try {
+		// 加载发件人地址
+		message.setFrom(new InternetAddress(from));
+		// 加载收件人地址
+		message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+		// 加载标题
+		message.setSubject(subject, "UTF-8");
 
-			// 设置邮件的文本内容
-			message.setContent(content, "text/html;charset=gb2312");
-			// 保存邮件
-			message.saveChanges();
-			// 发送邮件
-			Transport transport = session.getTransport("smtp");
-			// 连接服务器的邮箱
-			transport.connect(host, user, pwd);
-			// 把邮件发送出去
-			transport.sendMessage(message, message.getAllRecipients());
-			transport.close();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
+		// 设置邮件的文本内容
+		message.setContent(content, "text/html;charset=utf8");
+		// 保存邮件
+		message.saveChanges();
+		// 发送邮件
+		Transport transport = session.getTransport("smtp");
+		// 连接服务器的邮箱
+		transport.connect(host, user, pwd);
+		// 把邮件发送出去
+		transport.sendMessage(message, message.getAllRecipients());
+		transport.close();
+		// } catch (Exception e) {
+		// e.printStackTrace();
+		// }
 	}
 
 	public static void main(String[] args) {
-		SendMail sm = new SendMail();
+		MailSender sm = new MailSender();
 		String title = "安中通喊你领话费啦";
-		String content = "<h3>亲爱的用户，<br/>欢迎您使用安中通网络电话。<h3>" +
-		"<p><h4>现在点击领取话费，即可获得<font color=\"red\">" + 16 + "元</font>话费！</h4><br/>" +
-				"<a href=\"http://www.00244dh.com/\"><button type=\"button\">领取话费</button></a></p>";
-		sm.setAddress("a00244dh@163.com", title, content);
+		String content = "<h3>亲爱的用户，<br/>欢迎您使用安中通网络电话。<h3>"
+				+ "<p><h4>现在点击领取话费，即可获得<font color=\"red\">"
+				+ 16
+				+ "元</font>话费！</h4><br/>"
+				+ "<a href=\"http://www.00244dh.com/\"><button type=\"button\">领取话费</button></a></p>";
+		sm.setAddressAndContent("a00244dh@163.com", title, content);
 		try {
 			sm.send();
 		} catch (AddressException e) {

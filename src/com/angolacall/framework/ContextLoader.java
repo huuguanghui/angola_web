@@ -20,6 +20,7 @@ import com.richitec.ucenter.model.AdminUserDao;
 import com.richitec.ucenter.model.CommonConfigDao;
 import com.richitec.ucenter.model.RegLinkTagDao;
 import com.richitec.ucenter.model.UserDAO;
+import com.richitec.util.MailSender;
 import com.richitec.vos.client.VOSClient;
 
 public class ContextLoader extends ContextLoaderListener {
@@ -102,5 +103,9 @@ public class ContextLoader extends ContextLoaderListener {
 	
 	public static RegisterActivityDao getRegisterActivityDao() {
 		return (RegisterActivityDao) appContext.getBean("reg_activity_dao");
+	}
+	
+	public static MailSender getMailSender() {
+		return (MailSender) appContext.getBean("mail_sender");
 	}
 }

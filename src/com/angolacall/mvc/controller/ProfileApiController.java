@@ -21,20 +21,20 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import scala.Responder;
-
 import com.alipay.client.base.PartnerConfig;
 import com.alipay.client.security.RSASignature;
 import com.angolacall.constants.ChargeStatus;
 import com.angolacall.constants.UUTalkConfigKeys;
+import com.angolacall.constants.UserAccountStatus;
 import com.angolacall.framework.Configuration;
 import com.angolacall.framework.ContextLoader;
 import com.angolacall.mvc.admin.model.ChargeMoneyConfigDao;
 import com.angolacall.mvc.admin.model.UUTalkConfigManager;
+import com.angolacall.web.user.UserBean;
 import com.richitec.ucenter.model.UserDAO;
 import com.richitec.util.CryptoUtil;
 import com.richitec.util.MyRC4;
-import com.richitec.util.SendMail;
+import com.richitec.util.MailSender;
 import com.richitec.vos.client.OrderSuiteInfo;
 import com.richitec.vos.client.SuiteInfo;
 import com.richitec.vos.client.VOSClient;
@@ -368,27 +368,39 @@ public class ProfileApiController {
 			@RequestParam(value = "countryCode") String countryCode,
 			@RequestParam(value = "username") String userName)
 			throws JSONException, IOException {
-		int rows = userDao.setEmail(countryCode, userName, email);
 		JSONObject ret = new JSONObject();
+		if (userDao.isEmailBinded(email)) {
+			ret.put("result", "email is already binded by others");
+			resposne.getWriter().print(ret.toString());
+			return;
+		}
+
+		int rows = userDao.setEmail(countryCode, userName, email);
 		if (rows > 0) {
 			// email set ok
 			// send activation email to user
 			Map<String, Object> user = userDao.getUser(countryCode, userName);
 			Float frozenMoney = (Float) user.get("frozen_money");
 			if (frozenMoney > 0) {
+				// send money gain mail
 				try {
 					sendMoneyGainEmail(user);
-					ret.put("result", "mail send ok");
-					resposne.getWriter().print(ret.toString());
-					return;
+					ret.put("result", "money gain mail send ok");
 				} catch (Exception e) {
 					e.printStackTrace();
-					ret.put("result", "mail send failed");
-					resposne.getWriter().print(ret.toString());
-					return;
+					ret.put("result", "money gain mail send failed");
 				}
+				resposne.getWriter().print(ret.toString());
+				return;
 			} else {
-				ret.put("result", "email set ok");
+				// send email address verification mail
+				try {
+					sendEmailAddressVerifyMail(user);
+					ret.put("result", "address verify mail send ok");
+				} catch (Exception e) {
+					e.printStackTrace();
+					ret.put("result", "address verify mail send failed");
+				}
 				resposne.getWriter().print(ret.toString());
 				return;
 			}
@@ -396,6 +408,27 @@ public class ProfileApiController {
 			ret.put("result", "email set error");
 			resposne.getWriter().print(ret.toString());
 		}
+	}
+
+	private void sendEmailAddressVerifyMail(Map<String, Object> user)
+			throws AddressException, MessagingException {
+		Configuration config = ContextLoader.getConfiguration();
+
+		String countryCode = (String) user.get("countrycode");
+		String userName = (String) user.get("username");
+		String email = (String) user.get("email");
+		String randomId = (String) user.get("random_id");
+		String title = "安中通邮箱绑定验证";
+
+		String url = config.getServerUrl() + "/verifyEmailAddress/" + randomId;
+
+		String content = "<h3>亲爱的用户" + countryCode + userName
+				+ "，<br/>欢迎您使用安中通网络电话。</h3>"
+				+ "<p><h4>点击验证邮箱按钮，完成邮箱绑定验证。</h4><br/>" + "<a href=\"" + url
+				+ "\"><button type=\"button\">验证邮箱</button></a><br/><br/>"
+				+ "如果不能点击，请复制以下链接到浏览器。<br/>" + url + "</p>";
+		MailSender mailSender = ContextLoader.getMailSender();
+		mailSender.sendMail(email, title, content);
 	}
 
 	private void sendMoneyGainEmail(Map<String, Object> user)
@@ -407,19 +440,41 @@ public class ProfileApiController {
 		Float frozenMoney = (Float) user.get("frozen_money");
 		String email = (String) user.get("email");
 		String randomId = (String) user.get("random_id");
-		String title = "安中通话费领取通知";
+		String title = "安中通喊你领话费啦";
+		String url = config.getServerUrl() + "/getFrozenMoneyViaEmailLink/"
+				+ randomId;
 
 		String content = "<h3>亲爱的用户" + countryCode + userName
 				+ "，<br/>欢迎您使用安中通网络电话。</h3>"
 				+ "<p><h4>现在点击领取话费，即可获得<font color=\"red\">" + frozenMoney
-				+ "元</font>话费！</h4><br/>" + "<a href=\""
-				+ config.getServerUrl() + "/getFrozenMoneyViaEmailLink/"
-				+ randomId
+				+ "元</font>话费！</h4><br/>" + "<a href=\"" + url
 				+ "\"><button type=\"button\">领取话费</button></a><br/><br/>"
-				+ "如果不能点击，请复制以下链接到浏览器。<br/>" + config.getServerUrl()
-				+ "/getFrozenMoneyViaEmailLink/" + randomId + "</p>";
-		SendMail sm = new SendMail();
-		sm.setAddress(email, title, content);
-		sm.send();
+				+ "如果不能点击，请复制以下链接到浏览器。<br/>" + url + "</p>";
+		MailSender mailSender = ContextLoader.getMailSender();
+		mailSender.sendMail(email, title, content);
+	}
+
+	@RequestMapping("/getAccountInfo")
+	public void getAccountInfo(HttpServletResponse response,
+			@RequestParam(value = "countryCode") String countryCode,
+			@RequestParam(value = "username") String userName)
+			throws IOException {
+		UserBean user = userDao.getUserBean(countryCode, userName);
+		response.getWriter().print(user.toJSONObject().toString());
+	}
+
+	@RequestMapping("/sendActivateFrozenMoneyMail")
+	public void sendActivateFrozenMoneyMail(HttpServletResponse response,
+			@RequestParam(value = "countryCode") String countryCode,
+			@RequestParam(value = "username") String userName)
+			throws IOException {
+		Map<String, Object> user = userDao.getUser(countryCode, userName);
+		try {
+			sendMoneyGainEmail(user);
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+			return;
+		}
 	}
 }

@@ -3,7 +3,6 @@ package com.richitec.ucenter.model;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
@@ -15,6 +14,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
+import com.angolacall.constants.EmailStatus;
 import com.angolacall.constants.UserAccountStatus;
 import com.angolacall.framework.ContextLoader;
 import com.angolacall.web.user.UserBean;
@@ -22,7 +22,6 @@ import com.richitec.sms.client.SMSHttpResponse;
 import com.richitec.util.CountryManager;
 import com.richitec.util.CryptoUtil;
 import com.richitec.util.RandomString;
-import com.richitec.util.TextUtility;
 import com.richitec.util.ValidatePattern;
 
 public class UserDAO {
@@ -93,16 +92,16 @@ public class UserDAO {
 
 	public UserBean getUserBean(String countryCode, String loginName,
 			final String loginPwd) throws DataAccessException {
-		String sql = "SELECT * FROM im_user WHERE username=? AND countrycode=? AND password=? AND status IN (?, ?)";
+		String sql = "SELECT * FROM im_user WHERE username=? AND countrycode=? AND password=? AND status =?";
 		Object[] params = new Object[] { loginName, countryCode, loginPwd,
-				UserAccountStatus.success.name(),
-				UserAccountStatus.activated.name() };
+				UserAccountStatus.success.name()};
 		return jdbc.queryForObject(sql, params, new RowMapper<UserBean>() {
 			@Override
 			public UserBean mapRow(ResultSet rs, int rowCount)
 					throws SQLException {
 				UserBean user = new UserBean();
 				user.setReferrer(rs.getString("referrer"));
+				user.setReferrerCountryCode(rs.getString("referrer_country_code"));
 				user.setUserKey(rs.getString("userkey"));
 				user.setCountryCode(rs.getString("countrycode"));
 				user.setVosPhone(String.valueOf(rs.getLong("vosphone")));
@@ -112,6 +111,7 @@ public class UserDAO {
 						.getString("bindphone_country_code"));
 				user.setStatus(rs.getString("status"));
 				user.setEmail(rs.getString("email"));
+				user.setEmailStatus(rs.getString("email_status"));
 				user.setFrozenMoney(rs.getFloat("frozen_money"));
 				return user;
 			}
@@ -119,10 +119,35 @@ public class UserDAO {
 	}
 
 	public Map<String, Object> getUser(String countryCode, String userName) {
-		String sql = "SELECT * FROM im_user WHERE username = ? AND countrycode = ? AND status IN (?, ?)";
-		return jdbc.queryForMap(sql, userName, countryCode,
-				UserAccountStatus.success.name(),
-				UserAccountStatus.activated.name());
+		String sql = "SELECT * FROM im_user WHERE username = ? AND countrycode = ?";
+		return jdbc.queryForMap(sql, userName, countryCode);
+	}
+
+	public UserBean getUserBean(String countryCode, String userName)
+			throws DataAccessException {
+		String sql = "SELECT * FROM im_user WHERE username=? AND countrycode=?";
+		Object[] params = new Object[] { userName, countryCode};
+		return jdbc.queryForObject(sql, params, new RowMapper<UserBean>() {
+			@Override
+			public UserBean mapRow(ResultSet rs, int rowCount)
+					throws SQLException {
+				UserBean user = new UserBean();
+				user.setReferrer(rs.getString("referrer"));
+				user.setReferrerCountryCode(rs.getString("referrer_country_code"));
+				user.setUserKey(rs.getString("userkey"));
+				user.setCountryCode(rs.getString("countrycode"));
+				user.setVosPhone(String.valueOf(rs.getLong("vosphone")));
+				user.setVosPhonePwd(rs.getString("vosphone_pwd"));
+				user.setBindPhone(rs.getString("bindphone"));
+				user.setBindPhoneCountryCode(rs
+						.getString("bindphone_country_code"));
+				user.setStatus(rs.getString("status"));
+				user.setEmail(rs.getString("email"));
+				user.setEmailStatus(rs.getString("email_status"));
+				user.setFrozenMoney(rs.getFloat("frozen_money"));
+				return user;
+			}
+		});
 	}
 
 	/**
@@ -276,15 +301,30 @@ public class UserDAO {
 		return jdbc.queryForInt(sql, userName, countryCode);
 	}
 
+	public int updateEmailStatus(String countryCode, String userName, EmailStatus emailStatus) {
+		String sql = "UPDATE im_user SET email_status = ? WHERE countrycode = ? AND username = ?";
+		return jdbc.update(sql, emailStatus.name(), countryCode, userName);
+	}
+	
 	public int setEmail(String countryCode, String userName, String email) {
 		String randomId = CryptoUtil.md5(countryCode + userName + email
 				+ System.currentTimeMillis());
 		if (randomId.length() > 10) {
 			randomId = randomId.substring(0, 10);
 		}
-		String sql = "UPDATE im_user SET email = ?, random_id = ? WHERE countrycode = ? AND username = ?";
-		int rows = jdbc.update(sql, email, randomId, countryCode, userName);
+		String sql = "UPDATE im_user SET email = ?, email_status = ?, random_id = ? WHERE countrycode = ? AND username = ?";
+		int rows = jdbc.update(sql, email, EmailStatus.unverify.name(), randomId, countryCode, userName);
 		return rows;
+	}
+
+	public boolean isEmailBinded(String email) {
+		String sql = "SELECT count(*) FROM im_user WHERE email = ?";
+		int count = jdbc.queryForInt(sql, email);
+		if (count > 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public Map<String, Object> getUserByRandomId(String randomId) {

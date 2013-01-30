@@ -31,12 +31,18 @@
 					<br/>
 					<p>由于系统故障，话费领取失败，请稍后重试！</p>
 			<%
-				} else {
+				} else if ("already_get_money".equals(result)){
 			%>
 					<p>用户<%=countryCode + userName %>您好,</p>
 					<br/>
 					<p>您之前已经领取了话费，不可重复领取！</p>
 			<%
+				} else if ("email_verified_ok".equals(result)) {
+			%>
+					<p>用户<%=countryCode + userName %>您好,</p>
+					<br/>
+					<p>您的邮箱已通过验证，感谢您对安中通的支持！</p>
+			<%		
 				}
 			%>
 			<div class="link_region">

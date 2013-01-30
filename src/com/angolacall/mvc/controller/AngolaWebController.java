@@ -25,6 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.angolacall.constants.AuthConstant;
 import com.angolacall.constants.ChargeType;
+import com.angolacall.constants.EmailStatus;
 import com.angolacall.constants.UserAccountStatus;
 import com.angolacall.constants.WebConstants;
 import com.angolacall.framework.Configuration;
@@ -210,8 +211,10 @@ public class AngolaWebController {
 
 	@RequestMapping(value = "/getFrozenMoneyViaEmailLink/{randomId}")
 	public ModelAndView getFrozenMoneyViaEmailLink(
-			HttpServletResponse response, @PathVariable String randomId) throws IOException {
-		ModelAndView view = new ModelAndView("other/get_activation_money_result");
+			HttpServletResponse response, @PathVariable String randomId)
+			throws IOException {
+		ModelAndView view = new ModelAndView(
+				"other/get_activation_money_result");
 		UserDAO userDao = ContextLoader.getUserDAO();
 		Map<String, Object> user = null;
 		try {
@@ -223,27 +226,59 @@ public class AngolaWebController {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 			return view;
 		}
-		
+
 		String countryCode = (String) user.get("countrycode");
 		String userName = (String) user.get("username");
-		String status = (String) user.get("status");
 		Float frozenMoney = (Float) user.get("frozen_money");
+
+		userDao.updateEmailStatus(countryCode, userName,
+				EmailStatus.verified);
 		
-		if (!UserAccountStatus.activated.name().equals(status)) {
-			boolean ret = ChargeUtil.chargeUser(ChargeType.sysgift, countryCode, userName, frozenMoney.doubleValue());
+		if (frozenMoney > 0) {
+			boolean ret = ChargeUtil.chargeUser(ChargeType.sysgift,
+					countryCode, userName, frozenMoney.doubleValue());
 			if (ret) {
-				userDao.updateUserAccountStatus(countryCode, userName, UserAccountStatus.activated);
+				userDao.clearFrozenMoney(countryCode, userName);
 				view.addObject("result", "money_get_ok");
 			} else {
 				view.addObject("result", "money_get_failed");
 			}
 		} else {
-			view.addObject("result", "already_activated");
+			view.addObject("result", "already_get_money");
 		}
-		
+
 		view.addObject("countryCode", countryCode);
 		view.addObject("userName", userName);
 		view.addObject("money", frozenMoney);
+		return view;
+	}
+
+	@RequestMapping(value = "/verifyEmailAddress/{randomId}")
+	public ModelAndView verifyEmailAddress(HttpServletResponse response,
+			@PathVariable String randomId) throws IOException {
+		ModelAndView view = new ModelAndView(
+				"other/get_activation_money_result");
+		UserDAO userDao = ContextLoader.getUserDAO();
+		Map<String, Object> user = null;
+		try {
+			user = userDao.getUserByRandomId(randomId);
+		} catch (Exception e) {
+			log.info(e.getMessage());
+		}
+		if (user == null) {
+			response.sendError(HttpServletResponse.SC_NOT_FOUND);
+			return view;
+		}
+
+		String countryCode = (String) user.get("countrycode");
+		String userName = (String) user.get("username");
+		
+		userDao.updateEmailStatus(countryCode, userName,
+				EmailStatus.verified);
+		
+		view.addObject("countryCode", countryCode);
+		view.addObject("userName", userName);
+		view.addObject("result", "email_verified_ok");
 		return view;
 	}
 }

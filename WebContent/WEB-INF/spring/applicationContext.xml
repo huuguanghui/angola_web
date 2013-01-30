@@ -163,4 +163,19 @@
 	<bean id="reg_activity_dao" class="com.angolacall.mvc.admin.model.RegisterActivityDao">
 	     <property name="dataSource" ref="dataSource_mysql_c3p0"></property>
 	</bean>
+	
+	<bean id="mail_sender" class="com.richitec.util.MailSender">
+	     <property name="host">
+	         <value>${smtp_server}</value>
+	     </property>
+	     <property name="user">
+	         <value>${mail_auth_user}</value>
+	     </property>
+	     <property name="pwd">
+	         <value>${mail_auth_pwd}</value>
+	     </property>
+	     <property name="from">
+	         <value>${mail_from_address}</value>
+	     </property>
+	</bean>
 </beans>

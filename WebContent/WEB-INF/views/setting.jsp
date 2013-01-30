@@ -9,7 +9,7 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-<title>UUTalk-系统设置</title>
+<title>安中通-系统设置</title>
 <jsp:include page="common/_head.jsp"></jsp:include>
 </head>
 

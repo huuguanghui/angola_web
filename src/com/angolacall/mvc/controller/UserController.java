@@ -50,7 +50,6 @@ public class UserController extends ExceptionController {
 	public static final String PhoneCodeError = "phone_code_error";
 	public static final String PasswordError = "password_error";
 	public static final String ConfirmPasswordError = "confirm_password_error";
-	public static final String NicknameError = "nickname_error";
 
 	@PostConstruct
 	public void init() {
@@ -84,9 +83,9 @@ public class UserController extends ExceptionController {
 				json.put("bindphone", user.getBindPhone());
 				json.put("bindphone_country_code",
 						user.getBindPhoneCountryCode());
-				log.info("user status: " + user.getStatus() + " email: " + user.getEmail());
 				json.put("status", user.getStatus());
 				json.put("email", user.getEmail());
+				json.put("email_status", user.getEmailStatus());
 				json.put("reg_given_money", user.getFrozenMoney());
 				user.setUserName(loginName);
 				user.setPassword(loginPwd);
