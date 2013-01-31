@@ -223,7 +223,7 @@ public class AngolaWebController {
 			log.info(e.getMessage());
 		}
 		if (user == null) {
-			response.sendError(HttpServletResponse.SC_NOT_FOUND);
+			view.addObject("result", "money_gain_user_not_found");
 			return view;
 		}
 
@@ -266,7 +266,7 @@ public class AngolaWebController {
 			log.info(e.getMessage());
 		}
 		if (user == null) {
-			response.sendError(HttpServletResponse.SC_NOT_FOUND);
+			view.addObject("result", "verify_email_user_not_found");
 			return view;
 		}
 

@@ -43,6 +43,10 @@
 					<br/>
 					<p>您的邮箱已通过验证，感谢您对安中通的支持！</p>
 			<%		
+				} else if ("money_gain_user_not_found".equals(result) || "verify_email_user_not_found".equals(result)) {
+			%>
+					<p>对不起，此链接已经失效！</p>
+			<%	
 				}
 			%>
 			<div class="link_region">
