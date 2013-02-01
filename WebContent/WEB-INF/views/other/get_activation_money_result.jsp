@@ -5,7 +5,7 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-<title>安中通领取话费</title>
+<title>安中通</title>
 <jsp:include page="../common/_head.jsp"></jsp:include>
 </head>
 <body>
@@ -22,7 +22,7 @@
 					%>
 						<p>用户<%=countryCode + userName %>您好,</p>
 						<br/>
-						<p>您已成功领取系统赠送的<%=String.format("%.2f", money.floatValue()) %>元。</p>
+						<p>您已成功领取系统赠送的<%=String.format("%.2f", money.floatValue()) %>元话费。</p>
 					<%
 						
 				} else if ("money_get_failed".equals(result)){
@@ -43,7 +43,7 @@
 					<br/>
 					<p>您的邮箱已通过验证，感谢您对安中通的支持！</p>
 			<%		
-				} else if ("money_gain_user_not_found".equals(result) || "verify_email_user_not_found".equals(result)) {
+				} else {
 			%>
 					<p>对不起，此链接已经失效！</p>
 			<%	

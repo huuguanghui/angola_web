@@ -92,4 +92,13 @@ public class RandomString {
 	public static String genDSSessionID() {
 		return genRandomNum(6);
 	}
+	
+	public static String getRandomId(String msg) {
+		String randomId = CryptoUtil.md5(msg
+				+ System.currentTimeMillis());
+		if (randomId.length() > 10) {
+			randomId = randomId.substring(0, 10);
+		}
+		return randomId;
+	}
 }

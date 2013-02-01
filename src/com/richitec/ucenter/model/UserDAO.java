@@ -94,14 +94,15 @@ public class UserDAO {
 			final String loginPwd) throws DataAccessException {
 		String sql = "SELECT * FROM im_user WHERE username=? AND countrycode=? AND password=? AND status =?";
 		Object[] params = new Object[] { loginName, countryCode, loginPwd,
-				UserAccountStatus.success.name()};
+				UserAccountStatus.success.name() };
 		return jdbc.queryForObject(sql, params, new RowMapper<UserBean>() {
 			@Override
 			public UserBean mapRow(ResultSet rs, int rowCount)
 					throws SQLException {
 				UserBean user = new UserBean();
 				user.setReferrer(rs.getString("referrer"));
-				user.setReferrerCountryCode(rs.getString("referrer_country_code"));
+				user.setReferrerCountryCode(rs
+						.getString("referrer_country_code"));
 				user.setUserKey(rs.getString("userkey"));
 				user.setCountryCode(rs.getString("countrycode"));
 				user.setVosPhone(String.valueOf(rs.getLong("vosphone")));
@@ -126,14 +127,15 @@ public class UserDAO {
 	public UserBean getUserBean(String countryCode, String userName)
 			throws DataAccessException {
 		String sql = "SELECT * FROM im_user WHERE username=? AND countrycode=?";
-		Object[] params = new Object[] { userName, countryCode};
+		Object[] params = new Object[] { userName, countryCode };
 		return jdbc.queryForObject(sql, params, new RowMapper<UserBean>() {
 			@Override
 			public UserBean mapRow(ResultSet rs, int rowCount)
 					throws SQLException {
 				UserBean user = new UserBean();
 				user.setReferrer(rs.getString("referrer"));
-				user.setReferrerCountryCode(rs.getString("referrer_country_code"));
+				user.setReferrerCountryCode(rs
+						.getString("referrer_country_code"));
 				user.setUserKey(rs.getString("userkey"));
 				user.setCountryCode(rs.getString("countrycode"));
 				user.setVosPhone(String.valueOf(rs.getLong("vosphone")));
@@ -301,19 +303,19 @@ public class UserDAO {
 		return jdbc.queryForInt(sql, userName, countryCode);
 	}
 
-	public int updateEmailStatus(String countryCode, String userName, EmailStatus emailStatus) {
+	public int updateEmailStatus(String countryCode, String userName,
+			EmailStatus emailStatus) {
 		String sql = "UPDATE im_user SET email_status = ? WHERE countrycode = ? AND username = ?";
 		return jdbc.update(sql, emailStatus.name(), countryCode, userName);
 	}
-	
+
 	public int setEmail(String countryCode, String userName, String email) {
-		String randomId = CryptoUtil.md5(countryCode + userName + email
-				+ System.currentTimeMillis());
-		if (randomId.length() > 10) {
-			randomId = randomId.substring(0, 10);
-		}
+		String randomId = RandomString.getRandomId(countryCode + userName
+				+ email);
+
 		String sql = "UPDATE im_user SET email = ?, email_status = ?, random_id = ? WHERE countrycode = ? AND username = ?";
-		int rows = jdbc.update(sql, email, EmailStatus.unverify.name(), randomId, countryCode, userName);
+		int rows = jdbc.update(sql, email, EmailStatus.unverify.name(),
+				randomId, countryCode, userName);
 		return rows;
 	}
 
@@ -344,5 +346,11 @@ public class UserDAO {
 
 	public void clearFrozenMoney(String countryCode, String userName) {
 		setFrozenMoney(countryCode, userName, 0.0);
+	}
+	
+	public int updateRandomId(String countryCode, String userName, String randomId) {
+		String sql = "UPDATE im_user SET random_id = ? WHERE countrycode = ? AND username = ?";
+		int rows = jdbc.update(sql, randomId, countryCode, userName);
+		return rows;
 	}
 }

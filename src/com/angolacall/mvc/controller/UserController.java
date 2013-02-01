@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -14,6 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,7 +24,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.angolacall.constants.ChargeType;
+import com.angolacall.constants.EmailStatus;
 import com.angolacall.constants.UserAccountStatus;
+import com.angolacall.constants.UserConstants;
 import com.angolacall.framework.Configuration;
 import com.angolacall.framework.ContextLoader;
 import com.angolacall.mvc.admin.model.UUTalkConfigManager;
@@ -30,6 +35,7 @@ import com.angolacall.web.user.UserBean;
 import com.richitec.sms.client.SMSClient;
 import com.richitec.ucenter.model.UserDAO;
 import com.richitec.util.CryptoUtil;
+import com.richitec.util.MailSender;
 import com.richitec.util.RandomString;
 import com.richitec.vos.client.VOSClient;
 import com.richitec.vos.client.VOSHttpResponse;
@@ -171,6 +177,63 @@ public class UserController extends ExceptionController {
 		session.removeAttribute("phonecode");
 		session.removeAttribute("countrycode");
 		return "200";
+	}
+
+	@RequestMapping(value = "/resetpwdvialink/{random_id}")
+	public ModelAndView resetPwdViaLink(
+			@PathVariable(value = "random_id") String randomId) {
+		ModelAndView view = new ModelAndView("reset_pwd");
+		UserDAO userDao = ContextLoader.getUserDAO();
+		Map<String, Object> user = null;
+		try {
+			user = userDao.getUserByRandomId(randomId);
+		} catch (Exception e) {
+			log.info(e.getMessage());
+		}
+		if (user == null) {
+			return view;
+		}
+
+		view.addObject("user", user);
+		view.addObject("random_id", randomId);
+
+		return view;
+	}
+
+	@RequestMapping(value = "/resetPwd")
+	public @ResponseBody
+	String resetPwd(HttpServletResponse response,
+			@RequestParam(value = "random_id") String randomId,
+			@RequestParam(value = "password") String password,
+			@RequestParam(value = "password1") String password1) throws SQLException {
+		UserDAO userDao = ContextLoader.getUserDAO();
+		Map<String, Object> user = null;
+		try {
+			user = userDao.getUserByRandomId(randomId);
+		} catch (Exception e) {
+			log.info(e.getMessage());
+		}
+		if (user == null) {
+			return "user_not_found";
+		}
+
+		if (!password.equals(password1)) {
+			return "passwords_not_equal";
+		}
+
+		String countryCode = (String) user
+				.get(UserConstants.countrycode.name());
+		String userName = (String) user.get(UserConstants.username.name());
+
+		String md5Password = CryptoUtil.md5(password);
+		if (userDao.changePassword(userName, md5Password, countryCode) <= 0) {
+			return "password_reset_failed";
+		}
+
+		userDao.updateRandomId(countryCode, userName,
+				RandomString.getRandomId(countryCode + userName));
+
+		return "password_reset_ok";
 	}
 
 	@RequestMapping(value = "/websignup", method = RequestMethod.POST)
@@ -593,12 +656,83 @@ public class UserController extends ExceptionController {
 		}
 
 		if ("0".equals(result)) {
-			Double money = ContextLoader.getUUTalkConfigManager().getRegisterGivenMoney();
+			Double money = ContextLoader.getUUTalkConfigManager()
+					.getRegisterGivenMoney();
 			if (money != null && money > 0) {
 				userDao.setFrozenMoney(countryCode, userName, money);
 			}
 		}
 
 		return result;
+	}
+
+	private void sendPwdResetEmail(Map<String, Object> user)
+			throws AddressException, MessagingException {
+		Configuration config = ContextLoader.getConfiguration();
+
+		String countryCode = (String) user.get("countrycode");
+		String userName = (String) user.get("username");
+		String email = (String) user.get("email");
+		String randomId = (String) user.get("random_id");
+		String title = "安中通账户密码重置";
+		String url = config.getServerUrl() + "/user/resetpwdvialink/"
+				+ randomId;
+
+		String content = "<h3>亲爱的用户" + countryCode + userName
+				+ "，<br/>欢迎您使用安中通网络电话。</h3>"
+				+ "<p><h4>点击密码重置，您可重新设置您的密码。</h4><br/>" + "<a href=\"" + url
+				+ "\"><button type=\"button\">密码重置</button></a><br/><br/>"
+				+ "如果不能点击，请复制以下链接到浏览器。<br/>" + url + "</p>";
+		MailSender mailSender = ContextLoader.getMailSender();
+		mailSender.sendMail(email, title, content);
+	}
+
+	@RequestMapping("/sendResetPwdEmail")
+	public void sendResetPwdEmailApi(HttpServletResponse response,
+			@RequestParam(value = "countryCode") String countryCode,
+			@RequestParam(value = "username") String userName)
+			throws IOException, JSONException {
+		log.info("sendResetPwdEmailApi - countryCode: " + countryCode
+				+ " username: " + userName);
+		JSONObject ret = new JSONObject();
+		int rows = userDao.updateRandomId(countryCode, userName,
+					RandomString.getRandomId(countryCode + userName));
+		if (rows <= 0) {
+			log.info("sendResetPwdEmailApi - user not found");
+			ret.put("result", "user_not_found");
+			response.getWriter().print(ret.toString());
+			return;
+		}
+		
+		Map<String, Object> user = userDao.getUser(countryCode, userName);
+		String email = (String) user.get(UserConstants.email.name());
+		String emailStatus = (String) user.get(UserConstants.email_status
+				.name());
+
+		
+		if (email == null || email.equals("")) {
+			ret.put("result", "email_not_set");
+			response.getWriter().print(ret.toString());
+			return;
+		}
+
+		if (!EmailStatus.verified.name().equals(emailStatus)) {
+			ret.put("result", "email_unverify");
+			ret.put("email", email);
+			response.getWriter().print(ret.toString());
+			return;
+		}
+
+		try {
+			sendPwdResetEmail(user);
+			ret.put("email", email);
+			ret.put("result", "send_ok");
+			response.getWriter().print(ret.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+			ret.put("result", "send_failed");
+			response.getWriter().print(ret.toString());
+			return;
+		}
 	}
 }

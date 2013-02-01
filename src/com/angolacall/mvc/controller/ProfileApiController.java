@@ -24,8 +24,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.alipay.client.base.PartnerConfig;
 import com.alipay.client.security.RSASignature;
 import com.angolacall.constants.ChargeStatus;
+import com.angolacall.constants.EmailStatus;
 import com.angolacall.constants.UUTalkConfigKeys;
 import com.angolacall.constants.UserAccountStatus;
+import com.angolacall.constants.UserConstants;
 import com.angolacall.framework.Configuration;
 import com.angolacall.framework.ContextLoader;
 import com.angolacall.mvc.admin.model.ChargeMoneyConfigDao;
@@ -35,6 +37,7 @@ import com.richitec.ucenter.model.UserDAO;
 import com.richitec.util.CryptoUtil;
 import com.richitec.util.MyRC4;
 import com.richitec.util.MailSender;
+import com.richitec.util.RandomString;
 import com.richitec.vos.client.OrderSuiteInfo;
 import com.richitec.vos.client.SuiteInfo;
 import com.richitec.vos.client.VOSClient;
@@ -477,4 +480,6 @@ public class ProfileApiController {
 			return;
 		}
 	}
+	
+	
 }
