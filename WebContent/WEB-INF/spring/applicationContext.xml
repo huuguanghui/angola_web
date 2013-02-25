@@ -50,18 +50,6 @@
 		</property>
 	</bean>	
 	
-	<bean id="donkey_client" class="com.richitec.donkey.client.DonkeyClient">
-		<property name="baseUri">
-			<value>${donkey_base_uri}</value>
-		</property>
-		<property name="appId">
-			<value>${donkey_app_id}</value>
-		</property>
-		<property name="appKey">
-			<value>${donkey_app_key}</value>
-		</property>		
-	</bean>
-	
 	<bean id="vos_client" class="com.richitec.vos.client.VOSClient">
 		<property name="baseUri">
 			<value>${vos_base_uri}</value>
