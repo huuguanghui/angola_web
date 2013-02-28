@@ -17,6 +17,8 @@ public class Configuration {
 	private String serverUrl;
 	private String callbackCalleePrefix;
 	private String callbackCallerPrefix;
+	private String appPrefix;
+	
 	public String getSuite0Id() {
 		return this.suite0Id;
 	}
@@ -95,6 +97,14 @@ public class Configuration {
 
 	public void setCallbackCallerPrefix(String callbackCallerPrefix) {
 		this.callbackCallerPrefix = callbackCallerPrefix;
+	}
+
+	public String getAppPrefix() {
+		return appPrefix;
+	}
+
+	public void setAppPrefix(String appPrefix) {
+		this.appPrefix = appPrefix;
 	}
 
 }

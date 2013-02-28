@@ -128,8 +128,8 @@
 		</div>
 	</div>
 
-	<script src="/angola/js/lib/jquery-1.8.0.min.js"></script>
-	<script src="/angola/js/lib/bootstrap.min.js"></script>
+	<script src="/uutalk/js/lib/jquery-1.8.0.min.js"></script>
+	<script src="/uutalk/js/lib/bootstrap.min.js"></script>
 	<script type="text/javascript">
 		$("#new_money_save").click(function() {
 			$("#money_form_alert").addClass("hidden");
@@ -158,7 +158,7 @@
 			
 			$.ajax({
 				type : "post",
-				url : "/angola/admin/chargemanage/addChargeMoney",
+				url : "/uutalk/admin/chargemanage/addChargeMoney",
 				dataType : "json",
 				data : {
 					charge_money : chargeMoney,
@@ -178,7 +178,7 @@
 						break;
 						
 					case "ok":
-						location = "/angola/admin/chargemanage";
+						location = "/uutalk/admin/chargemanage";
 						break;
 					}
 					
@@ -248,7 +248,7 @@
 			
 			$.ajax({
 				type : "post",
-				url : "/angola/admin/chargemanage/editChargeMoney",
+				url : "/uutalk/admin/chargemanage/editChargeMoney",
 				dataType : "json",
 				data : {
 					id : chargeMoneyId,
@@ -269,7 +269,7 @@
 						break;
 						
 					case "ok":
-						location = "/angola/admin/chargemanage";
+						location = "/uutalk/admin/chargemanage";
 						break;
 					}
 					
@@ -291,13 +291,13 @@
 			if (confirm("确定要删除'" + description + "'这条记录？")) {
 				$.ajax({
 					type : "post",
-					url : "/angola/admin/chargemanage/deleteChargeMoney",
+					url : "/uutalk/admin/chargemanage/deleteChargeMoney",
 					dataType : "json",
 					data : {
 						id : chargeMoneyId,
 					},
 					success : function(data, textStatus, jqxhr) {
-						location = "/angola/admin/chargemanage";
+						location = "/uutalk/admin/chargemanage";
 					},
 					error : function(jqXHR, textStatus) {
 						alert("系统内部错误（STATUS CODE: " + jqXHR.status + ")");

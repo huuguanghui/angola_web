@@ -18,17 +18,17 @@
 			<div class="nav-collapse">
 				<ul class="nav pull-right">
                     <li class="<%="signup".equals(pageName) ? "active" : ""%>">
-                        <a href="/angola/signup">注册</a>
+                        <a href="/uutalk/signup">注册</a>
                     </li>
 					<li class="<%="signin".equals(pageName) ? "active" : ""%>">
 					<% if (userBean == null) { %>
-						<a href="/angola/signin">登录</a>
+						<a href="/uutalk/signin">登录</a>
 					<% } else {	%>
-						<a href="/angola/accountcharge">进入账户</a>
+						<a href="/uutalk/accountcharge">进入账户</a>
 					<% } %>
 					</li>
 				    <li class="<%="deposite".equals(pageName) ? "active" : ""%>">
-				        <a href="/angola/deposite">在线充值</a>
+				        <a href="/uutalk/deposite">在线充值</a>
                     </li>
 				</ul>
 			</div>

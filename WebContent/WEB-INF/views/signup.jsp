@@ -86,13 +86,13 @@
 			%>
 			<div class="span4 offset4">
 				<h2>
-					恭喜你，注册成功！<a href="/angola/signin">点此登录</a>
+					恭喜你，注册成功！<a href="/uutalk/signin">点此登录</a>
 				</h2>
 			</div>
 			<%
 				} else {
 			%>
-			<form id="formSignup" action="/angola/user/websignup" method="post"
+			<form id="formSignup" action="/uutalk/user/websignup" method="post"
 				class="im-form span6 offset3">
 				<h2>使用手机号码注册</h2>
 				<hr>
@@ -173,8 +173,8 @@
 	<!-- Le javascript
     ================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
-	<script src="/angola/js/lib/jquery-1.8.0.min.js"></script>
-	<script src="/angola/js/lib/bootstrap.min.js"></script>
+	<script src="/uutalk/js/lib/jquery-1.8.0.min.js"></script>
+	<script src="/uutalk/js/lib/bootstrap.min.js"></script>
 	<script type="text/javascript">
 		$(function() {
 			function disable60Seconds() {
@@ -216,7 +216,7 @@
 				$span.html("");
 				$divCtrl.removeClass("error");
 				$divCtrl.removeClass("success");
-				$.post("/angola/user/getPhoneCode", {
+				$.post("/uutalk/user/getPhoneCode", {
 					phone : phoneNumber,
 					countryCode : country_code
 				}, function(data) {

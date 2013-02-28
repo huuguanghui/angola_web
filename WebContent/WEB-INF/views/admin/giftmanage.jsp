@@ -76,8 +76,8 @@
 	<jsp:include page="common/_footer.jsp"></jsp:include>
 
 
-	<script src="/angola/js/lib/jquery-1.8.0.min.js"></script>
-	<script src="/angola/js/lib/bootstrap.min.js"></script>
+	<script src="/uutalk/js/lib/jquery-1.8.0.min.js"></script>
+	<script src="/uutalk/js/lib/bootstrap.min.js"></script>
 	<script type="text/javascript">
 		$("#edit_reg_gift_btn").click(function() {
 			var giftValue = $("#reg_gift_input").val();
@@ -88,7 +88,7 @@
 			}
 			$.ajax({
 				type : "post",
-				url : "/angola/admin/giftmanage/editRegGiftValue",
+				url : "/uutalk/admin/giftmanage/editRegGiftValue",
 				dataType : "json",
 				data : {
 					regGiftValue : giftValue
@@ -120,7 +120,7 @@
 			$("#reg_gift_desc_text").html("");
 			$.ajax({
 				type : "post",
-				url : "/angola/admin/giftmanage/editRegGiftDesc",
+				url : "/uutalk/admin/giftmanage/editRegGiftDesc",
 				dataType : "json",
 				data : {
 					regGiftDesc : descText
@@ -141,7 +141,7 @@
 			$("#invite_charge_gift_desc_text").html("");
 			$.ajax({
 				type : "post",
-				url : "/angola/admin/giftmanage/editInviteChargeGiftDesc",
+				url : "/uutalk/admin/giftmanage/editInviteChargeGiftDesc",
 				dataType : "json",
 				data : {
 					inviteChargeGiftDesc : descText

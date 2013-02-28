@@ -71,8 +71,8 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="/angola/js/lib/jquery-1.8.0.min.js"></script>
-    <script src="/angola/js/lib/bootstrap.min.js"></script>
+    <script src="/uutalk/js/lib/jquery-1.8.0.min.js"></script>
+    <script src="/uutalk/js/lib/bootstrap.min.js"></script>
 	<script type="text/javascript">
 	var $_divCtrl = $("#divPhoneNumberCtrl");
 	
@@ -143,7 +143,7 @@
         var $span = $("#spanPhoneNumberInfo");
         $_divCtrl.removeClass("error");
         $_divCtrl.removeClass("success");
-        $.post("/angola/user/validatePhoneNumber", 
+        $.post("/uutalk/user/validatePhoneNumber", 
             { phone: phoneNumber, 
         	countryCode: country_code},
             function(data){

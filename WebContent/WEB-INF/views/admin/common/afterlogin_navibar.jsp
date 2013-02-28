@@ -8,7 +8,7 @@
 	AdminUserBean userBean = (AdminUserBean) session
 	.getAttribute(AdminUserBean.SESSION_BEAN);
 	if (userBean == null) {
-		response.sendRedirect("/angola/admin/");
+		response.sendRedirect("/uutalk/admin/");
 		return;
 	}
 	String pageName = String.valueOf(request
@@ -25,14 +25,14 @@
 				<li><a id="username" class="im-attendee-name">
 				    <i class="icon-user"></i>&nbsp;<%=userBean.getUserName() %></a>
 				</li>
-				<li><a id="logout" href="/angola/admin/signout">退出登录</a></li>
+				<li><a id="logout" href="/uutalk/admin/signout">退出登录</a></li>
 			</ul>
 			<div class="nav-collapse">
 				<ul class="nav pull-right">
-					<li class="<%=Pages.gift_manage.name().equals(pageName) ? "active" : ""%>"><a href="/angola/admin/giftmanage">邀请赠送管理</a></li>
-					<li class="<%=Pages.charge_manage.name().equals(pageName) ? "active" : ""%>"><a href="/angola/admin/chargemanage">充值管理</a></li>
-					<li class="<%=Pages.register_manage.name().equals(pageName) ? "active" : ""%>"><a href="/angola/admin/registermanage">注册管理</a></li>
-					<li class="<%=Pages.notice_manage.name().equals(pageName) ? "active" : ""%>"><a href="/angola/admin/noticemanage">消息管理</a></li>
+					<li class="<%=Pages.gift_manage.name().equals(pageName) ? "active" : ""%>"><a href="/uutalk/admin/giftmanage">邀请赠送管理</a></li>
+					<li class="<%=Pages.charge_manage.name().equals(pageName) ? "active" : ""%>"><a href="/uutalk/admin/chargemanage">充值管理</a></li>
+					<li class="<%=Pages.register_manage.name().equals(pageName) ? "active" : ""%>"><a href="/uutalk/admin/registermanage">注册管理</a></li>
+					<li class="<%=Pages.notice_manage.name().equals(pageName) ? "active" : ""%>"><a href="/uutalk/admin/noticemanage">消息管理</a></li>
 				</ul>
 			</div>
 		</div>

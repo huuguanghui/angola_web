@@ -131,8 +131,8 @@
 		</div>
 	</div>
 	
-	<script type="text/javascript" src="/angola/js/lib/jquery-1.8.0.min.js"></script>
-	<script type="text/javascript" src="/angola/js/lib/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/uutalk/js/lib/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="/uutalk/js/lib/bootstrap.min.js"></script>
 	<script type="text/javascript">
 		$("#new_notice_save").click(
 				function() {
@@ -147,13 +147,13 @@
 
 					$.ajax({
 						type : "post",
-						url : "/angola/admin/noticemanage/addNotice",
+						url : "/uutalk/admin/noticemanage/addNotice",
 						dataType : "json",
 						data : {
 							"content" : content
 						},
 						success : function(data, textStatus, jqxhr) {
-							location = "/angola/admin/noticemanage";
+							location = "/uutalk/admin/noticemanage";
 
 						},
 						error : function(jqXHR, textStatus) {
@@ -181,13 +181,13 @@
 			if (confirm("确定要删除'" + content + "'这条消息？")) {
 				$.ajax({
 					type : "post",
-					url : "/angola/admin/noticemanage/delNotice",
+					url : "/uutalk/admin/noticemanage/delNotice",
 					dataType : 'json',
 					data : {
 						"noticeId" : id
 					},
 					success : function() {
-						location = "/angola/admin/noticemanage";
+						location = "/uutalk/admin/noticemanage";
 					},
 					error : function(jqXHR, textStatus) {
 						alert("系统内部错误（STATUS CODE: "
@@ -204,13 +204,13 @@
 			if (confirm("确定要发布'" + content + "'这条消息？")) {
 				$.ajax({
 					type : "post",
-					url : "/angola/admin/noticemanage/pubNotice",
+					url : "/uutalk/admin/noticemanage/pubNotice",
 					dataType : 'json',
 					data : {
 						"noticeId" : id
 					},
 					success : function() {
-						location = "/angola/admin/noticemanage";
+						location = "/uutalk/admin/noticemanage";
 					},
 					error : function(jqXHR, textStatus) {
 						alert("系统内部错误（STATUS CODE: "
@@ -250,14 +250,14 @@
 
 			$.ajax({
 				type : "post",
-				url : "/angola/admin/noticemanage/editNotice",
+				url : "/uutalk/admin/noticemanage/editNotice",
 				dataType : "json",
 				data : {
 					"noticeId" : id,
 					"content" : content
 				},
 				success : function(data, textStatus, jqxhr) {
-					location = "/angola/admin/noticemanage";
+					location = "/uutalk/admin/noticemanage";
 
 				},
 				error : function(jqXHR, textStatus) {

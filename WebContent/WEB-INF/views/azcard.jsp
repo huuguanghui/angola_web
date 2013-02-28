@@ -35,7 +35,7 @@
 		<a class="chongzhi500" href=""></a>
 		<a class="download-btn" href="http://www.00244dh.com/appvcenter/downloadapp/3/android"></a>
 	</div>
-	<form id="azcardForm" action="/angola/azcardbalance" method="post">
+	<form id="azcardForm" action="/uutalk/azcardbalance" method="post">
 		<div class="chongzhi-form-field">
 			<label>查询充值卡余额请输入绑定的电话号码：</label>
 			<input id="iptPhoneNumber" name=phoneNumber type="text" 
@@ -59,7 +59,7 @@
 	</p>
 </div>
 
-<script src="/angola/js/lib/jquery-1.8.0.min.js"></script>
+<script src="/uutalk/js/lib/jquery-1.8.0.min.js"></script>
 <script type="text/javascript">
 $(function(){
 	var $ipt = $("#iptPhoneNumber");
@@ -76,7 +76,7 @@ $(function(){
 			return false;
 		}
 			
-		var jqxhr = $.post("/angola/azcardbalance", 
+		var jqxhr = $.post("/uutalk/azcardbalance", 
 			{phoneNumber: $ipt.val()},
 			function(data){
 				var status = data.status;

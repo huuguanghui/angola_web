@@ -30,7 +30,7 @@
 			<%
 				if (user != null) {
 			%>
-    		<form id="formResetPassword" action="/angola/user/resetPwd" class="im-form">
+    		<form id="formResetPassword" action="/uutalk/user/resetPwd" class="im-form">
                 <h2>重新设置密码</h2>
                 <input id="random_id" type="hidden" name="random_id" value="<%=randomId %>" />
                 <div id="divPassword" class="control-group">
@@ -80,8 +80,8 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="/angola/js/lib/jquery-1.8.0.min.js"></script>
-    <script src="/angola/js/lib/bootstrap.min.js"></script>
+    <script src="/uutalk/js/lib/jquery-1.8.0.min.js"></script>
+    <script src="/uutalk/js/lib/bootstrap.min.js"></script>
 	<script type="text/javascript">
 	function isValidInput($divCtrl, value){
         var $span = $divCtrl.find(".help-inline");
@@ -116,7 +116,7 @@
         $divSubmit = $("#divSubmit");
         $spanSubmit = $("#spanSubmit");
         
-		$.post("/angola/user/resetPwd",
+		$.post("/uutalk/user/resetPwd",
 			{
 				random_id: randomId,
 				password: newPassword,

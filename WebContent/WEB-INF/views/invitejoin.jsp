@@ -26,7 +26,7 @@
     	<div class="row">
     		<div id="reg_success_div" class="span5 offset4 hidden">
 				<h3>
-					恭喜你，注册成功！<a href="/angola/signin">点此登录</a>
+					恭喜你，注册成功！<a href="/uutalk/signin">点此登录</a>
 				</h3>
 			</div>
     	
@@ -102,8 +102,8 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="/angola/js/lib/jquery-1.8.0.min.js"></script>
-    <script src="/angola/js/lib/bootstrap.min.js"></script>
+    <script src="/uutalk/js/lib/jquery-1.8.0.min.js"></script>
+    <script src="/uutalk/js/lib/bootstrap.min.js"></script>
 	<script type="text/javascript">
 		$(function(){
 			function disable60Seconds(){
@@ -146,7 +146,7 @@
 				$span.html("");
 				$divCtrl.removeClass("error");
 				$divCtrl.removeClass("success");
-				$.post("/angola/user/getPhoneCode", 
+				$.post("/uutalk/user/getPhoneCode", 
 					{ phone: phoneNumber,
 					countryCode : country_code},
 					function(data){
@@ -211,7 +211,7 @@
 			
 			$.ajax({
 				type : "post",
-				url : "/angola/user/regViaInvite",
+				url : "/uutalk/user/regViaInvite",
 				dataType : "json",
 				data : {
 					"referrer" : referrer,

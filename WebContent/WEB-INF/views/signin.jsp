@@ -53,9 +53,9 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="/angola/js/lib/jquery-1.8.0.min.js"></script>
-    <script src="/angola/js/lib/bootstrap.min.js"></script>
-    <script src="/angola/js/lib/md5.js"></script>
+    <script src="/uutalk/js/lib/jquery-1.8.0.min.js"></script>
+    <script src="/uutalk/js/lib/bootstrap.min.js"></script>
+    <script src="/uutalk/js/lib/md5.js"></script>
 	<script type="text/javascript">
 	function isValidUserName(){
 		var $divCtrl = $("#divUserNameAlert");
@@ -107,7 +107,7 @@
 		    $("#divCountryCode").removeClass("error");
 			$("#spanCountryCodeInfo").html("");
 		    
-		    var jqxhr = $.post("/angola/user/login",
+		    var jqxhr = $.post("/uutalk/user/login",
 		    	{
 		         loginName: username,
 		         loginPwd: md5(pwd),
@@ -115,7 +115,7 @@
 		    	}, 
 		    	function(data){
 		    		if (data.result == "0"){
-		    			location.href = "/angola/accountcharge";
+		    			location.href = "/uutalk/accountcharge";
 		    		} else {
 		                $divCtrl.addClass("error");
 		                $span.html("登录失败，请仔细检查你输入的用户名和密码。");

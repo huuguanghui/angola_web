@@ -12,7 +12,7 @@
 	<%
 		AdminUserBean user = (AdminUserBean) session.getAttribute(AdminUserBean.SESSION_BEAN);
 		if (user != null) {
-			response.sendRedirect("/angola/admin/giftmanage");
+			response.sendRedirect("/uutalk/admin/giftmanage");
 			return;
 		}
 	%>
@@ -20,7 +20,7 @@
 
 	<jsp:include page="common/beforelogin_navibar.jsp"></jsp:include>
 	<div class="container">
-		<form id="admin-signin-form" action="/angola/admin/login">
+		<form id="admin-signin-form" action="/uutalk/admin/login">
 			<label>管理系统登录</label>
 			<div>
 				<input type="text" class="input-medium" name="loginName" placeholder="用户名" />
@@ -46,8 +46,8 @@
 		</form>
 	</div>
 	<jsp:include page="common/_footer.jsp"></jsp:include>
-	<script src="/angola/js/lib/jquery-1.8.0.min.js"></script>
-	<script src="/angola/js/lib/bootstrap.min.js"></script>
+	<script src="/uutalk/js/lib/jquery-1.8.0.min.js"></script>
+	<script src="/uutalk/js/lib/bootstrap.min.js"></script>
 </body>
 
 

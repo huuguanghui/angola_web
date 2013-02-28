@@ -7,14 +7,14 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
-    <link href="/angola/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/uutalk/css/bootstrap.min.css" rel="stylesheet">
     <style>
       body {
         padding-top: 80px; /* 80px to make the container go all the way to the bottom of the topbar */
       }
     </style>
-    <link href="/angola/css/bootstrap-responsive.min.css" rel="stylesheet">
-    <link href="/angola/css/style.css" rel="stylesheet">
+    <link href="/uutalk/css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="/uutalk/css/style.css" rel="stylesheet">
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>

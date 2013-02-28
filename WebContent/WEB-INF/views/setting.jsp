@@ -22,7 +22,7 @@
 					<div class="tab-pane active" id="pane-change-password">
 						<h3>修改密码</h3>
 						<hr>
-						<form action="/angola/setting/changepassword" method="post"
+						<form action="/uutalk/setting/changepassword" method="post"
 							id="formChangePwd" class="im-form">
 							<div class="control-group info">
 								<label class="control-label">登录名</label>
@@ -63,9 +63,9 @@
 	<!-- Le javascript
     ================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
-	<script src="/angola/js/lib/jquery-1.8.0.min.js"></script>
-	<script src="/angola/js/lib/bootstrap.min.js"></script>
-	<script type="text/javascript" src="/angola/js/lib/md5.js"></script>
+	<script src="/uutalk/js/lib/jquery-1.8.0.min.js"></script>
+	<script src="/uutalk/js/lib/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/uutalk/js/lib/md5.js"></script>
 	<script type="text/javascript">
 		function isValidPassword($div, val) {
 			var $span = $div.find(".help-inline");

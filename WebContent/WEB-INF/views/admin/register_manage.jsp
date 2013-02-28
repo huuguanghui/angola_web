@@ -118,10 +118,10 @@
 		</div>
 	</div>
 
-	<script src="/angola/js/lib/jquery-1.8.0.min.js"></script>
-	<script src="/angola/js/lib/bootstrap.min.js"></script>
+	<script src="/uutalk/js/lib/jquery-1.8.0.min.js"></script>
+	<script src="/uutalk/js/lib/bootstrap.min.js"></script>
 	<script type="text/javascript"
-		src="/angola/js/lib/My97DatePicker/WdatePicker.js"></script>
+		src="/uutalk/js/lib/My97DatePicker/WdatePicker.js"></script>
 	<script type="text/javascript">
 		$("#edit_reg_money_btn").click(
 				function() {
@@ -134,7 +134,7 @@
 
 					$.ajax({
 						type : "post",
-						url : "/angola/admin/registermanage/editRegMoney",
+						url : "/uutalk/admin/registermanage/editRegMoney",
 						dataType : "json",
 						data : {
 							"money" : money
@@ -147,7 +147,7 @@
 								$("#reg_money_edit_info").html(
 										"请输入正确的金额(格式:0.00)");
 							} else if (jqXHR.status == 401) {
-								location = "/angola/admin/registermanage";
+								location = "/uutalk/admin/registermanage";
 							} else {
 								$("#reg_money_edit_info").html(
 										"系统内部错误（STATUS CODE: " + jqXHR.status
@@ -163,17 +163,17 @@
 
 			$.ajax({
 				type : "post",
-				url : "/angola/admin/registermanage/closeRegisterActivity",
+				url : "/uutalk/admin/registermanage/closeRegisterActivity",
 				dataType : "json",
 				data : {
 					"id" : id
 				},
 				success : function(data, textStatus, jqxhr) {
-					location = "/angola/admin/registermanage";
+					location = "/uutalk/admin/registermanage";
 				},
 				error : function(jqXHR, textStatus) {
 					if (jqXHR.status == 401) {
-						location = "/angola/admin/registermanage";
+						location = "/uutalk/admin/registermanage";
 					} else {
 						alert("系统内部错误（STATUS CODE: " + jqXHR.status + ")");
 					}
@@ -187,17 +187,17 @@
 
 			$.ajax({
 				type : "post",
-				url : "/angola/admin/registermanage/openRegisterActivity",
+				url : "/uutalk/admin/registermanage/openRegisterActivity",
 				dataType : "json",
 				data : {
 					"id" : id
 				},
 				success : function(data, textStatus, jqxhr) {
-					location = "/angola/admin/registermanage";
+					location = "/uutalk/admin/registermanage";
 				},
 				error : function(jqXHR, textStatus) {
 					if (jqXHR.status == 401) {
-						location = "/angola/admin/registermanage";
+						location = "/uutalk/admin/registermanage";
 					} else {
 						alert("系统内部错误（STATUS CODE: " + jqXHR.status + ")");
 					}
@@ -264,7 +264,7 @@
 			
 			$.ajax({
 				type : "post",
-				url : "/angola/admin/registermanage/editRegisterActivity",
+				url : "/uutalk/admin/registermanage/editRegisterActivity",
 				dataType : "json",
 				data : {
 					"id" : id,
@@ -273,13 +273,13 @@
 					"giftMoney" : giftMoney
 				},
 				success : function(data, textStatus, jqxhr) {
-					location = "/angola/admin/registermanage";
+					location = "/uutalk/admin/registermanage";
 				},
 				error : function(jqXHR, textStatus) {
 					if (jqXHR.status == 406) {
 						alert("请输入正确的金额(格式:0.00)");
 					} else if (jqXHR.status == 401) {
-						location = "/angola/admin/registermanage";
+						location = "/uutalk/admin/registermanage";
 					} else {
 						alert("系统内部错误（STATUS CODE: " + jqXHR.status + ")");
 					}

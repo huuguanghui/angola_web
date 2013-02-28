@@ -165,7 +165,7 @@
 	</p>
 </div>
 
-<script src="/angola/js/lib/jquery-1.8.0.min.js"></script>
+<script src="/uutalk/js/lib/jquery-1.8.0.min.js"></script>
 <script type="text/javascript">
 $(function(){
     var hidden = "hidden";

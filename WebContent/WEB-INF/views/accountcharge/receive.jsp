@@ -38,7 +38,7 @@
 			%>
 			<div class="link_region">
 				<a href="http://www.00244dh.com">返回首页</a>
-				<a href="http://www.00244dh.com/angola/chongzhi">继续充值</a>
+				<a href="http://www.00244dh.com/uutalk/chongzhi">继续充值</a>
 			</div>
 			</div>
 		</div>

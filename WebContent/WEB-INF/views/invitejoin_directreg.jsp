@@ -91,8 +91,8 @@
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="/angola/js/lib/jquery-1.8.0.min.js"></script>
-    <script src="/angola/js/lib/bootstrap.min.js"></script>
+    <script src="/uutalk/js/lib/jquery-1.8.0.min.js"></script>
+    <script src="/uutalk/js/lib/bootstrap.min.js"></script>
 	<script type="text/javascript">
 		$("#formSignup").submit(function() {
 			var referrer = $("#ipReferrer").val();
@@ -139,7 +139,7 @@
 			
 			$.ajax({
 				type : "post",
-				url : "/angola/user/regViaInviteDirectReg",
+				url : "/uutalk/user/regViaInviteDirectReg",
 				dataType : "json",
 				data : {
 					"referrer" : referrer,

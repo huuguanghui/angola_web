@@ -23,12 +23,12 @@
 				<li><a id="username" class="im-attendee-name" title="<%=userBean.getUserName()%>">
 				    <i class="icon-user"></i>&nbsp;<%=userBean.getDisplayName()%></a>
 				</li>
-				<li><a id="logout" href="/angola/signout">退出登录</a></li>
+				<li><a id="logout" href="/uutalk/signout">退出登录</a></li>
 			</ul>
 			<div class="nav-collapse">
 				<ul class="nav pull-right">
-					<li class="<%="accountcharge".equals(pageName) ? "active" : ""%>"><a href="/angola/accountcharge">充值账户</a></li>
-					<li class="<%="setting".equals(pageName) ? "active" : ""%>"><a href="/angola/setting">系统设置</a></li>
+					<li class="<%="accountcharge".equals(pageName) ? "active" : ""%>"><a href="/uutalk/accountcharge">充值账户</a></li>
+					<li class="<%="setting".equals(pageName) ? "active" : ""%>"><a href="/uutalk/setting">系统设置</a></li>
 				</ul>
 			</div>
 		</div>
