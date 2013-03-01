@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-<title>安中通支付宝充值结果</title>
+<title>环宇通支付宝充值结果</title>
 <jsp:include page="../common/_head.jsp"></jsp:include>
 </head>
 <body>

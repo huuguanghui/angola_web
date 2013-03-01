@@ -196,7 +196,7 @@ public class ChargeAccountController {
 			 */
 			chargeDao.addChargeRecord(chargeId, countryCode, userName, value,
 					ChargeStatus.success);
-//			smsClient.sendTextMessage(accountName, "您的安中通账户已成功充值" + value
+//			smsClient.sendTextMessage(accountName, "您的环宇通账户已成功充值" + value
 //					+ "元，谢谢！");
 			
 			ChargeUtil.checkAndGiveMoneyToReferrer(countryCode, userName, value);
@@ -498,7 +498,7 @@ public class ChargeAccountController {
 		if (vosResp.isOperationSuccess()) {
 			chargeDao.addChargeRecord(chargeId, countryCode, userName, value,
 					ChargeStatus.success);
-			smsClient.sendTextMessage(userName, "您的安中通账户已成功充值" + value
+			smsClient.sendTextMessage(userName, "您的环宇通账户已成功充值" + value
 					+ "元，谢谢！");
 			
 			ChargeUtil.checkAndGiveMoneyToReferrer(countryCode, userName, value);

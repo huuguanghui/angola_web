@@ -87,7 +87,7 @@
 			<label>请选择充值方式</label>
 			<div id="divDepositeTypeList">
 				<input type="radio" name="depositeType" value="azcard" 
-					<% if("azcard".equals(depositeType)){ %>checked="checked"<% } %>/><span>安中通充值卡</span>
+					<% if("azcard".equals(depositeType)){ %>checked="checked"<% } %>/><span>环宇通充值卡</span>
 				<input type="radio" name="depositeType" value="alipay" 
 					<% if("alipay".equals(depositeType)){ %>checked="checked"<% } %> /><span>支付宝充值</span>
 				<!-- 
@@ -122,7 +122,7 @@
 						}
 					}
 				%> 
-				<p>说明：使用安中通充值卡充值享受另外优惠，以上优惠限支付宝充值。</p>				
+				<p>说明：使用环宇通充值卡充值享受另外优惠，以上优惠限支付宝充值。</p>				
 			</div>
 			<div id="divAZCardPanel" <% if(!"azcard".equals(depositeType)){ %>class="hidden"<% } %>>	
 				<h3>充值卡卡号</h3>

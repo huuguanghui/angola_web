@@ -74,7 +74,7 @@ public class AdminController {
 			return view;
 		} else {
 			ModelAndView view = new ModelAndView();
-			view.setViewName("index");
+			view.setViewName("admin/index");
 			view.addObject("LoginRetCode", HttpServletResponse.SC_FORBIDDEN);
 			return view;
 		}
