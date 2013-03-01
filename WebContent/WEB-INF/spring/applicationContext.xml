@@ -39,6 +39,9 @@
 		<property name="appPrefix">
 		    <value>${app_prefix}</value>
 		</property>
+		<property name="suitePrefix">
+		    <value>${suite_prefix}</value>
+		</property>
 	</bean>
 	
 	<bean id="sms_client" class="com.richitec.sms.client.SMSClient">

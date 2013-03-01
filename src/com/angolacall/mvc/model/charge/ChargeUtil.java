@@ -13,6 +13,7 @@ import com.angolacall.constants.ChargeType;
 import com.angolacall.framework.ContextLoader;
 import com.angolacall.mvc.admin.model.InviteChargeGiftPlan;
 import com.angolacall.mvc.admin.model.NoticeDao;
+import com.richitec.ucenter.model.UserDAO;
 import com.richitec.util.RandomString;
 import com.richitec.vos.client.VOSClient;
 import com.richitec.vos.client.VOSHttpResponse;
@@ -56,7 +57,8 @@ public class ChargeUtil {
 
 		Double amount = Double.valueOf(money);
 		VOSClient vosClient = ContextLoader.getVOSClient();
-		VOSHttpResponse response = vosClient.deposite(countryCode + userName,
+		UserDAO userDao = ContextLoader.getUserDAO();
+		VOSHttpResponse response = vosClient.deposite(userDao.genVosAccountName(countryCode, userName),
 				amount); // deposit charged money
 		if (response.isOperationSuccess()) {
 			log.info("vos deposite success");
@@ -118,8 +120,7 @@ public class ChargeUtil {
 		Float giftMoney = (Float) record.get("gift_money");
 		if (giftMoney != null) {
 			// deposit gift money to user
-			VOSHttpResponse response = vosClient.deposite(countryCode
-					+ userName, giftMoney.doubleValue());
+			VOSHttpResponse response = vosClient.deposite(ContextLoader.getUserDAO().genVosAccountName(countryCode, userName), giftMoney.doubleValue());
 			if (response.isOperationSuccess()) {
 				String giftChargeId = getOrderNumber(
 						ChargeType.chargegift.name(), countryCode, userName);
@@ -148,8 +149,8 @@ public class ChargeUtil {
 		String chargeId = getOrderNumber(chargetype.name(),
 				referrerCountryCode, referrer);
 		VOSClient vosClient = ContextLoader.getVOSClient();
-		VOSHttpResponse response = vosClient.deposite(referrerCountryCode
-				+ referrer, money);
+		UserDAO userDao = ContextLoader.getUserDAO();
+		VOSHttpResponse response = vosClient.deposite(userDao.genVosAccountName(referrerCountryCode, referrer), money);
 		if (response.isOperationSuccess()) {
 			ContextLoader.getChargeDAO().addChargeRecord(chargeId,
 					referrerCountryCode, referrer, money,
@@ -184,7 +185,8 @@ public class ChargeUtil {
 		String chargeId = getOrderNumber(chargeType.name(), countryCode,
 				userName);
 		VOSClient vosClient = ContextLoader.getVOSClient();
-		VOSHttpResponse response = vosClient.deposite(countryCode + userName,
+		UserDAO userDao = ContextLoader.getUserDAO();
+		VOSHttpResponse response = vosClient.deposite(userDao.genVosAccountName(countryCode, userName),
 				money);
 		if (response.isOperationSuccess()) {
 			ContextLoader.getChargeDAO().addChargeRecord(chargeId, countryCode, userName, money, ChargeStatus.success);

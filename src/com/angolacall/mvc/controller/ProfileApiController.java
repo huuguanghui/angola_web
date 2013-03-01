@@ -231,18 +231,23 @@ public class ProfileApiController {
 			throws JSONException, IOException {
 		log.info("getSuites");
 		VOSClient vosClient = ContextLoader.getVOSClient();
-		List<OrderSuiteInfo> orderSuites = vosClient.getOrderSuites(countryCode
-				+ userName);
+		List<OrderSuiteInfo> orderSuites = vosClient.getOrderSuites(userDao.genVosAccountName(countryCode, userName));
 		List<SuiteInfo> allSuites = vosClient.getAllSuites();
 
+		Configuration config = ContextLoader.getConfiguration();
+		String suitePrefix = config.getSuitePrefix();
+		
 		JSONObject ret = new JSONObject();
 		if (orderSuites != null) {
 			JSONArray orderSuiteArray = new JSONArray();
 			for (OrderSuiteInfo osi : orderSuites) {
-				if ("suite0".equals(osi.getSuiteName())) {
-					continue;
+//				if ("suite0".equals(osi.getSuiteName())) {
+//					continue;
+//				}
+//				orderSuiteArray.put(osi.toJSONObject());
+				if (osi.getSuiteName().startsWith(suitePrefix)) {
+					orderSuiteArray.put(osi.toJSONObject());
 				}
-				orderSuiteArray.put(osi.toJSONObject());
 			}
 			ret.put("my_suites", orderSuiteArray);
 		}
@@ -250,21 +255,25 @@ public class ProfileApiController {
 		if (allSuites != null) {
 			JSONArray allSuitesArray = new JSONArray();
 			for (SuiteInfo si : allSuites) {
-				if ("suite0".equals(si.getSuiteName())) {
-					continue;
+//				if ("suite0".equals(si.getSuiteName())) {
+//					continue;
+//				}
+//
+//				// boolean isOrdered = false;
+//				// for (OrderSuiteInfo osi : orderSuites) {
+//				// if (si.getSuiteId().equals(osi.getSuiteId())) {
+//				// isOrdered = true;
+//				// break;
+//				// }
+//				// }
+//				//
+//				// if (!isOrdered) {
+//				allSuitesArray.put(si.toJSONObject());
+//				// }
+				if (si.getSuiteName().startsWith(suitePrefix)) {
+					allSuitesArray.put(si.toJSONObject());
 				}
-
-				// boolean isOrdered = false;
-				// for (OrderSuiteInfo osi : orderSuites) {
-				// if (si.getSuiteId().equals(osi.getSuiteId())) {
-				// isOrdered = true;
-				// break;
-				// }
-				// }
-				//
-				// if (!isOrdered) {
-				allSuitesArray.put(si.toJSONObject());
-				// }
+				
 			}
 			ret.put("all_suites", allSuitesArray);
 		}
@@ -312,7 +321,7 @@ public class ProfileApiController {
 		availableTime = df.format(cal.getTime());
 		log.info("available time: " + availableTime);
 		VOSHttpResponse vosResponse = ContextLoader.getVOSClient()
-				.subscribeSuite(countryCode + userName, suiteId, availableTime);
+				.subscribeSuite(userDao.genVosAccountName(countryCode, userName), suiteId, availableTime);
 		if (vosResponse.getHttpStatusCode() != 200
 				|| !vosResponse.isOperationSuccess()) {
 			log.error("\nCannot do callback for user : " + countryCode

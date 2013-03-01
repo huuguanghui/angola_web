@@ -194,8 +194,9 @@ public class AngolaWebController {
 	String azcardPost(
 			@RequestParam(value = "countryCode", required = false, defaultValue = "") String countryCode,
 			@RequestParam(value = "phoneNumber") String phoneNumber) {
+		UserDAO userDao = ContextLoader.getUserDAO();
 		AccountInfo accountInfo = ContextLoader.getVOSClient().getAccountInfo(
-				countryCode + phoneNumber, 2);
+				userDao.genVosAccountName(countryCode, phoneNumber), 2);
 		if (accountInfo != null) {
 			return "{\"status\":0, \"balance\":"
 					+ String.format("%,.2f", accountInfo.getBalance()) + "}";
@@ -231,9 +232,8 @@ public class AngolaWebController {
 		String userName = (String) user.get("username");
 		Float frozenMoney = (Float) user.get("frozen_money");
 
-		userDao.updateEmailStatus(countryCode, userName,
-				EmailStatus.verified);
-		
+		userDao.updateEmailStatus(countryCode, userName, EmailStatus.verified);
+
 		if (frozenMoney > 0) {
 			boolean ret = ChargeUtil.chargeUser(ChargeType.sysgift,
 					countryCode, userName, frozenMoney.doubleValue());
@@ -272,10 +272,9 @@ public class AngolaWebController {
 
 		String countryCode = (String) user.get("countrycode");
 		String userName = (String) user.get("username");
-		
-		userDao.updateEmailStatus(countryCode, userName,
-				EmailStatus.verified);
-		
+
+		userDao.updateEmailStatus(countryCode, userName, EmailStatus.verified);
+
 		view.addObject("countryCode", countryCode);
 		view.addObject("userName", userName);
 		view.addObject("result", "email_verified_ok");

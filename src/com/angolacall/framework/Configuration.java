@@ -18,7 +18,8 @@ public class Configuration {
 	private String callbackCalleePrefix;
 	private String callbackCallerPrefix;
 	private String appPrefix;
-	
+	private String suitePrefix;
+
 	public String getSuite0Id() {
 		return this.suite0Id;
 	}
@@ -105,6 +106,14 @@ public class Configuration {
 
 	public void setAppPrefix(String appPrefix) {
 		this.appPrefix = appPrefix;
+	}
+
+	public String getSuitePrefix() {
+		return suitePrefix;
+	}
+
+	public void setSuitePrefix(String suitePrefix) {
+		this.suitePrefix = suitePrefix;
 	}
 
 }

@@ -16,6 +16,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.angolacall.constants.EmailStatus;
 import com.angolacall.constants.UserAccountStatus;
+import com.angolacall.framework.Configuration;
 import com.angolacall.framework.ContextLoader;
 import com.angolacall.web.user.UserBean;
 import com.richitec.sms.client.SMSHttpResponse;
@@ -73,17 +74,17 @@ public class UserDAO {
 	 */
 	public String regUser(String countryCode, String phone,
 			String referrerCountryCode, String referrer, String password,
-			String password1) {
+			String password1, String source) {
 		String result = checkRegisterUser(countryCode, phone, password,
 				password1);
 		log.info("checkRegisterUser - result: " + result);
 		if (result.equals("0")) {
 			String userkey = CryptoUtil.md5(phone + password);
 			String vosPhonePwd = RandomString.genRandomNum(6);
-			String sql = "INSERT INTO im_user(username, password, userkey, referrer_country_code, referrer, countrycode, bindphone, bindphone_country_code, vosphone_pwd) VALUES (?,?,?,?,?,?,?,?,?)";
+			String sql = "INSERT INTO im_user(username, password, userkey, referrer_country_code, referrer, countrycode, bindphone, bindphone_country_code, vosphone_pwd, source) VALUES (?,?,?,?,?,?,?,?,?,?)";
 			Object[] params = new Object[] { phone, CryptoUtil.md5(password),
 					userkey, referrerCountryCode, referrer, countryCode, phone,
-					countryCode, vosPhonePwd };
+					countryCode, vosPhonePwd, source };
 			int resultCount = jdbc.update(sql, params);
 			result = resultCount > 0 ? "0" : "1001";
 		}
@@ -352,5 +353,16 @@ public class UserDAO {
 		String sql = "UPDATE im_user SET random_id = ? WHERE countrycode = ? AND username = ?";
 		int rows = jdbc.update(sql, randomId, countryCode, userName);
 		return rows;
+	}
+	
+	public static String genVosAccountName(String countryCode, String userName, String source) {
+		Configuration config = ContextLoader.getConfiguration();
+		return config.getAppPrefix() + source + "_" + countryCode + userName;
+	}
+	
+	public String genVosAccountName(String countryCode, String userName) {
+		Map<String, Object> user = getUser(countryCode, userName);
+		String source = (String) user.get("source");
+		return genVosAccountName(countryCode, userName, source);
 	}
 }

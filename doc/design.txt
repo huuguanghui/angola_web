@@ -1,0 +1,17 @@
+1. VOS Account Composition
+VOS account is composed of:
+u[s|pn|w|i]_xxxxxxxxx
+ --source--
+ 
+
+xxxxxxxx is number.
+
+2. VOS Account Prefix Table
+Prefix				Meaning
+---------------------------
+u					uutalk
+s					from standard client
+p					from OEM pre-installed
+n					OEM number
+w					from web
+i					from invitation

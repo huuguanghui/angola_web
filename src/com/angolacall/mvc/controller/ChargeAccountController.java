@@ -172,16 +172,15 @@ public class ChargeAccountController {
 	}
 	
 	private VOSHttpResponse depositeToVOS(
-			String countryCode, String accountName,
+			String countryCode, String userName,
 			String cardNumber, String cardPwd, Double value){
 		
 		String chargeId = getCardChargeId(cardNumber);
-		VOSHttpResponse vosResp = vosClient.depositeByCard(countryCode
-				+ accountName, cardNumber, cardPwd);
+		VOSHttpResponse vosResp = vosClient.depositeByCard(userDao.genVosAccountName(countryCode, userName), cardNumber, cardPwd);
 		if (vosResp.getHttpStatusCode() != 200 || !vosResp.isOperationSuccess()) {
-			chargeDao.addChargeRecord(chargeId, countryCode, accountName, value,
+			chargeDao.addChargeRecord(chargeId, countryCode, userName, value,
 					ChargeStatus.vos_fail);
-			log.error("\nCannot deposite to account <" + accountName
+			log.error("\nCannot deposite to account <" + userName
 					+ "> with card <" + cardNumber + ">" + "<" + cardPwd + ">"
 					+ "\nVOS Http Response : " + vosResp.getHttpStatusCode()
 					+ "\nVOS Status Code : " + vosResp.getVOSStatusCode()
@@ -195,12 +194,12 @@ public class ChargeAccountController {
 			 * DepositeCardInfo(vosResp.getVOSResponseInfo());
 			 * mv.addObject("despositeInfo", info);
 			 */
-			chargeDao.addChargeRecord(chargeId, countryCode, accountName, value,
+			chargeDao.addChargeRecord(chargeId, countryCode, userName, value,
 					ChargeStatus.success);
 //			smsClient.sendTextMessage(accountName, "您的安中通账户已成功充值" + value
 //					+ "元，谢谢！");
 			
-			ChargeUtil.checkAndGiveMoneyToReferrer(countryCode, accountName, value);
+			ChargeUtil.checkAndGiveMoneyToReferrer(countryCode, userName, value);
 		}
 		
 		return vosResp;
@@ -259,8 +258,7 @@ public class ChargeAccountController {
 		// get account balance
 		view.addObject(
 				WebConstants.balance.name(),
-				vosClient.getAccountBalance(userBean.getCountryCode()
-						+ userBean.getUserName()));
+				vosClient.getAccountBalance(userDao.genVosAccountName(userBean.getCountryCode(), userBean.getUserName())));
 
 		// get charge history list
 		int total = chargeDao.getChargeListTotalCount(
@@ -429,7 +427,7 @@ public class ChargeAccountController {
 			throws JSONException, IOException {
 		// get account balance
 		JSONObject ret = new JSONObject();
-		Double value = vosClient.getAccountBalance(countryCode + userName);
+		Double value = vosClient.getAccountBalance(userDao.genVosAccountName(countryCode, userName));
 		ret.put("result", null == value ? 1 : 0);
 		if (null != value) {
 			ret.put(WebConstants.balance.name(), value);
@@ -478,8 +476,7 @@ public class ChargeAccountController {
 		String chargeId = getCardChargeId(pin);
 		log.info("charge id: " + chargeId);
 
-		VOSHttpResponse vosResp = vosClient.depositeByCard(countryCode
-				+ userName, pin, password);
+		VOSHttpResponse vosResp = vosClient.depositeByCard(userDao.genVosAccountName(countryCode, userName), pin, password);
 
 		// log.info("\n deposite to account <" + userName + "> with card <" +
 		// pin

@@ -25,6 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.angolacall.constants.ChargeType;
 import com.angolacall.constants.EmailStatus;
+import com.angolacall.constants.RegSource;
 import com.angolacall.constants.UserAccountStatus;
 import com.angolacall.constants.UserConstants;
 import com.angolacall.framework.Configuration;
@@ -288,11 +289,12 @@ public class UserController extends ExceptionController {
 			return mv;
 		}
 
+		String source = RegSource.w.name();
 		String result = userDao.regUser(countryCode, phoneNumber, "", "",
-				password, confirmPassword);
+				password, confirmPassword, source);
 
 		if ("0".equals(result)) { // insert success
-			result = finishVosRegister(countryCode, phoneNumber);
+			result = finishVosRegister(countryCode, phoneNumber, source);
 		}
 
 		if ("0".equals(result)) {
@@ -340,11 +342,12 @@ public class UserController extends ExceptionController {
 			return;
 		}
 
+		String source = RegSource.i.name();
 		String result = userDao.regUser(countryCode, phoneNumber,
-				referrerCountryCode, referrer, password, confirmPassword);
+				referrerCountryCode, referrer, password, confirmPassword, source);
 
 		if ("0".equals(result)) { // insert success
-			result = finishVosRegister(countryCode, phoneNumber);
+			result = finishVosRegister(countryCode, phoneNumber, source);
 
 			if (result.equals("0")) {
 				// give money to referrer
@@ -381,11 +384,12 @@ public class UserController extends ExceptionController {
 			@RequestParam(value = "confirmPassword") String confirmPassword)
 			throws IOException, JSONException {
 
+		String source = RegSource.i.name();
 		String result = userDao.regUser(countryCode, phoneNumber,
-				referrerCountryCode, referrer, password, confirmPassword);
+				referrerCountryCode, referrer, password, confirmPassword, source);
 
 		if ("0".equals(result)) { // insert success
-			result = finishVosRegister(countryCode, phoneNumber);
+			result = finishVosRegister(countryCode, phoneNumber, source);
 
 			if (result.equals("0")) {
 				// give money to referrer
@@ -488,23 +492,25 @@ public class UserController extends ExceptionController {
 	@RequestMapping("/regUser")
 	public void regUser(@RequestParam(value = "password") String password,
 			@RequestParam(value = "password1") String password1,
+			@RequestParam(value = "source") String source,
 			HttpServletResponse response, HttpSession session) throws Exception {
 		log.info("regUser");
 
 		String result = "";
 		String phone = "";
 		String countryCode = "";
+		
 		if (null == session.getAttribute("phonenumber")) {
 			result = "6"; // session过期
 		} else {
 			phone = (String) session.getAttribute("phonenumber");
 			countryCode = (String) session.getAttribute("countrycode");
 			result = userDao.regUser(countryCode, phone, "", "", password,
-					password1);
+					password1, source);
 		}
 
 		if ("0".equals(result)) { // insert success
-			result = finishVosRegister(countryCode, phone);
+			result = finishVosRegister(countryCode, phone, source);
 		}
 
 		JSONObject jsonUser = new JSONObject();
@@ -516,13 +522,13 @@ public class UserController extends ExceptionController {
 		response.getWriter().print(jsonUser.toString());
 	}
 
-	private String addUserToVOS(String fullUserName, String vosPhoneNumber,
+	private String addUserToVOS(String vosAccountName, String vosPhoneNumber,
 			String vosPhonePwd) {
 		// create new account in VOS
-		VOSHttpResponse addAccountResp = vosClient.addAccount(fullUserName);
+		VOSHttpResponse addAccountResp = vosClient.addAccount(vosAccountName);
 		if (addAccountResp.getHttpStatusCode() != 200
 				|| !addAccountResp.isOperationSuccess()) {
-			log.error("\nCannot create VOS accont for user : " + fullUserName
+			log.error("\nCannot create VOS accont for user : " + vosAccountName
 					+ "\nVOS Http Response : "
 					+ addAccountResp.getHttpStatusCode()
 					+ "\nVOS Status Code : "
@@ -534,11 +540,11 @@ public class UserController extends ExceptionController {
 
 		// create new phone in VOS
 		VOSHttpResponse addPhoneResp = vosClient.addPhoneToAccount(
-				fullUserName, vosPhoneNumber, vosPhonePwd);
+				vosAccountName, vosPhoneNumber, vosPhonePwd);
 		if (addPhoneResp.getHttpStatusCode() != 200
 				|| !addPhoneResp.isOperationSuccess()) {
 			log.error("\nCannot create VOS phone <" + vosPhoneNumber
-					+ "> for user : " + fullUserName + "\nVOS Http Response : "
+					+ "> for user : " + vosAccountName + "\nVOS Http Response : "
 					+ addPhoneResp.getHttpStatusCode() + "\nVOS Status Code : "
 					+ addPhoneResp.getVOSStatusCode() + "\nVOS Response Info ："
 					+ addPhoneResp.getVOSResponseInfo());
@@ -547,11 +553,11 @@ public class UserController extends ExceptionController {
 
 		// add suite to account
 		VOSHttpResponse addSuiteResp = vosClient.addSuiteToAccount(
-				fullUserName, config.getSuite0Id());
+				vosAccountName, config.getSuite0Id());
 		if (addSuiteResp.getHttpStatusCode() != 200
 				|| !addSuiteResp.isOperationSuccess()) {
 			log.error("\nCannot add VOS suite <" + config.getSuite0Id()
-					+ "> for user : " + fullUserName + "\nVOS Http Response : "
+					+ "> for user : " + vosAccountName + "\nVOS Http Response : "
 					+ addSuiteResp.getHttpStatusCode() + "\nVOS Status Code : "
 					+ addSuiteResp.getVOSStatusCode() + "\nVOS Response Info ："
 					+ addSuiteResp.getVOSResponseInfo());
@@ -605,17 +611,18 @@ public class UserController extends ExceptionController {
 	@RequestMapping(value = "/clientdirectreg", method = RequestMethod.POST)
 	public void clientDirectReg(HttpServletResponse response,
 			@RequestParam String phoneNumber, @RequestParam String countryCode,
-			@RequestParam String password) throws IOException {
+			@RequestParam String password,
+			@RequestParam String source) throws IOException {
 		String result = "0";
 		result = userDao.checkRegisterPhone(countryCode, phoneNumber);
 
 		if (result.equals("0")) {
 			result = userDao.regUser(countryCode, phoneNumber, "", "",
-					password, password);
+					password, password, source);
 		}
 
 		if ("0".equals(result)) { // insert success
-			result = finishVosRegister(countryCode, phoneNumber);
+			result = finishVosRegister(countryCode, phoneNumber, source);
 		}
 
 		JSONObject jsonUser = new JSONObject();
@@ -627,13 +634,13 @@ public class UserController extends ExceptionController {
 		response.getWriter().print(jsonUser.toString());
 	}
 
-	private String finishVosRegister(String countryCode, String userName) {
+	private String finishVosRegister(String countryCode, String userName, String source) {
 		String result = "0";
 		Map<String, Object> vosPhoneInfoMap = userDao.getVOSPhone(countryCode,
 				userName);
 		Long vosPhoneNumber = (Long) vosPhoneInfoMap.get("vosphone");
 		String vosPhonePwd = (String) vosPhoneInfoMap.get("vosphone_pwd");
-		result = addUserToVOS(countryCode + userName,
+		result = addUserToVOS(UserDAO.genVosAccountName(countryCode, userName, source),
 				vosPhoneNumber.toString(), vosPhonePwd);
 
 		if ("0".equals(result)) {
