@@ -596,7 +596,7 @@ public class UserController extends ExceptionController {
 					countryCode);
 			if (rows > 0) {
 				String msg = String.format(
-						"您的新密码是%s，请登录后及时修改您的密码。[AngolaCall]", newPwd);
+						"您的新密码是%s，请登录后及时修改您的密码。[环宇通]", newPwd);
 				String bindPhone = (String) user.get("bindphone");
 				smsClient.sendTextMessage(bindPhone, msg);
 			} else {
@@ -666,7 +666,18 @@ public class UserController extends ExceptionController {
 			Double money = ContextLoader.getUUTalkConfigManager()
 					.getRegisterGivenMoney();
 			if (money != null && money > 0) {
-				userDao.setFrozenMoney(countryCode, userName, money);
+//				userDao.setFrozenMoney(countryCode, userName, money);
+				VOSHttpResponse depositeResp = vosClient.deposite(UserDAO.genVosAccountName(countryCode, userName, source), money);
+				if (depositeResp.getHttpStatusCode() != 200
+						|| !depositeResp.isOperationSuccess()) {
+					log.error("\nCannot deposite gift for user : "
+							+ userName + "\nVOS Http Response : "
+							+ depositeResp.getHttpStatusCode()
+							+ "\nVOS Status Code : "
+							+ depositeResp.getVOSStatusCode()
+							+ "\nVOS Response Info ："
+							+ depositeResp.getVOSResponseInfo());
+				}
 			}
 		}
 
