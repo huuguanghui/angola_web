@@ -9,7 +9,7 @@ public class CountryManager {
 
 	private Map<String, String> countryMap;
 	private static String[] COUNTRY_CODES = { "0086", "086", "+86", "86",
-			"00244", "0244", "+244", "244" };
+			"00244", "0244", "+244", "244", "0057", "057", "+57", "57" };
 
 	private CountryManager() {
 		countryMap = new HashMap<String, String>();
@@ -17,6 +17,7 @@ public class CountryManager {
 	}
 
 	private void init() {
+		countryMap.put("0057", "co");
 		countryMap.put("0086", "cn");
 		countryMap.put("00244", "ao");
 	}
