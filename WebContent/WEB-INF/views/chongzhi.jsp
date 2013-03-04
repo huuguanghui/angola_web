@@ -66,7 +66,7 @@
 		<a class="chongzhi100" href=""></a>
 		<a class="chongzhi200" href=""></a>
 		<a class="chongzhi500" href=""></a>
-		<a class="download-btn" href="http://www.00244dh.com/appvcenter/downloadapp/3/android"></a>
+		<a class="download-btn" href="http://www.00244dh.com/appvcenter/downloadapp/4/android"></a>
 	</div>
 	<form id="depositeForm" action="chongzhi" method="post">
 		<div id="divAccountInfo" class="chongzhi-form-field">
