@@ -30,7 +30,7 @@ public class AlipayService {
     /**
      * 支付宝提供给商户的服务接入网关URL(新)
      */
-    private static final String ALIPAY_GATEWAY_NEW = "https://mapi.alipay.com/gateway.do?";
+    private static final String ALIPAY_GATEWAY_NEW = "https://www.alipay.com/cooperate/gateway.do?";
 
     /**
      * 构造即时到帐接口
@@ -40,7 +40,7 @@ public class AlipayService {
     public static String create_direct_pay_by_user(Map<String, String> sParaTemp) {
 
     	//增加基本配置
-        sParaTemp.put("service", "create_direct_pay_by_user");
+        sParaTemp.put("service", "create_forex_trade");
         sParaTemp.put("partner", AlipayConfig.partner);
         sParaTemp.put("return_url", AlipayConfig.return_url);
         sParaTemp.put("notify_url", AlipayConfig.notify_url);

@@ -25,21 +25,21 @@ public class AlipayConfig {
 	
 	//↓↓↓↓↓↓↓↓↓↓请在这里配置您的基本信息↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 	// 合作身份者ID，以2088开头由16位纯数字组成的字符串
-	public static String partner = "2088801270252724";
+	public static String partner = "2088801945034545";
 	
 	// 交易安全检验码，由数字和字母组成的32位字符串
-	public static String key = "4jnm78lp451bxrc783ofo65icbx2bik8";
+	public static String key = "9uwv1tfdpd8010g290sz4m5bj03kh6q8";
 	
 	// 签约支付宝账号或卖家收款支付宝帐户
-	public static String seller_email = "youyun@richitec.com";
+	public static String seller_email = "hanqiang@uu-talk.com";
 	
 	// 支付宝服务器通知的页面 要用 http://格式的完整路径，不允许加?id=123这类自定义参数
 	// 必须保证其地址能够在互联网中访问的到
-	public static String notify_url = "http://www.00244dh.com/uutalk/alipayComplete";
+	public static String notify_url = "http://www.uu-talk.com/uutalk/alipayComplete";
 	
 	// 当前页面跳转后的页面 要用 http://格式的完整路径，不允许加?id=123这类自定义参数
 	// 域名不能写成http://localhost/create_direct_pay_by_user_jsp_utf8/return_url.jsp ，否则会导致return_url执行无效
-	public static String return_url = "http://www.00244dh.com/uutalk/alipayReturn";
+	public static String return_url = "http://www.uu-talk.com/uutalk/alipayReturn";
 
 	//↑↑↑↑↑↑↑↑↑↑请在这里配置您的基本信息↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 	

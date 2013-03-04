@@ -39,7 +39,7 @@
 	//请与贵网站订单系统中的唯一订单号匹配
 	String out_trade_no = ChargeUtil.getOrderNumber(ChargeType.alipay.name(), countryCode, accountName);
 	//订单名称，显示在支付宝收银台里的“商品名称”里，显示在支付宝的交易管理的“商品名称”的列表里。
-	String body = "环宇通账户充值";
+	String subject = "环宇通账户充值";
 	//订单总金额，显示在支付宝收银台里的“应付总额”里
 	String chargeMoneyId = request.getParameter("depositeId");
 	Map<String, Object> chargeMoneyRecord = ContextLoader.getChargeMoneyConfigDao().getChargeMoneyRecord(Integer.parseInt(chargeMoneyId));
@@ -49,12 +49,13 @@
 	
 	//把请求参数打包成数组
 	Map<String, String> sParaTemp = new HashMap<String, String>();
-	sParaTemp.put("payment_type", "1");
+	//sParaTemp.put("payment_type", "1");
 	sParaTemp.put("out_trade_no", out_trade_no);
-	sParaTemp.put("subject", out_trade_no);
-	sParaTemp.put("body", body);
-	sParaTemp.put("total_fee", chargeMoney.toString());
-
+	sParaTemp.put("subject", subject);
+	//sParaTemp.put("body", body);
+	sParaTemp.put("rmb_fee", String.format("%.2f", chargeMoney.floatValue()));
+	sParaTemp.put("currency", "USD");
+	
 	//构造函数，生成请求URL
 	String sHtmlText = AlipayService
 			.create_direct_pay_by_user(sParaTemp);

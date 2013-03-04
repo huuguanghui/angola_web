@@ -12,7 +12,7 @@
 
 	String depositeType = (String)request.getParameter("depositeType");
 	if (null == depositeType){
-		depositeType = "azcard";
+		depositeType = "alipay";
 	}
 	
 	String alipayError = (String)request.getAttribute("alipayError");
@@ -20,18 +20,6 @@
 	VOSHttpResponse vosHttpError = (VOSHttpResponse)request.getAttribute("vosHttpError");
 	VOSHttpResponse vosError = (VOSHttpResponse)request.getAttribute("vosError");
 	
-	String vosErrorInfo = null;
-	if (null!=vosError){
-		if (vosError.getVOSStatusCode() == -10079) {
-			vosErrorInfo = "充值卡卡号或密码错误！";
-		} else if (vosError.getVOSStatusCode() == -10078) {
-			vosErrorInfo = "此充值卡已被使用！";
-		} else {
-			vosErrorInfo = vosError.getVOSResponseInfo() + vosError.getVOSStatusCode();
-		}
-	}
-	
-	String cardNumber = (String)request.getParameter("cardNumber");
 
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -86,9 +74,7 @@
 		<div id="divDepositeType" class="chongzhi-form-field">
 			<label>请选择充值方式</label>
 			<div id="divDepositeTypeList">
-				<input type="radio" name="depositeType" value="azcard" 
-					<% if("azcard".equals(depositeType)){ %>checked="checked"<% } %>/><span>环宇通充值卡</span>
-				<input type="radio" name="depositeType" value="alipay" 
+				<input type="radio" name="depositeType" value="alipay"
 					<% if("alipay".equals(depositeType)){ %>checked="checked"<% } %> /><span>支付宝充值</span>
 				<!-- 
 				<input type="radio" name="depositeType" value="szx" 
@@ -99,7 +85,7 @@
 					<% if("telecom".equals(depositeType)){ %>checked="checked"<% } %>/><span>电信卡</span>
 				 -->
 			</div>
-			<div id="divAlipayPanel" <% if(!"alipay".equals(depositeType)){ %>class="hidden"<% } %>>
+			<div id="divAlipayPanel" <% if(!"alipay".equals(depositeType)){ %><% } %>>
 				<%if(null!=alipayError) { %>
 				<span class="red"><%=alipayError %></span>
 				<% } %>
@@ -122,29 +108,8 @@
 						}
 					}
 				%> 
-				<p>说明：使用环宇通充值卡充值享受另外优惠，以上优惠限支付宝充值。</p>				
+				<p>说明：使用充值卡充值享受另外优惠，以上优惠限支付宝充值。</p>				
 			</div>
-			<div id="divAZCardPanel" <% if(!"azcard".equals(depositeType)){ %>class="hidden"<% } %>>	
-				<h3>充值卡卡号</h3>
-				<input id="iptCardNumber" name="cardNumber" type="text"
-					value="<%=(null!=cardNumber)?cardNumber:""%>" />
-				<%if(null!=uutalkError) { %>
-				<span class="red">无效的充值卡号</span>
-				<% } %>					
-				<h3>充值卡密码</h3>
-				<input id="iptCardPwd" name="cardPwd" type="text"></input>
-				
-				<%if(null!=vosHttpError) { %>
-				<div>
-					<span class="red">"网络请求错误："<%=vosHttpError.getHttpStatusCode() %></span>
-				</div>
-				<% } %>	
-				<%if(null!=vosErrorInfo) { %>
-				<div>
-					<span class="red">充值错误：<%=vosErrorInfo %></span>
-				</div>
-				<% } %>		
-			</div>			
 		</div>
  
 		<div id="divDepositeSubmit" class="chongzhi-form-field">
