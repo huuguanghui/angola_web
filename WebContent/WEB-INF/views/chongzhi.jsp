@@ -58,7 +58,7 @@
 	</div>
 	<form id="depositeForm" action="chongzhi" method="post">
 		<div id="divAccountInfo" class="chongzhi-form-field">
-			<label>选择国家代码</label>
+			<label>国家</label>
 			<select id="iptCountryCodeSelect" name="countryCode">
 				<jsp:include page="common/countrycode_options.jsp"></jsp:include>
 			</select>
