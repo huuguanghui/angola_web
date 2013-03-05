@@ -339,14 +339,14 @@ public class ChargeAccountController {
 		Map<String, String> params = getParameterMap(request);
 
 		String order_no = request.getParameter("out_trade_no"); // 获取订单号
-		String total_fee = request.getParameter("total_fee"); // 获取总金额
+//		String total_fee = request.getParameter("total_fee"); // 获取总金额
 		String trade_status = request.getParameter("trade_status"); // 交易状态
 
 		log.info("trade_status: " + trade_status);
 		if (AlipayNotify.verify(params)) {
 			if (trade_status.equals("TRADE_FINISHED")
 					|| trade_status.equals("TRADE_SUCCESS")) {
-				ChargeUtil.finishCharge(order_no, total_fee);
+				ChargeUtil.finishCharge(order_no);
 			} else {
 				chargeDao.updateChargeRecord(order_no, ChargeStatus.fail);
 			}
@@ -389,19 +389,21 @@ public class ChargeAccountController {
 		Map<String, String> params = getParameterMap(request);
 
 		String order_no = request.getParameter("out_trade_no"); // 获取订单号
-		String total_fee = request.getParameter("total_fee"); // 获取总金额
+//		String total_fee = request.getParameter("total_fee"); // 获取总金额
 		String trade_status = request.getParameter("trade_status"); // 交易状态
 
+		Map<String, Object> chargeInfo = chargeDao.getChargeInfoById(order_no);
+		Float chargeMoney = (Float) chargeInfo.get("money");
+		
 		if (AlipayNotify.verify(params)) {
 			if (trade_status.equals("TRADE_FINISHED")
 					|| trade_status.equals("TRADE_SUCCESS")) {
 				// 判断该笔订单是否在商户网站中已经做过处理（可参考“集成教程”中“3.4返回数据处理”）
 				// 如果没有做过处理，根据订单号（out_trade_no）在商户网站的订单系统中查到该笔订单的详细，并执行商户的业务程序
 				// 如果有做过处理，不执行商户的业务程序
-				String accountName = ChargeUtil.finishCharge(order_no,
-						total_fee);
+				String accountName = ChargeUtil.finishCharge(order_no);
 				mv.addObject("result", "0");
-				mv.addObject(WebConstants.charge_money.name(), total_fee);
+				mv.addObject(WebConstants.charge_money.name(), String.format("%.2f", chargeMoney.floatValue()));
 				mv.addObject(WebConstants.pay_account_name.name(), accountName);
 			} else {
 				mv.addObject("result", "1");
@@ -556,11 +558,11 @@ public class ChargeAccountController {
 			log.info("notify json: " + notifyInfo.toString());
 
 			String order_no = notifyInfo.getString("out_trade_no");
-			String total_fee = notifyInfo.getString("total_fee");
+//			String total_fee = notifyInfo.getString("total_fee");
 			String trade_status = notifyInfo.getString("trade_status");
 
 			log.info("order_no: " + order_no);
-			log.info("total_fee: " + total_fee);
+//			log.info("total_fee: " + total_fee);
 			log.info("trade_status: " + trade_status);
 			// 验证签名通过
 			if (verified) {
@@ -568,7 +570,7 @@ public class ChargeAccountController {
 				// 当交易状态成功，处理业务逻辑成功。回写success
 				if (trade_status.equals("TRADE_FINISHED")
 						|| trade_status.equals("TRADE_SUCCESS")) {
-					ChargeUtil.finishCharge(order_no, total_fee);
+					ChargeUtil.finishCharge(order_no);
 				} else {
 					chargeDao.updateChargeRecord(order_no, ChargeStatus.fail);
 				}
