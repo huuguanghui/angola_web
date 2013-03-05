@@ -39,7 +39,7 @@ public class ChargeUtil {
 				+ RandomString.validateCode();
 	}
 
-	public static String finishCharge(String chargeId, String money) {
+	public static String finishCharge(String chargeId) {
 		ChargeDAO chargeDao = ContextLoader.getChargeDAO();
 		Map<String, Object> chargeInfo = chargeDao.getChargeInfoById(chargeId);
 		if (chargeInfo == null) {
@@ -55,7 +55,9 @@ public class ChargeUtil {
 			return countryCode + userName;
 		}
 
-		Double amount = Double.valueOf(money);
+		Float chargeMoney = (Float) chargeInfo.get("money");
+		
+		Double amount = chargeMoney.doubleValue();
 		VOSClient vosClient = ContextLoader.getVOSClient();
 		UserDAO userDao = ContextLoader.getUserDAO();
 		VOSHttpResponse response = vosClient.deposite(userDao.genVosAccountName(countryCode, userName),
