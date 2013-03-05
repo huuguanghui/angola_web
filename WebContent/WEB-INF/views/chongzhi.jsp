@@ -27,7 +27,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset={dede:global.cfg_soft_lang/}" />
 <title>充值中心</title>
-<link href="http://www.00244dh.com/templets/00244dh/style/uutalk.css" rel="stylesheet" media="screen" type="text/css" />
+<link href="http://www.uu-talk.com/templets/uu-talk/style/uutalk.css" rel="stylesheet" media="screen" type="text/css" />
 </head>
 <body>
 
@@ -37,12 +37,11 @@
  -->	
 	<div class="nav-bar">
 		<ul>
-		<li><a href="http://www.00244dh.com">首页</a></li>
+		<li><a href="http://www.uu-talk.com">首页</a></li>
 		<li><a href="#">充值中心</a></li>
-		<li><a href="http://www.00244dh.com/a/huiboka/">回拨卡</a></li>
-		<li><a href="http://www.00244dh.com/a/zifeishuoming/">资费说明</a></li>
-		<li><a href="http://www.00244dh.com/a/bangzhu/">帮助</a></li>
-		<li><a href="http://www.00244dh.com/a/hezuojiameng/">合作加盟</a></li>
+		<li><a href="http://www.uu-talk.com/a/zifeishuoming/">资费说明</a></li>
+		<li><a href="http://www.uu-talk.com/a/bangzhu/">帮助</a></li>
+		<li><a href="http://www.uu-talk.com/a/hezuojiameng/">合作加盟</a></li>
 		</ul>
 	</div>
 </div>
@@ -54,7 +53,7 @@
 		<a class="chongzhi100" href=""></a>
 		<a class="chongzhi200" href=""></a>
 		<a class="chongzhi500" href=""></a>
-		<a class="download-btn" href="http://www.00244dh.com/appvcenter/downloadapp/4/android"></a>
+		<a class="download-btn" href="http://www.uu-talk.com/appvcenter/downloadapp/4/android"></a>
 	</div>
 	<form id="depositeForm" action="chongzhi" method="post">
 		<div id="divAccountInfo" class="chongzhi-form-field">
