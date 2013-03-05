@@ -1,5 +1,6 @@
 package com.angolacall.mvc.model.charge;
 
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -13,6 +14,7 @@ import com.angolacall.constants.ChargeType;
 import com.angolacall.framework.ContextLoader;
 import com.angolacall.mvc.admin.model.InviteChargeGiftPlan;
 import com.angolacall.mvc.admin.model.NoticeDao;
+import com.richitec.sms.client.SMSClient;
 import com.richitec.ucenter.model.UserDAO;
 import com.richitec.util.RandomString;
 import com.richitec.vos.client.VOSClient;
@@ -65,6 +67,14 @@ public class ChargeUtil {
 		if (response.isOperationSuccess()) {
 			log.info("vos deposite success");
 			chargeDao.updateChargeRecord(chargeId, ChargeStatus.success);
+			
+			SMSClient smsClient = ContextLoader.getSMSClient();
+			try {
+				smsClient.sendTextMessage(userName, "您的环宇通账户已成功充值" + String.format("%.2f", amount.floatValue())
+						+ "元，谢谢！");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
 
 			// give money to referrer if has
 			checkAndGiveMoneyToReferrer(countryCode, userName, amount);
