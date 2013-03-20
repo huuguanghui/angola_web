@@ -19,7 +19,9 @@ public class Configuration {
 	private String callbackCallerPrefix;
 	private String suitePrefix;
 	private String qqAppId;
-
+	private String qqShareSite;
+	private String qqShareFromUrl;
+	
 	public String getSuite0Id() {
 		return this.suite0Id;
 	}
@@ -116,4 +118,21 @@ public class Configuration {
 		this.qqAppId = qqAppId;
 	}
 
+	public String getQqShareSite() {
+		return qqShareSite;
+	}
+
+	public void setQqShareSite(String qqShareSite) {
+		this.qqShareSite = qqShareSite;
+	}
+
+	public String getQqShareFromUrl() {
+		return qqShareFromUrl;
+	}
+
+	public void setQqShareFromUrl(String qqShareFromUrl) {
+		this.qqShareFromUrl = qqShareFromUrl;
+	}
+
+	
 }
