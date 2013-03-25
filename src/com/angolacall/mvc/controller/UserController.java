@@ -205,7 +205,8 @@ public class UserController extends ExceptionController {
 	String resetPwd(HttpServletResponse response,
 			@RequestParam(value = "random_id") String randomId,
 			@RequestParam(value = "password") String password,
-			@RequestParam(value = "password1") String password1) throws SQLException {
+			@RequestParam(value = "password1") String password1)
+			throws SQLException {
 		UserDAO userDao = ContextLoader.getUserDAO();
 		Map<String, Object> user = null;
 		try {
@@ -603,9 +604,18 @@ public class UserController extends ExceptionController {
 	}
 
 	@RequestMapping(value = "/clientdirectreg", method = RequestMethod.POST)
-	public void clientDirectReg(HttpServletResponse response,
-			@RequestParam String phoneNumber, @RequestParam String countryCode,
-			@RequestParam String password) throws IOException {
+	public void clientDirectReg(
+			HttpServletResponse response,
+			@RequestParam String phoneNumber,
+			@RequestParam String countryCode,
+			@RequestParam String password,
+			@RequestParam(value = "brand", required = false, defaultValue = "") String brand,
+			@RequestParam(value = "model", required = false, defaultValue = "") String model,
+			@RequestParam(value = "release", required = false, defaultValue = "") String release,
+			@RequestParam(value = "sdk", required = false, defaultValue = "") String sdk,
+			@RequestParam(value = "width", required = false, defaultValue = "0") String width,
+			@RequestParam(value = "height", required = false, defaultValue = "0") String height)
+			throws IOException {
 		String result = "0";
 		result = userDao.checkRegisterPhone(countryCode, phoneNumber);
 
@@ -618,9 +628,32 @@ public class UserController extends ExceptionController {
 			result = finishVosRegister(countryCode, phoneNumber);
 		}
 
+		if ("0".equals(result)) {
+			userDao.recordDeviceInfo(phoneNumber, countryCode, brand, model,
+					release, sdk, width, height);
+		}
+
 		JSONObject jsonUser = new JSONObject();
 		try {
 			jsonUser.put("result", result);
+			if ("0".equals(result)) {
+				UserBean user = userDao.getUserBean(countryCode, phoneNumber);
+				if (null != user) {
+					jsonUser.put("result", "0");
+					jsonUser.put("username", phoneNumber);
+					jsonUser.put("countrycode", countryCode);
+					jsonUser.put("userkey", user.getUserKey());
+					jsonUser.put("vosphone", user.getVosPhone());
+					jsonUser.put("vosphone_pwd", user.getVosPhonePwd());
+					jsonUser.put("bindphone", user.getBindPhone());
+					jsonUser.put("bindphone_country_code",
+							user.getBindPhoneCountryCode());
+					jsonUser.put("status", user.getStatus());
+					jsonUser.put("email", user.getEmail());
+					jsonUser.put("email_status", user.getEmailStatus());
+					jsonUser.put("reg_given_money", user.getFrozenMoney());
+				}
+			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -696,20 +729,19 @@ public class UserController extends ExceptionController {
 				+ " username: " + userName);
 		JSONObject ret = new JSONObject();
 		int rows = userDao.updateRandomId(countryCode, userName,
-					RandomString.getRandomId(countryCode + userName));
+				RandomString.getRandomId(countryCode + userName));
 		if (rows <= 0) {
 			log.info("sendResetPwdEmailApi - user not found");
 			ret.put("result", "user_not_found");
 			response.getWriter().print(ret.toString());
 			return;
 		}
-		
+
 		Map<String, Object> user = userDao.getUser(countryCode, userName);
 		String email = (String) user.get(UserConstants.email.name());
 		String emailStatus = (String) user.get(UserConstants.email_status
 				.name());
 
-		
 		if (email == null || email.equals("")) {
 			ret.put("result", "email_not_set");
 			response.getWriter().print(ret.toString());
