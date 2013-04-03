@@ -12,10 +12,10 @@
 
 	String depositeType = (String)request.getParameter("depositeType");
 	if (null == depositeType){
-		depositeType = "azcard";
+		depositeType = "alipay";
 	}
 	
-	String alipayError = (String)request.getAttribute("alipayError");
+	String payError = (String)request.getAttribute("payError");
 	String uutalkError = (String)request.getAttribute("uutalkError");
 	VOSHttpResponse vosHttpError = (VOSHttpResponse)request.getAttribute("vosHttpError");
 	VOSHttpResponse vosError = (VOSHttpResponse)request.getAttribute("vosError");
@@ -68,7 +68,7 @@
 		<a class="chongzhi500" href=""></a>
 		<a class="download-btn" href="http://www.00244dh.com/appvcenter/downloadapp/3/android"></a>
 	</div>
-	<form id="depositeForm" action="chongzhi" method="post">
+	<form id="depositeForm" action="chongzhi" method="post" target="_blank">
 		<div id="divAccountInfo" class="chongzhi-form-field">
 			<label>选择国家代码</label>
 			<select id="iptCountryCodeSelect" name="countryCode">
@@ -86,22 +86,20 @@
 		<div id="divDepositeType" class="chongzhi-form-field">
 			<label>请选择充值方式</label>
 			<div id="divDepositeTypeList">
-				<input type="radio" name="depositeType" value="azcard" 
-					<% if("azcard".equals(depositeType)){ %>checked="checked"<% } %>/><span>安中通充值卡</span>
 				<input type="radio" name="depositeType" value="alipay" 
 					<% if("alipay".equals(depositeType)){ %>checked="checked"<% } %> /><span>支付宝充值</span>
-				<!-- 
 				<input type="radio" name="depositeType" value="szx" 
-					<% if("szx".equals(depositeType)){ %>checked="checked"<% } %>/><span>神州行</span>		
+					<% if("szx".equals(depositeType)){ %>checked="checked"<% } %>/><span>移动卡充值</span>		
 				<input type="radio" name="depositeType" value="unicom" 
-					<% if("unicom".equals(depositeType)){ %>checked="checked"<% } %>/><span>联通卡</span>
+					<% if("unicom".equals(depositeType)){ %>checked="checked"<% } %>/><span>联通卡充值</span>
 				<input type="radio" name="depositeType" value="telecom" 
-					<% if("telecom".equals(depositeType)){ %>checked="checked"<% } %>/><span>电信卡</span>
-				 -->
+					<% if("telecom".equals(depositeType)){ %>checked="checked"<% } %>/><span>电信卡充值</span>
+				<input type="radio" name="depositeType" value="azcard" 
+					<% if("azcard".equals(depositeType)){ %>checked="checked"<% } %>/><span>安中通充值卡</span>
 			</div>
-			<div id="divAlipayPanel" <% if(!"alipay".equals(depositeType)){ %>class="hidden"<% } %>>
-				<%if(null!=alipayError) { %>
-				<span class="red"><%=alipayError %></span>
+			<div id="divAlipayPanel" <% if(!"alipay".equals(depositeType) && !"szx".equals(depositeType) && !"unicom".equals(depositeType) && !"telecom".equals(depositeType)){ %>class="hidden"<% } %>>
+				<%if(null!=payError) { %>
+				<span class="red"><%=payError %></span>
 				<% } %>
 				<h3>充值大优惠</h3>
 				<%
@@ -122,7 +120,7 @@
 						}
 					}
 				%> 
-				<p>说明：使用安中通充值卡充值享受另外优惠，以上优惠限支付宝充值。</p>				
+				<p>说明：使用安中通充值卡充值享受另外优惠，以上优惠限支付宝和移动、联通、电信充值卡充值。</p>				
 			</div>
 			<div id="divAZCardPanel" <% if(!"azcard".equals(depositeType)){ %>class="hidden"<% } %>>	
 				<h3>充值卡卡号</h3>
@@ -173,7 +171,7 @@ $(function(){
 	var $divAZCardPanel = $("#divAZCardPanel");
 	$("#divDepositeTypeList :radio").change(function(){
 		var value = $(this).val();
-		if (value == 'alipay'){
+		if (value == 'alipay'|| value == 'szx' || value == 'unicom' || value == 'telecom'){
 			//show alipay div
 			$divAlipayPanel.removeClass(hidden);
 			$divAZCardPanel.addClass(hidden);

@@ -105,7 +105,7 @@ public class ChargeAccountController {
 		if ("alipay".equals(depositeType)){
 			if (null == depositeId || depositeId.isEmpty()){
 				mv.setViewName("chongzhi");
-				mv.addObject("alipayError", "请选择充值金额");
+				mv.addObject("payError", "请选择充值金额");
 				return mv;
 			} 
 //			else {
@@ -143,6 +143,28 @@ public class ChargeAccountController {
 				mv.addObject("vosResponse", vosResp);
 				return mv;
 			}
+		}
+		
+		if ("szx".equals(depositeType) || "unicom".equals(depositeType)
+				|| "telecom".equals(depositeType)) {
+			if (null == depositeId || depositeId.isEmpty()) {
+				mv.setViewName("chongzhi");
+				mv.addObject("payError", "请选择充值金额");
+				return mv;
+			}
+			String yeepayTunnel = "";
+			if ("szx".equals(depositeType)) {
+				yeepayTunnel = "SZX-NET";
+			} else if ("unicom".equals(depositeType)) {
+				yeepayTunnel = "UNICOM-NET";
+			} else if ("telecom".equals(depositeType)) {
+				yeepayTunnel = "TELECOM-NET";
+			}
+			mv.setViewName("accountcharge/yeepay_reqpay");
+			mv.addObject("yeepayTunnel", yeepayTunnel);
+			mv.addObject("countryCode", countryCode);
+			mv.addObject("accountName", accountName);
+			return mv;
 		}
 		
 		mv.setViewName("chongzhi");

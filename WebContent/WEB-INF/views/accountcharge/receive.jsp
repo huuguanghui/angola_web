@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-<title>安中通支付宝充值结果</title>
+<title>安中通充值结果</title>
 <jsp:include page="../common/_head.jsp"></jsp:include>
 </head>
 <body>
@@ -18,7 +18,7 @@
 					String chargeMoney = (String) request.getAttribute(WebConstants.charge_money.name());
 					if (accountName == null) {
 					%>
-						<p>充值出现异常，系统未能成功入账，请联系管理员(QQ：1622122511)！</p>
+						<p>充值出现异常，系统未能成功入账，请联系客服(QQ：1622122511)！</p>
 					<%
 					} else {
 					%>
