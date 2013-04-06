@@ -31,6 +31,7 @@ import com.alipay.util.AlipayNotify;
 import com.angolacall.constants.ChargeStatus;
 import com.angolacall.constants.ChargeType;
 import com.angolacall.constants.WebConstants;
+import com.angolacall.framework.Configuration;
 import com.angolacall.framework.ContextLoader;
 import com.angolacall.mvc.model.charge.ChargeDAO;
 import com.angolacall.mvc.model.charge.ChargeUtil;
@@ -39,8 +40,10 @@ import com.richitec.sms.client.SMSClient;
 import com.richitec.ucenter.model.UserDAO;
 import com.richitec.util.Pager;
 import com.richitec.util.RandomString;
+import com.richitec.util.TextUtility;
 import com.richitec.vos.client.VOSClient;
 import com.richitec.vos.client.VOSHttpResponse;
+import com.yeepay.PaymentForOnlineService;
 
 @Controller
 public class ChargeAccountController {
@@ -608,4 +611,91 @@ public class ChargeAccountController {
 		}
 	}
 
+	/**
+	 * 易宝支付通知接口
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/yeepay_return")
+	public ModelAndView yeepayReturn(HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
+		log.info(" ==== yeepay return ====");
+		ModelAndView mv = new ModelAndView("accountcharge/receive");
+
+		Configuration config = ContextLoader.getConfiguration();
+
+		String keyValue = config.getYeepayKey(); // 商家密钥
+		String r0_Cmd = TextUtility.trimNull(request.getParameter("r0_Cmd")); // 业务类型
+		String p1_MerId = TextUtility.trimNull(config.getYeepayMerchantId()); // 商户编号
+		String r1_Code = TextUtility.trimNull(request.getParameter("r1_Code"));// 支付结果
+		String r2_TrxId = TextUtility
+				.trimNull(request.getParameter("r2_TrxId"));// 易宝支付交易流水号
+		String r3_Amt = TextUtility.trimNull(request.getParameter("r3_Amt"));// 支付金额
+		String r4_Cur = TextUtility.trimNull(request.getParameter("r4_Cur"));// 交易币种
+		String r5_Pid = new String(TextUtility.trimNull(
+				request.getParameter("r5_Pid")).getBytes("iso-8859-1"), "gbk");// 商品名称
+
+		String r6_Order = TextUtility
+				.trimNull(request.getParameter("r6_Order"));// 商户订单号
+		String r7_Uid = TextUtility.trimNull(request.getParameter("r7_Uid"));// 易宝支付会员ID
+		String r8_MP = new String(TextUtility.trimNull(
+				request.getParameter("r8_MP")).getBytes("iso-8859-1"), "gbk");// 商户扩展信息
+		String r9_BType = TextUtility
+				.trimNull(request.getParameter("r9_BType"));// 交易结果返回类型
+		String hmac = TextUtility.trimNull(request.getParameter("hmac"));// 签名数据
+
+		log.info("order id: " + r6_Order + "charge money: " + r3_Amt);
+		log.info("hmac: " + hmac);
+		log.info("p1_MerId: " + p1_MerId);
+		log.info("r0_cmd: " + r0_Cmd);
+		log.info("r1_code: " + r1_Code);
+		log.info("r2_trxId: " + r2_TrxId);
+		log.info("r4_Cur: " + r4_Cur);
+		log.info("r5_pid: " + r5_Pid);
+		log.info("r7_Uid: " + r7_Uid);
+		log.info("r8_mp: " + r8_MP);
+		log.info("r9_BType: " + r9_BType);
+
+		boolean isOK = false;
+		// 校验返回数据包
+		isOK = PaymentForOnlineService.verifyCallback(hmac, p1_MerId, r0_Cmd,
+				r1_Code, r2_TrxId, r3_Amt, r4_Cur, r5_Pid, r6_Order, r7_Uid,
+				r8_MP, r9_BType, keyValue);
+		if (isOK) {
+			// 在接收到支付结果通知后，判断是否进行过业务逻辑处理，不要重复进行业务逻辑处理
+			if (r1_Code.equals("1")) {
+				if (r9_BType.equals("1")) {
+					// 产品通用接口支付成功返回-浏览器重定向
+					// out.println("callback方式:产品通用接口支付成功返回-浏览器重定向");
+					String accountName = ChargeUtil.finishCharge(r6_Order);
+					Map<String, Object> chargeInfo = chargeDao
+							.getChargeInfoById(r6_Order);
+					Float chargeMoney = (Float) chargeInfo.get("money");
+
+					mv.addObject("result", "0");
+					mv.addObject(WebConstants.charge_money.name(),
+							String.format("%.2f", chargeMoney.floatValue()));
+					mv.addObject(WebConstants.pay_account_name.name(),
+							accountName);
+
+				} else if (r9_BType.equals("2")) {
+					// 产品通用接口支付成功返回-服务器点对点通讯
+					// 如果在发起交易请求时 设置使用应答机制时，必须应答以"success"开头的字符串，大小写不敏感
+					ChargeUtil.finishCharge(r6_Order);
+					response.getWriter().println("SUCCESS");
+					// 产品通用接口支付成功返回-电话支付返回
+				}
+				// 下面页面输出是测试时观察结果使用
+				// out.println("<br>交易成功!<br>商家订单号:" + r6_Order + "<br>支付金额:" +
+				// r3_Amt + "<br>易宝支付交易流水号:" + r2_TrxId);
+			}
+		} else {
+			// out.println("交易签名被篡改!");
+			chargeDao.updateChargeRecord(r6_Order, ChargeStatus.fail);
+			mv.addObject("result", "1");
+		}
+
+		return mv;
+	}
 }
